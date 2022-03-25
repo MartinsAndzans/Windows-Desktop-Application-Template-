@@ -18,6 +18,8 @@ RECT MainWindow::MainWindowDimensions = { 0, 0, MainWindowWidth, MainWindowHeigh
 HWND MainWindow::hDebugTool1 = { 0 };
 HWND MainWindow::hDebugTool2 = { 0 };
 
+HWND MainWindow::hAnimation = { 0 };
+
 POINT MainWindow::mousePosition = { 0 };
 
 #pragma endregion
@@ -130,7 +132,7 @@ VOID MainWindow::CreateDebugTools() {
 
 	for (int i = 0; i < DebugTools.size(); i++) {
 
-		if (!(DebugTools[i] = CreateWindowEx(WS_EX_STATICEDGE,
+		if (!(DebugTools[i] = CreateWindowEx(WS_EX_CLIENTEDGE,
 			L"STATIC",
 			Captions[i].c_str(),
 			WS_CHILD | WS_BORDER | WS_VISIBLE | SS_OWNERDRAW,
@@ -161,9 +163,13 @@ void MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	ColorPicker::InitColorPicker();
 
+	AnimationStars::InitAnimationStars();
+
 	CreateFonts();
 
 	CreateDebugTools();
+
+	hAnimation = CreateWindowEx(WS_EX_DLGMODALFRAME, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 0, 0, 0, 0, hMainWindow, (HMENU)RGB(0, 255, 155), HInstance(), NULL);
 
 }
 
@@ -171,6 +177,8 @@ void MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 	MainWindowDimensions.right = LOWORD(lParam);
 	MainWindowDimensions.bottom = HIWORD(lParam);
+
+	SetWindowPos(hAnimation, NULL, 10, 10, 400, 400, SWP_SHOWWINDOW);
 
 	#pragma region DebugTool2
 

@@ -14,6 +14,7 @@
 #include "Draw.h"
 
 #include "ColorPicker.h"
+#include "AnimationStars.h"
 
 #pragma endregion
 

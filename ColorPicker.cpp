@@ -1,5 +1,7 @@
 #include "ColorPicker.h"
 
+// INIT COLOR PICKER STATIC MEMBERS
+
 #pragma region InitColorPickerStaticMembers
 
 HDC ColorPicker::ColorPickerDC = { 0 };
@@ -21,6 +23,8 @@ RECT ColorPicker::SelectedColor = { 0 };
 POINT ColorPicker::mousePosition = { 0 };
 
 #pragma endregion
+
+// INIT COLOR PICKER
 
 #pragma region InitColorPicker
 

@@ -28,6 +28,8 @@ private:
 	static HWND hDebugTool1;
 	static HWND hDebugTool2;
 
+	static HWND hAnimation;
+
 	static POINT mousePosition;
 
 	#pragma endregion

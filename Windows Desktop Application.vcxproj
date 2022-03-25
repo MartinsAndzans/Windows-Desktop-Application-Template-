@@ -155,11 +155,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AnimationStars.cpp" />
     <ClCompile Include="ColorPicker.cpp" />
     <ClCompile Include="InitMainWindow.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationStars.h" />
     <ClInclude Include="ColorPicker.h" />
     <ClInclude Include="Draw.h" />
     <ClInclude Include="Functions.h" />

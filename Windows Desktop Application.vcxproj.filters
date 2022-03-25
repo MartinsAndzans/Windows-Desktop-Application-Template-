@@ -39,6 +39,9 @@
     <Filter Include="Custom Controls\Color Picker">
       <UniqueIdentifier>{f25780ca-147c-4c2c-a0e2-99f022f08bda}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Custom Controls\Animation Stars">
+      <UniqueIdentifier>{91ea52dd-62c0-4482-a945-b452cc96ecc0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp">
@@ -49,6 +52,9 @@
     </ClCompile>
     <ClCompile Include="ColorPicker.cpp">
       <Filter>Custom Controls\Color Picker</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationStars.cpp">
+      <Filter>Custom Controls\Animation Stars</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -66,6 +72,9 @@
     </ClInclude>
     <ClInclude Include="ColorPicker.h">
       <Filter>Custom Controls\Color Picker</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationStars.h">
+      <Filter>Custom Controls\Animation Stars</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
