@@ -11,8 +11,6 @@
 
 #define ASTIMER 1001
 
-#define AS_COLOR_DONTCARE 0x0FFFFFFF
-
 #define MIN_RGB 0x00000000
 #define MAX_RGB 0x00FFFFFF
 
@@ -36,6 +34,8 @@ private:
 	static HFONT StarFont;
 
 	static RECT Dimensions;
+
+	static COLORREF StarColor;
 
 	#pragma endregion
 

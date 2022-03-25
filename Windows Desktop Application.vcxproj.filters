@@ -76,6 +76,9 @@
     <ClInclude Include="AnimationStars.h">
       <Filter>Custom Controls\Animation Stars</Filter>
     </ClInclude>
+    <ClInclude Include="Console.h">
+      <Filter>Functions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Crosshair.cur">

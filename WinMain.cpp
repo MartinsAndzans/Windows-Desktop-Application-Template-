@@ -18,6 +18,8 @@ VOID BroadcastMessages();
 int wmain(int ArrgumentCount, wchar_t *Arrguments[]) {
 
 	ShowWindow(GetConsoleWindow(), SW_SHOW);
+
+	Console::setConsoleTitle("Debug Console");
 	
 	if (MainWindow::InitMainWindowClass(MAIN_WINDOW_CLASS)) {
 		if (MainWindow::CreateMainWindow(MAIN_WINDOW_CLASS, MAIN_WINDOW_TITLE)) {

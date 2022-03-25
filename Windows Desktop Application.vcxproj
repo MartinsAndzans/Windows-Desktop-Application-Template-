@@ -163,6 +163,7 @@
   <ItemGroup>
     <ClInclude Include="AnimationStars.h" />
     <ClInclude Include="ColorPicker.h" />
+    <ClInclude Include="Console.h" />
     <ClInclude Include="Draw.h" />
     <ClInclude Include="Functions.h" />
     <ClInclude Include="Headers.h" />

@@ -169,7 +169,7 @@ void MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	CreateDebugTools();
 
-	hAnimation = CreateWindowEx(WS_EX_DLGMODALFRAME, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 0, 0, 0, 0, hMainWindow, (HMENU)RGB(0, 255, 155), HInstance(), NULL);
+	hAnimation = CreateWindowEx(WS_EX_DLGMODALFRAME, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 0, 0, 0, 0, hMainWindow, (HMENU)0, HInstance(), (LPVOID)RGB(0, 155, 255));
 
 }
 

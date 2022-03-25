@@ -14,6 +14,8 @@ HFONT AnimationStars::StarFont;
 
 RECT AnimationStars::Dimensions;
 
+COLORREF AnimationStars::StarColor = { 0 };
+
 #pragma endregion
 
 // INIT ANIMATION STARS
@@ -129,6 +131,8 @@ void AnimationStars::onCreate(HWND hAnimationStars, LPARAM lParam) {
 
 	createStarFont(StarFont);
 
+	StarColor = (COLORREF)window->lpCreateParams;
+
 	Dimensions.right = window->cx;
 	Dimensions.bottom = window->cy;
 
@@ -179,9 +183,7 @@ void AnimationStars::onPaint(HWND hAnimationStars) {
 
 	SelectObject(MemoryDC, StarFont);
 
-	COLORREF StarColor = (COLORREF)GetWindowLong(hAnimationStars, GWL_ID);
-
-	if (StarColor < MIN_RGB || StarColor > MAX_RGB || StarColor == AS_COLOR_DONTCARE) {
+	if (StarColor < MIN_RGB || StarColor > MAX_RGB || StarColor == NULL) {
 		StarColor = RGB(255, 255, 255);
 	}
 	
