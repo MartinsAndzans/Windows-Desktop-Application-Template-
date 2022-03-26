@@ -36,7 +36,7 @@ class Draw {
 public:
 
 
-	static void drawRectangle(HDC hdc, RECT rect) {
+	static VOID drawRectangle(HDC hdc, RECT rect) {
 
 		/// <summary>
 		/// This Function Draws Rectangle
@@ -58,7 +58,7 @@ public:
 
 	}
 
-	static void drawRectangle(HDC hdc, INT X = 0, INT Y = 0, INT W = 120, INT H = 40, INT BorderWidth = 2, COLORREF RectangleColor = WHITE_COLOR, COLORREF BorderColor = BLACK_COLOR) {
+	static VOID drawRectangle(HDC hdc, INT X = 0, INT Y = 0, INT W = 120, INT H = 40, INT BorderWidth = 2, COLORREF RectangleColor = WHITE_COLOR, COLORREF BorderColor = BLACK_COLOR) {
 
 		/// <summary>
 		/// This Function Draws Rectangle
@@ -107,7 +107,7 @@ public:
 
 	}
 
-	static void drawCube(HDC hdc, INT X = 100, INT Y = 100, INT W = 40, INT H = 40, INT Z = 20) {
+	static VOID drawCube(HDC hdc, INT X = 100, INT Y = 100, INT W = 40, INT H = 40, INT Z = 20) {
 
 		while (Z >= 0) {
 			drawRectangle(hdc, X, Y, W, H);
@@ -116,7 +116,7 @@ public:
 
 	}
 
-	static void drawRomb(HDC hdc, int x = 0, int y = 0, int w = 60, int h = 60, COLORREF color = BLACK_COLOR, bool alpha = true) {
+	static VOID drawRomb(HDC hdc, int x = 0, int y = 0, int w = 60, int h = 60, COLORREF color = BLACK_COLOR, bool alpha = true) {
 
 		/// <summary>
 		/// This Function Draws Romb
@@ -288,7 +288,7 @@ public:
 
 	}
 
-	static void SetPixelxPW(HDC hdc, int px, int py, COLORREF Color, size_t pw) {
+	static VOID SetPixelxPW(HDC hdc, int px, int py, COLORREF Color, size_t pw) {
 
 		for (int pxs = 0; pxs <= pw; pxs++) {
 			for (int pys = 0; pys <= pw; pys++) {
@@ -298,13 +298,13 @@ public:
 
 	}
 
-	static void drawMatrix(HDC hdc, RECT MatrixDimensions) {
+	static VOID drawMatrix(HDC hdc, RECT MatrixDimensions) {
 
 
 
 	}
 
-	static void drawGrid(HDC hdc, INT X = 0, INT Y = 0, INT W = 80, INT H = 80, SIZE_T CellSize = 1, COLORREF GridFirstColor = WHITE_COLOR, COLORREF GridSecondColor = BLACK_COLOR) {
+	static VOID drawGrid(HDC hdc, INT X = 0, INT Y = 0, INT W = 80, INT H = 80, SIZE_T CellSize = 1, COLORREF GridFirstColor = WHITE_COLOR, COLORREF GridSecondColor = BLACK_COLOR) {
 
 		INT XS = 0, XE = W, YS = 0, YE = H;
 		COLORREF GridColor = GridFirstColor;

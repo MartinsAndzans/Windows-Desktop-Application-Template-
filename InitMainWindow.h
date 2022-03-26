@@ -17,8 +17,8 @@ private:
 	static PAINTSTRUCT MainPS;
 	static HDC MainWindowDC;
 
-	static HBITMAP MainBitmap;
 	static HDC MemoryDC;
+	static HBITMAP MainBitmap;
 
 	static HFONT MainFont;
 
@@ -27,8 +27,6 @@ private:
 
 	static HWND hDebugTool1;
 	static HWND hDebugTool2;
-
-	static HWND hAnimation;
 
 	static POINT mousePosition;
 
@@ -46,13 +44,13 @@ private:
 
 	#pragma region Events
 
-	static void onCreate(HWND hMainWindow, LPARAM lParam);
-	static void onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
-	static void onMouseMove(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
-	static void onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
-	static void onPaint(HWND hMainWindow);
-	static void onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
-	static void onDropFiles(HWND hMainWindow, WPARAM wParam);
+	static VOID onCreate(HWND hMainWindow, LPARAM lParam);
+	static VOID onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
+	static VOID onMouseMove(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
+	static VOID onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
+	static VOID onPaint(HWND hMainWindow);
+	static VOID onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
+	static VOID onDropFiles(HWND hMainWindow, WPARAM wParam);
 
 	#pragma endregion
 

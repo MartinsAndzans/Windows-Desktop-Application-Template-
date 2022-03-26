@@ -7,12 +7,13 @@
 #include <string>
 
 #define SEC 1000
-#define MIN 1000 * 60
 
 #define ASTIMER 1001
 
 #define MIN_RGB 0x00000000
 #define MAX_RGB 0x00FFFFFF
+
+#define GWL_USERDATA -21
 
 #define MAX_ASTITLE_CHAR 200
 #define HInstance() GetModuleHandle(NULL)
@@ -35,6 +36,8 @@ private:
 
 	static RECT Dimensions;
 
+	static INT Proportion;
+
 	static COLORREF StarColor;
 
 	#pragma endregion
@@ -43,17 +46,17 @@ private:
 
 	static VOID createStarFont(HFONT Font);
 
-	static VOID drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF StarColor, std::wstring StarSymbol = L"*", INT proportion = 6);
+	static VOID drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF StarColor, const wchar_t StarSymbol[] = L"*", INT proportion = 6);
 
 	#pragma endregion
 
 	#pragma region Events
 
-	static void onCreate(HWND hAnimationStars, LPARAM lParam);
-	static void onWindowPosChanged(HWND hAnimationStars, LPARAM lParam);
-	static void onPaint(HWND hAnimationStars);
-	static void onTimer(HWND hAnimationStars, WPARAM wParam, LPARAM lParam);
-	static void onDestroy(HWND hAnimationStars);
+	static VOID onCreate(HWND hAnimationStars, LPARAM lParam);
+	static VOID onWindowPosChanged(HWND hAnimationStars, LPARAM lParam);
+	static VOID onPaint(HWND hAnimationStars);
+	static VOID onTimer(HWND hAnimationStars, WPARAM wParam, LPARAM lParam);
+	static VOID onDestroy(HWND hAnimationStars);
 
 	#pragma endregion
 

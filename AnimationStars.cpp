@@ -4,15 +4,17 @@
 
 #pragma region InitAnimationStarsStaticMembers
 
-HDC AnimationStars::AnimationStarsDC;
-PAINTSTRUCT AnimationStars::ps;
+HDC AnimationStars::AnimationStarsDC = { 0 };
+PAINTSTRUCT AnimationStars::ps = { 0 };
 
-HDC AnimationStars::MemoryDC;
-HBITMAP AnimationStars::Bitmap;
+HDC AnimationStars::MemoryDC = { 0 };
+HBITMAP AnimationStars::Bitmap = { 0 };
 
-HFONT AnimationStars::StarFont;
+HFONT AnimationStars::StarFont = { 0 };
 
-RECT AnimationStars::Dimensions;
+RECT AnimationStars::Dimensions = { 0 };
+
+INT AnimationStars::Proportion = { 0 };
 
 COLORREF AnimationStars::StarColor = { 0 };
 
@@ -29,6 +31,8 @@ BOOL AnimationStars::InitAnimationStars() {
 	/// CREATES CLASS "ANIMATION STARS"
 	/// </summary>
 	/// <returns>If Function Succeeded Returns True, but If not False</returns>
+	
+	createStarFont(StarFont);
 
 	WNDCLASSEX AnimationStarsEx = { 0 };
 
@@ -43,7 +47,7 @@ BOOL AnimationStars::InitAnimationStars() {
 	AnimationStarsEx.lpfnWndProc = AnimationStarsProcedure;
 	AnimationStarsEx.lpszClassName = L"ANIMATION STARS";
 	AnimationStarsEx.lpszMenuName = NULL;
-	AnimationStarsEx.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+	AnimationStarsEx.style = CS_HREDRAW | CS_VREDRAW | CS_PARENTDC;
 
 	if (!RegisterClassEx(&AnimationStarsEx)) {
 		return FALSE;
@@ -75,35 +79,54 @@ VOID AnimationStars::createStarFont(HFONT Font) {
 
 }
 
-VOID AnimationStars::drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF StarColor, std::wstring StarSymbol, INT proportion) {
+VOID AnimationStars::drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF StarColor, const wchar_t StarSymbol[], INT Proportion) {
 
 	SIZE size = { 0 };
 	SYSTEMTIME st = { 0 };
 	INT CELL = 0;
-	INT XS = 0, XE = W, YS = 0, YE = H, XC = W / proportion, YC = H / proportion;
+	INT XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
 
 	COLORREF DefaultColor = GetTextColor(hdc);
 	SetTextColor(hdc, StarColor);
 
-	GetTextExtentPoint(hdc, StarSymbol.c_str(), (int)StarSymbol.length(), &size);
-
+	GetTextExtentPoint(hdc, StarSymbol, lstrlenW(StarSymbol), &size);
+	
 	GetSystemTime(&st);
 	srand(st.wMilliseconds);
+	
+	for (int i = 0; i < Proportion * Proportion; i++) {
 
-	for (int i = 0; i < proportion * proportion; i++) {
+		INT STARX = rand() % XCELL + XS; // XS - (XS + XCELL)
+		INT STARY = rand() % YCELL + YS; // YS - (YS + YCELL)
 
-		INT SX = rand() % XC + XS; // XS - (XS + XC)
-		INT SY = rand() % YC + YS; // YS - (YS + YC)
+		TextOut(hdc, X + STARX - size.cx / 2, Y + STARY - size.cy / 2, StarSymbol, lstrlenW(StarSymbol));
 
-		TextOut(hdc, X + SX - size.cx / 2, Y + SY - size.cy / 2, StarSymbol.c_str(), (int)StarSymbol.length());
-
-		XS = XS + XC;
+		///////////////////////////
+		//// -->               ////
+		//// +---+---+---+---+ ////
+		//// | 0 | 1 | 2 | 3 | ////
+		//// +---+---+---+---+ ////
+		///////////////////////////
+		
+		XS = XS + XCELL;
 		CELL++;
 
-		if (CELL == proportion) {
+		/////////////////
+		//// +---+ | ////
+		//// | 0 | | ////
+		//// +---+ V ////
+		//// | 1 |   ////
+		//// +---+   ////
+		//// | 2 |   ////
+		//// +---+   ////
+		//// | 3 |   ////
+		//// +---+   ////
+		/////////////////
+
+		if (CELL == Proportion) {
 			CELL = 0;
 			XS = 0;
-			YS = YS + YC;
+			YS = YS + YCELL;
 		}
 
 	}
@@ -118,7 +141,7 @@ VOID AnimationStars::drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF Sta
 
 #pragma region Events
 
-void AnimationStars::onCreate(HWND hAnimationStars, LPARAM lParam) {
+VOID AnimationStars::onCreate(HWND hAnimationStars, LPARAM lParam) {
 
 	LPCREATESTRUCT window = LPCREATESTRUCT(lParam);
 
@@ -129,12 +152,7 @@ void AnimationStars::onCreate(HWND hAnimationStars, LPARAM lParam) {
 		DestroyWindow(hAnimationStars);
 	}
 
-	createStarFont(StarFont);
-
-	StarColor = (COLORREF)window->lpCreateParams;
-
-	Dimensions.right = window->cx;
-	Dimensions.bottom = window->cy;
+	SetWindowLongPtr(hAnimationStars, GWL_USERDATA, (LONG_PTR)window->lpCreateParams);
 
 	if (window->cx != 0 || window->cy != 0) {
 		SetTimer(hAnimationStars, ASTIMER, SEC / 10, (TIMERPROC)NULL);
@@ -142,12 +160,9 @@ void AnimationStars::onCreate(HWND hAnimationStars, LPARAM lParam) {
 
 }
 
-void AnimationStars::onWindowPosChanged(HWND hAnimationStars, LPARAM lParam) {
+VOID AnimationStars::onWindowPosChanged(HWND hAnimationStars, LPARAM lParam) {
 
 	LPWINDOWPOS window = LPWINDOWPOS(lParam);
-
-	Dimensions.right = window->cx;
-	Dimensions.bottom = window->cy;
 
 	if (window->cx != 0 || window->cy != 0) {
 		KillTimer(hAnimationStars, ASTIMER);
@@ -159,18 +174,20 @@ void AnimationStars::onWindowPosChanged(HWND hAnimationStars, LPARAM lParam) {
 
 }
 
-void AnimationStars::onTimer(HWND hAnimationStars, WPARAM wParam, LPARAM lParam) {
+VOID AnimationStars::onTimer(HWND hAnimationStars, WPARAM wParam, LPARAM lParam) {
 
 	if (wParam == ASTIMER) {
 
-		//PlaySound(L"F:\\Multvide\\Lorija Vuda && Hardijs Madzulis - (04) Paliec.wma", NULL, SND_ASYNC | SND_FILENAME);
-
+		GetClientRect(hAnimationStars, &Dimensions);
 		RedrawWindow(hAnimationStars, &Dimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
+
 	}
 
 }
 
-void AnimationStars::onPaint(HWND hAnimationStars) {
+VOID AnimationStars::onPaint(HWND hAnimationStars) {
+
+	GetClientRect(hAnimationStars, &Dimensions);
 
 	AnimationStarsDC = BeginPaint(hAnimationStars, &ps);
 
@@ -179,31 +196,45 @@ void AnimationStars::onPaint(HWND hAnimationStars) {
 
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
-	FillRect(MemoryDC, &Dimensions, CreateSolidBrush(AnimationStarsBackgroundColor));
+	HBRUSH BackgroundBrush = CreateSolidBrush(AnimationStarsBackgroundColor);
+	FillRect(MemoryDC, &Dimensions, BackgroundBrush);
+	DeleteObject(BackgroundBrush);
 
 	SelectObject(MemoryDC, StarFont);
 
-	if (StarColor < MIN_RGB || StarColor > MAX_RGB || StarColor == NULL) {
-		StarColor = RGB(255, 255, 255);
-	}
+	StarColor = LOWORD(GetWindowLong(hAnimationStars, GWL_USERDATA));
+	Proportion = HIWORD(GetWindowLong(hAnimationStars, GWL_USERDATA));
+
+	/////////////////////////////////////////////////////////////////////
+	//// +---------------------------------------------------------+ ////
+	//// |                                                         | ////
+	//// | lpCreateParams - LOWORD(StarColor) | HIWORD(Proportion) | ////
+	//// |                                                         | ////
+	//// +---------------------------------------------------------+ ////
+	/////////////////////////////////////////////////////////////////////
+
+	(StarColor < MIN_RGB || StarColor > MAX_RGB || StarColor == NULL) ? StarColor = RGB(255, 255, 255) : StarColor = StarColor;
+	(Proportion == NULL) ? Proportion = 6 : Proportion = Proportion;
 	
 	SetTextColor(MemoryDC, StarColor);
 
 	WCHAR WindowTitle[MAX_ASTITLE_CHAR] = { 0 };
 	GetWindowText(hAnimationStars, WindowTitle, ARRAYSIZE(WindowTitle));
-	std::wstring WWindowTitle = WindowTitle;
 
-	drawStars(MemoryDC, Dimensions.left, Dimensions.top, Dimensions.right, Dimensions.bottom, StarColor);
+	drawStars(MemoryDC, Dimensions.left, Dimensions.top, Dimensions.right, Dimensions.bottom, StarColor, L"*", Proportion);
 
-	TextOut(MemoryDC, Dimensions.left + 10, Dimensions.top + 10, WWindowTitle.c_str(), (int)WWindowTitle.length());
+	TextOut(MemoryDC, Dimensions.left + 10, Dimensions.top + 10, WindowTitle, lstrlenW(WindowTitle));
 
 	BitBlt(AnimationStarsDC, 0, 0, Dimensions.right, Dimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
+
+	DeleteDC(MemoryDC);
+	DeleteObject(Bitmap);
 
 	EndPaint(hAnimationStars, &ps);
 
 }
 
-void AnimationStars::onDestroy(HWND hAnimationStars) {
+VOID AnimationStars::onDestroy(HWND hAnimationStars) {
 
 	KillTimer(hAnimationStars, ASTIMER);
 

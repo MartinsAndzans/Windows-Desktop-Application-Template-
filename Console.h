@@ -17,17 +17,17 @@ private:
 	static SMALL_RECT consoleSize;
 	static CONSOLE_CURSOR_INFO info;
 	static CONSOLE_SCREEN_BUFFER_INFO csbi;
-
+	
 public:
 
-	static void setConsoleTitle(std::string Title) {
+	static VOID setConsoleTitle(std::string Title) {
 
 		std::wstring wTitle = std::wstring(Title.begin(), Title.end());
 		SetConsoleTitle(wTitle.c_str());
-
+		
 	}
 
-	static void setCursorPosition(short int x, short int y, bool buffer_flush, bool move_cursor, bool cls) {
+	static VOID setCursorPosition(short int x, short int y, bool buffer_flush, bool move_cursor, bool cls) {
 
 		static const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -71,7 +71,7 @@ public:
 
 	}
 
-	static void setCursorVisible(bool cursor_visible) {
+	static VOID setCursorVisible(bool cursor_visible) {
 
 		static const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -85,7 +85,7 @@ public:
 
 	}
 
-	static void setCursorSize(int cursor_size) {
+	static VOID setCursorSize(int cursor_size) {
 
 		static const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 

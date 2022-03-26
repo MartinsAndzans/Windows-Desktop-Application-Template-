@@ -7,8 +7,8 @@
 PAINTSTRUCT MainWindow::MainPS = { 0 };
 HDC MainWindow::MainWindowDC = { 0 };
 
-HBITMAP MainWindow::MainBitmap = { 0 };
 HDC MainWindow::MemoryDC = { 0 };
+HBITMAP MainWindow::MainBitmap = { 0 };
 
 HFONT MainWindow::MainFont = { 0 };
 
@@ -17,8 +17,6 @@ RECT MainWindow::MainWindowDimensions = { 0, 0, MainWindowWidth, MainWindowHeigh
 
 HWND MainWindow::hDebugTool1 = { 0 };
 HWND MainWindow::hDebugTool2 = { 0 };
-
-HWND MainWindow::hAnimation = { 0 };
 
 POINT MainWindow::mousePosition = { 0 };
 
@@ -157,7 +155,7 @@ VOID MainWindow::CreateDebugTools() {
 
 #pragma region Events
 
-void MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
+VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	MainWindow::hMainWindow = hMainWindow;
 
@@ -169,16 +167,17 @@ void MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	CreateDebugTools();
 
-	hAnimation = CreateWindowEx(WS_EX_DLGMODALFRAME, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 0, 0, 0, 0, hMainWindow, (HMENU)0, HInstance(), (LPVOID)RGB(0, 155, 255));
+	CreateWindowEx(WS_EX_DLGMODALFRAME, L"ANIMATION STARS", L"STARS IS VERY COOL", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 10, 400, 400, hMainWindow, (HMENU)0, HInstance(), (LPVOID)MAKELPARAM(RGB(0, 155, 255), 10));
+	CreateWindowEx(WS_EX_DLGMODALFRAME, L"ANIMATION STARS", L"STARS IS BEAUTIFUL", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 420, 200, 200, hMainWindow, (HMENU)1, HInstance(), NULL);
+	CreateWindowEx(WS_EX_DLGMODALFRAME, L"COLOR PICKER", L"SMALL", WS_CHILD | WS_BORDER | WS_VISIBLE, 420, 10, 1, 1, hMainWindow, (HMENU)2, HInstance(), NULL);
+	CreateWindowEx(WS_EX_DLGMODALFRAME, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 420, 60, 1, 1, hMainWindow, (HMENU)3, HInstance(), NULL);
 
 }
 
-void MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
+VOID MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 	MainWindowDimensions.right = LOWORD(lParam);
 	MainWindowDimensions.bottom = HIWORD(lParam);
-
-	SetWindowPos(hAnimation, NULL, 10, 10, 400, 400, SWP_SHOWWINDOW);
 
 	#pragma region DebugTool2
 
@@ -195,7 +194,7 @@ void MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 }
 
-void MainWindow::onMouseMove(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
+VOID MainWindow::onMouseMove(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 	GetCursorPos(&mousePosition);
 	ScreenToClient(hMainWindow, &mousePosition);
@@ -209,7 +208,7 @@ void MainWindow::onMouseMove(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 }
 
-void MainWindow::onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
+VOID MainWindow::onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 	LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lParam;
 
@@ -219,7 +218,9 @@ void MainWindow::onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 		SIZE size = { 0 };
 		WCHAR StaticText[MAX_CHAR_STRING] = { 0 };
-		FillRect(item->hDC, &item->rcItem, CreateSolidBrush(GREEN_COLOR));
+		HBRUSH ItemBrush = CreateSolidBrush(GREEN_COLOR);
+		FillRect(item->hDC, &item->rcItem, ItemBrush);
+		DeleteObject(ItemBrush);
 		SetBkMode(item->hDC, TRANSPARENT);
 		SetTextColor(item->hDC, WHITE_COLOR);
 		SetFont(item->hwndItem, MainFont);
@@ -233,7 +234,7 @@ void MainWindow::onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 }
 
-void MainWindow::onPaint(HWND hMainWindow) {
+VOID MainWindow::onPaint(HWND hMainWindow) {
 
 	MainWindowDC = BeginPaint(hMainWindow, &MainPS);
 
@@ -242,7 +243,9 @@ void MainWindow::onPaint(HWND hMainWindow) {
 
 	SelectObject(MemoryDC, MainBitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
-	FillRect(MemoryDC, &MainWindowDimensions, CreateSolidBrush(MainWindowBackgroundColor));
+	HBRUSH BackgroundBrush = CreateSolidBrush(MainWindowBackgroundColor);
+	FillRect(MemoryDC, &MainWindowDimensions, BackgroundBrush);
+	DeleteObject(BackgroundBrush);
 
 	SelectObject(MemoryDC, MainFont);
 
@@ -255,17 +258,20 @@ void MainWindow::onPaint(HWND hMainWindow) {
 
 	BitBlt(MainWindowDC, 0, 0, MainWindowDimensions.right, MainWindowDimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
+	DeleteDC(MemoryDC);
+	DeleteObject(MainBitmap);
+
 	EndPaint(hMainWindow, &MainPS);
 
 }
 
-void MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
+VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 
 
 }
 
-void MainWindow::onDropFiles(HWND hMainWindow, WPARAM wParam) {
+VOID MainWindow::onDropFiles(HWND hMainWindow, WPARAM wParam) {
 
 	HDROP DroppedFile = (HDROP)wParam;
 	CHAR buffer[MAX_CHAR_STRING] = { 0 };

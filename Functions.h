@@ -12,26 +12,8 @@
 #include <Windows.h>
 #include <fstream>
 #include <string>
+#include <vector>
 #include <math.h>
-
-#ifndef WHITE_COLOR
-#define WHITE_COLOR RGB(255, 255, 255)
-#endif
-#ifndef BLACK_COLOR
-#define BLACK_COLOR RGB(0, 0, 0)
-#endif
-#ifndef ORANGE_COLOR
-#define ORANGE_COLOR RGB(214, 152, 45)
-#endif
-#ifndef RED_COLOR
-#define RED_COLOR RGB(238, 20, 20)
-#endif
-#ifndef BLUE_COLOR
-#define BLUE_COLOR RGB(40, 34, 214)
-#endif
-#ifndef GREEN_COLOR
-#define GREEN_COLOR RGB(45, 125, 15)
-#endif
 
 class Functions {
 
@@ -87,14 +69,14 @@ public:
 		if (textLength != 0) {
 			if (OpenClipboard(hwnd)) {
 				HLOCAL CopyData = { 0 };
-				void *buffer = NULL;
+				VOID *buffer = NULL;
 				EmptyClipboard();
 				CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(WCHAR) * textLength + 1);
 				if (CopyData != NULL) {
 					buffer = LocalLock(CopyData);
 				}
 				if (buffer != NULL) {
-					memcpy(buffer, (void*)text.c_str(), sizeof(WCHAR) * textLength + 1);
+					memcpy(buffer, (VOID*)text.c_str(), sizeof(WCHAR) * textLength + 1);
 					LocalUnlock(CopyData);
 					SetClipboardData(CF_UNICODETEXT, CopyData);
 					LocalFree(CopyData);
@@ -122,14 +104,14 @@ public:
 		if (textLength != 0) {
 			if (OpenClipboard(hwnd)) {
 				HLOCAL CopyData = { 0 };
-				void *buffer = NULL;
+				VOID *buffer = NULL;
 				EmptyClipboard();
 				CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(CHAR) * textLength + 1);
 				if (CopyData != NULL) {
 					buffer = LocalLock(CopyData);
 				}
 				if (buffer != NULL) {
-					memcpy(buffer, (void*)text.c_str(), sizeof(CHAR) * textLength + 1);
+					memcpy(buffer, (VOID*)text.c_str(), sizeof(CHAR) * textLength + 1);
 					LocalUnlock(CopyData);
 					SetClipboardData(CF_TEXT, CopyData);
 					LocalFree(CopyData);
@@ -158,7 +140,7 @@ public:
 
 		if (OpenClipboard(hwnd)) {
 			HLOCAL ClipboardData = { 0 };
-			void *buffer = NULL;
+			VOID *buffer = NULL;
 			std::wstring TextFromClipboard = L"";
 			ClipboardData = LocalAlloc(LMEM_MOVEABLE | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(std::wstring));
 			if(ClipboardData != NULL) {
@@ -198,7 +180,7 @@ public:
 
 		if (OpenClipboard(hwnd)) {
 			HLOCAL ClipboardData = { 0 };
-			void* buffer = NULL;
+			VOID* buffer = NULL;
 			std::string TextFromClipboard = "";
 			ClipboardData = LocalAlloc(LMEM_MOVEABLE | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(std::string));
 			if (ClipboardData != NULL) {
@@ -224,7 +206,7 @@ public:
 		return "ERROR -1";
 	}
 
-	static void createDynamicControl(HWND *hwnd, LPWSTR Class, LPWSTR Caption, DWORD Styles, RECT Dimensions, HWND ParentWindow, HMENU ID) {
+	static VOID createDynamicControl(HWND *hwnd, LPWSTR Class, LPWSTR Caption, DWORD Styles, RECT Dimensions, HWND ParentWindow, HMENU ID) {
 
 		/// <summary>
 		/// Creates Dynamic Control
@@ -259,7 +241,7 @@ public:
 		}
 	}
 
-	static void ShowError(std::string AdditionalErrorMessage) {
+	static VOID ShowError(std::string AdditionalErrorMessage) {
 
 		/// <summary>
 		/// Shows Error Message
@@ -274,16 +256,48 @@ public:
 
 	}
 
-	static std::string FindTextFromFileBySymbol(std::string FilePath, char Symbol) {
+	static std::vector <std::string> FindTextFromFileBySymbol(std::string FilePath, const char Symbol[]) {
+
+		/// <summary>
+		/// Finds all Lines in File with matching Symbol
+		/// </summary>
+		/// <param name="FilePath">File Path</param>
+		/// <param name="Symbol">Symbol To Be Checked</param>
+		/// <returns>If Succeeded Returns Vector with Strings, but If not "ERROR"</returns>
 
 		std::fstream file;
 
+		std::vector <std::string> TextArray = { "ERROR" };
+
 		file.open(FilePath, std::ios::in);
 
-		if (file.is_open() == false) {
-			return "ERROR";
+		if (!file.is_open()) {
+
+			return TextArray;
+
 		}
 		else {
+
+			TextArray.clear();
+			TextArray.shrink_to_fit();
+
+			std::string buffer = "";
+
+			while (!file.eof()) {
+
+				std::getline(file, buffer);
+
+				if (buffer.find(Symbol, 0) != std::string::npos) {
+
+					TextArray.push_back(buffer);
+
+				}
+
+			}
+
+			file.close();
+
+			return TextArray;
 
 		}
 

@@ -30,10 +30,10 @@ private:
 
 	static RECT Dimensions;
 
-	static HPEN PBorder;
-	static HBRUSH BColor;
+	static HPEN PenBorder;
+	static HBRUSH BrushColor;
 
-	static RECT SelectedColor;
+	static RECT RectSelectedColor;
 
 	static POINT mousePosition;
 
@@ -48,10 +48,10 @@ private:
 
 	#pragma region Events
 
-	static void onCreate(HWND hColorPicker, LPARAM lParam);
-	static void onWindowPosChanged(HWND hColorPicker, LPARAM lParam);
-	static void onMouseMove(HWND hColorPicker, WPARAM wParam, LPARAM lParam);
-	static void onPaint(HWND hColorPicker);
+	static VOID onCreate(HWND hColorPicker, LPARAM lParam);
+	static VOID onWindowPosChanged(HWND hColorPicker, LPARAM lParam);
+	static VOID onMouseMove(HWND hColorPicker, WPARAM wParam, LPARAM lParam);
+	static VOID onPaint(HWND hColorPicker);
 
 	#pragma endregion
 
