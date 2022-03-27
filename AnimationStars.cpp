@@ -233,7 +233,7 @@ VOID AnimationStars::onPaint(HWND hAnimationStars) {
 
 	drawStars(MemoryDC, Dimensions.left, Dimensions.top, Dimensions.right, Dimensions.bottom, StarColor, L"*", Proportion);
 
-	TextOut(MemoryDC, Dimensions.left + 10, Dimensions.top + 10, WindowTitle, lstrlenW(WindowTitle));
+	TextOut(MemoryDC, Dimensions.left + 2, Dimensions.top + 2, WindowTitle, lstrlenW(WindowTitle));
 
 	BitBlt(AnimationStarsDC, 0, 0, Dimensions.right, Dimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
