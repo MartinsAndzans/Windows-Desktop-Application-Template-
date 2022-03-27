@@ -241,18 +241,19 @@ public:
 		}
 	}
 
-	static VOID ShowError(std::string AdditionalErrorMessage) {
+	static VOID ShowError(HWND ParentWindow = HWND_DESKTOP, std::string AdditionalErrorMessage = " - Error") {
 
 		/// <summary>
 		/// Shows Error Message
 		/// </summary>
+		/// <param name="ParentWindow">Parent Window</param>
 		/// <param name="AdditionalErroMessage">Additional Error Message</param>
 
 		std::string SError;
 		int Error = GetLastError();
 		std::string SErrorMessage = "ERROR " + (SError = _itos(Error)) + AdditionalErrorMessage;
 
-		MessageBoxA(HWND_DESKTOP, SErrorMessage.c_str(), "ERROR", MB_OK | MB_ICONERROR);
+		MessageBoxA(ParentWindow, SErrorMessage.c_str(), "ERROR", MB_OK | MB_ICONERROR);
 
 	}
 

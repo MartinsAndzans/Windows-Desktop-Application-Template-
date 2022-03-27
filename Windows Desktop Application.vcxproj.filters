@@ -11,7 +11,7 @@
     </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;dlg;rc2;rct;bin;rgs;jpe;resx;tiff;tif;wav;mfcribbon-ms</Extensions>
+      <Extensions>dlg;bin;rgs;jpe;tiff;tif;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="Resource Files\Cursors">
       <UniqueIdentifier>{8f826ffb-b466-41c7-b9c0-309c103d52cf}</UniqueIdentifier>
@@ -41,6 +41,14 @@
     </Filter>
     <Filter Include="Custom Controls\Animation Stars">
       <UniqueIdentifier>{91ea52dd-62c0-4482-a945-b452cc96ecc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\resources">
+      <UniqueIdentifier>{c3d6474a-aaee-4b2c-9570-3de4d223dbcc}</UniqueIdentifier>
+      <Extensions>rc;rc2;rct;resx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\Music">
+      <UniqueIdentifier>{0e4b0dab-69c9-44d0-8c44-98f7ad1f5507}</UniqueIdentifier>
+      <Extensions>wav</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>

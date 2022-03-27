@@ -58,7 +58,7 @@ BOOL MainWindow::InitMainWindowClass(std::wstring ClassName) {
 	mainwcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_GLOBALCLASS;
 
 	if (!RegisterClassEx(&mainwcex)) {
-		Functions::ShowError(" - Main Window Class not Created!");
+		Functions::ShowError(HWND_DESKTOP, " - Main Window Class not Created!");
 		RETURN FALSE;
 	}
 
@@ -87,7 +87,7 @@ BOOL MainWindow::CreateMainWindow(std::wstring ClassName, std::wstring WindowTit
 		NULL);
 
 	if (hMainWindow == NULL) {
-		Functions::ShowError(" - Main Window not Created!");
+		Functions::ShowError(HWND_DESKTOP, " - Main Window not Created!");
 		RETURN FALSE;
 	}
 
@@ -139,7 +139,7 @@ VOID MainWindow::CreateDebugTools() {
 			DebugToolsID[i],
 			HInstance(),
 			NULL))) {
-			Functions::ShowError(" - Child Window not Created!");
+			Functions::ShowError(hMainWindow, " - Child Window not Created!");
 			PostQuitMessage(0);
 		}
 
@@ -167,10 +167,9 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	CreateDebugTools();
 
-	CreateWindowEx(WS_EX_DLGMODALFRAME, L"ANIMATION STARS", L"STARS IS VERY COOL", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 10, 400, 400, hMainWindow, (HMENU)0, HInstance(), (LPVOID)MAKELPARAM(RGB(0, 155, 255), 10));
-	CreateWindowEx(WS_EX_DLGMODALFRAME, L"ANIMATION STARS", L"STARS IS BEAUTIFUL", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 420, 200, 200, hMainWindow, (HMENU)1, HInstance(), NULL);
-	CreateWindowEx(WS_EX_DLGMODALFRAME, L"COLOR PICKER", L"SMALL", WS_CHILD | WS_BORDER | WS_VISIBLE, 420, 10, 1, 1, hMainWindow, (HMENU)2, HInstance(), NULL);
-	CreateWindowEx(WS_EX_DLGMODALFRAME, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 420, 60, 1, 1, hMainWindow, (HMENU)3, HInstance(), NULL);
+	CreateWindowEx(WS_EX_DLGMODALFRAME, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 10, 140, 140, hMainWindow, (HMENU)4, HInstance(), (LPVOID)RGB(0, 155, 255));
+	CreateWindowEx(WS_EX_DLGMODALFRAME, L"COLOR PICKER", L"SMALL", WS_CHILD | WS_BORDER | WS_VISIBLE, 160, 10, 1, 1, hMainWindow, (HMENU)0, HInstance(), NULL);
+	CreateWindowEx(WS_EX_DLGMODALFRAME, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 160, 60, 1, 1, hMainWindow, (HMENU)1, HInstance(), NULL);
 
 }
 
@@ -267,7 +266,18 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 
 VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
+	#define ID_DEFAULT 0xFFFF
 
+	switch (LOWORD(wParam)) {
+	case ID_DEFAULT:
+	{
+
+
+
+		break;
+
+	}
+	}
 
 }
 

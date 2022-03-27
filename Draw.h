@@ -304,6 +304,71 @@ public:
 
 	}
 
+	static VOID drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF StarColor, const wchar_t StarSymbol[], INT Proportion) {
+
+		if (W && H != 0) {
+
+			SIZE size = { 0 };
+			SYSTEMTIME st = { 0 };
+			INT CELL = 0;
+			INT XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
+
+			COLORREF DefaultColor = GetTextColor(hdc);
+			SetTextColor(hdc, StarColor);
+
+			GetTextExtentPoint(hdc, StarSymbol, lstrlenW(StarSymbol), &size);
+
+			GetSystemTime(&st);
+			srand(st.wMilliseconds);
+
+			for (int i = 0; i < Proportion * Proportion; i++) {
+
+				INT STARX = rand() % XCELL + XS; // XS - (XS + XCELL)
+				INT STARY = rand() % YCELL + YS; // YS - (YS + YCELL)
+
+				TextOut(hdc, X + STARX - size.cx / 2, Y + STARY - size.cy / 2, StarSymbol, lstrlenW(StarSymbol));
+
+				///////////////////////////
+				//// -->               ////
+				//// +---+---+---+---+ ////
+				//// | 0 | 1 | 2 | 3 | ////
+				//// +---+---+---+---+ ////
+				///////////////////////////
+
+				XS = XS + XCELL;
+				CELL++;
+
+				/////////////////
+				//// +---+ | ////
+				//// | 0 | | ////
+				//// +---+ V ////
+				//// | 1 |   ////
+				//// +---+   ////
+				//// | 2 |   ////
+				//// +---+   ////
+				//// | 3 |   ////
+				//// +---+   ////
+				/////////////////
+
+				if (CELL == Proportion) {
+					CELL = 0;
+					XS = 0;
+					YS = YS + YCELL;
+				}
+
+			}
+
+			SetTextColor(hdc, DefaultColor);
+
+		}
+		else {
+
+			OutputDebugString(L"ERROR - Width or Height Must be non Zero Value!\r\n");
+
+		}
+
+	}
+
 	static VOID drawGrid(HDC hdc, INT X = 0, INT Y = 0, INT W = 80, INT H = 80, SIZE_T CellSize = 1, COLORREF GridFirstColor = WHITE_COLOR, COLORREF GridSecondColor = BLACK_COLOR) {
 
 		INT XS = 0, XE = W, YS = 0, YE = H;

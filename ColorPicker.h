@@ -6,10 +6,17 @@
 #include <Windows.h>
 #include <string>
 
+#define GWL_USERDATA -21
+
+#define MAKEDWORD(w1, w2) (((DWORD)(BYTE)(w1)) | ((DWORD)(BYTE)(w2) << 8))
+
+#define LODWORD(dw) ((DWORD)(BYTE)(dw))
+#define HIDWORD(dw) ((DWORD)(BYTE)((dw) >> 8))
+
 #define MAX_CPTITLE_CHAR 40
 #define HInstance() GetModuleHandle(NULL)
 
-#define ColorPickerBackgroundColor RGB(255, 255, 255)
+#define ColorPickerBackgroundColor RGB(0, 0, 0)
 
 class ColorPicker {
 
@@ -33,9 +40,9 @@ private:
 	static HPEN PenBorder;
 	static HBRUSH BrushColor;
 
-	static RECT RectSelectedColor;
-
 	static POINT mousePosition;
+
+	static BOOL LMButtonPressed;
 
 #pragma endregion
 

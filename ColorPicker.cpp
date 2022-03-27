@@ -18,9 +18,9 @@ RECT ColorPicker::Dimensions = { 0 };
 HPEN ColorPicker::PenBorder = { 0 };
 HBRUSH ColorPicker::BrushColor = { 0 };
 
-RECT ColorPicker::RectSelectedColor = { 0 };
-
 POINT ColorPicker::mousePosition = { 0 };
+
+BOOL ColorPicker::LMButtonPressed = FALSE;
 
 #pragma endregion
 
@@ -222,7 +222,8 @@ VOID ColorPicker::onCreate(HWND hColorPicker, LPARAM lParam) {
 
 	if (lstrcmpW(window->lpszName, L"SMALL") == 0) {
 		if (window->cx != 0 || window->cy != 0) {
-			SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.x, DimensionsSmall.y, SWP_SHOWWINDOW);
+			window->cx = DimensionsSmall.x, window->cy = DimensionsSmall.y;
+			//SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.x, DimensionsSmall.y, SWP_SHOWWINDOW);
 		}
 	}
 	else if (lstrcmpW(window->lpszName, L"LARGE") == 0) {
@@ -244,7 +245,7 @@ VOID ColorPicker::onWindowPosChanged(HWND hColorPicker, LPARAM lParam) {
 
 	WCHAR WindowTitle[MAX_CPTITLE_CHAR] = { 0 };
 	GetWindowText(hColorPicker, WindowTitle, ARRAYSIZE(WindowTitle));
-
+	
 	if (lstrcmpW(WindowTitle, L"SMALL") == 0) {
 		if (window->cx != 0 || window->cy != 0) {
 			SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.x, DimensionsSmall.y, SWP_SHOWWINDOW);
@@ -265,11 +266,15 @@ VOID ColorPicker::onWindowPosChanged(HWND hColorPicker, LPARAM lParam) {
 
 VOID ColorPicker::onMouseMove(HWND hColorPicker, WPARAM wParam, LPARAM lParam) {
 
-	GetCursorPos(&mousePosition);
-	ScreenToClient(hColorPicker, &mousePosition);
+	if (LMButtonPressed) {
 
-	GetClientRect(hColorPicker, &Dimensions);
-	RedrawWindow(hColorPicker, &Dimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
+		GetCursorPos(&mousePosition);
+		ScreenToClient(hColorPicker, &mousePosition);
+
+		GetClientRect(hColorPicker, &Dimensions);
+		RedrawWindow(hColorPicker, &Dimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
+
+	}
 
 }
 
@@ -303,29 +308,16 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 		BorderWidth = drawGradientSmall(MemoryDC, Dimensions.left, Dimensions.top, Dimensions.right, Dimensions.bottom);
 	}
 
-	//BrushColor = (HBRUSH)LOWORD(GetWindowLong(hColorPicker, -21));
-	//mousePosition.x = HIWORD(GetWindowLong(hColorPicker, -21));
-
-	//SelectObject(MemoryDC, PenBorder), SelectObject(MemoryDC, BrushColor);
-
-	//if (BrushColor != NULL) {
-
-		//RectSelectedColor = { mousePosition.x - 10, mousePosition.x - 10, mousePosition.x + 10, mousePosition.x + 10 };
-		//Ellipse(MemoryDC, RectSelectedColor.left, RectSelectedColor.top, RectSelectedColor.right, RectSelectedColor.bottom);
-
-	//}
-
-	if (GetAsyncKeyState(VK_LBUTTON) && mousePosition.x >= 0 + BorderWidth && mousePosition.y >= 0 + BorderWidth &&
+	if (LMButtonPressed && mousePosition.x >= 0 + BorderWidth && mousePosition.y >= 0 + BorderWidth &&
 		mousePosition.x <= Dimensions.right - BorderWidth && mousePosition.y <= Dimensions.bottom - BorderWidth) {
 
 		COLORREF Color = GetPixel(MemoryDC, mousePosition.x, mousePosition.y);
-		PenBorder = CreatePen(PS_SOLID, BorderWidth, RGB(0, 0, 0)); BrushColor = CreateSolidBrush(Color);
+		PenBorder = CreatePen(PS_SOLID, BorderWidth, RGB(0, 0, 0)), BrushColor = CreateSolidBrush(Color);
 		SelectObject(MemoryDC, PenBorder), SelectObject(MemoryDC, BrushColor);
-		//RectSelectedColor = { mousePosition.x - 10, mousePosition.y - 10, mousePosition.x + 10, mousePosition.y + 10 };
-		//Ellipse(MemoryDC, RectSelectedColor.left, RectSelectedColor.top, RectSelectedColor.right, RectSelectedColor.bottom);
-		//SetWindowLong(hColorPicker, -21, MAKELONG(Color, mousePosition.x));
 		Ellipse(MemoryDC, mousePosition.x - 10, mousePosition.y - 10, mousePosition.x + 10, mousePosition.y + 10);
-
+		DWORD Point = MAKEDWORD(mousePosition.x, mousePosition.y);
+		SetWindowLong(hColorPicker, GWL_USERDATA, Point);
+		
 		////////////////////////////////////////////////
 		//// +------------------------------------+ ////
 		//// |                                    | ////
@@ -338,6 +330,23 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 		DWORD ID = GetWindowLong(hColorPicker, GWL_ID);
 		PostMessage(GetParent(hColorPicker), WM_COMMAND, MAKEWPARAM(ID, hColorPicker), Color);
 		DeleteObject(PenBorder), DeleteObject(BrushColor);
+
+	}
+	else {
+
+		DWORD Point = GetWindowLong(hColorPicker, GWL_USERDATA);
+
+		if (Point != NULL) {
+
+			PenBorder = CreatePen(PS_SOLID, BorderWidth, RGB(0, 0, 0));
+			SelectObject(MemoryDC, PenBorder);
+
+			Ellipse(MemoryDC, LODWORD(Point) - 10, HIDWORD(Point) - 10, LODWORD(Point) + 10, HIDWORD(Point) + 10);
+
+			DeleteObject(PenBorder);
+
+		}
+
 
 	}
 
@@ -379,14 +388,23 @@ LRESULT ColorPicker::ColorPickerProcedure(HWND hColorPicker, UINT msg, WPARAM wP
 		onPaint(hColorPicker);
 		return 0;
 	}
+	case WM_NCMOUSEMOVE:
+	{
+		LMButtonPressed = FALSE;
+		GetClientRect(hColorPicker, &Dimensions);
+		RedrawWindow(hColorPicker, &Dimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
+		return 0;
+	}
 	case WM_LBUTTONDOWN:
 	{
+		LMButtonPressed = TRUE;
 		GetClientRect(hColorPicker, &Dimensions);
 		RedrawWindow(hColorPicker, &Dimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 		return 0;
 	}
 	case WM_LBUTTONUP:
 	{
+		LMButtonPressed = FALSE;
 		GetClientRect(hColorPicker, &Dimensions);
 		RedrawWindow(hColorPicker, &Dimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 		return 0;
@@ -394,6 +412,6 @@ LRESULT ColorPicker::ColorPickerProcedure(HWND hColorPicker, UINT msg, WPARAM wP
 	}
 	return DefWindowProc(hColorPicker, msg, wParam, lParam);
 
-}
 
+}
 #pragma endregion

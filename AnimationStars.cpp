@@ -81,57 +81,66 @@ VOID AnimationStars::createStarFont(HFONT Font) {
 
 VOID AnimationStars::drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF StarColor, const wchar_t StarSymbol[], INT Proportion) {
 
-	SIZE size = { 0 };
-	SYSTEMTIME st = { 0 };
-	INT CELL = 0;
-	INT XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
+	if (W && H != 0) {
 
-	COLORREF DefaultColor = GetTextColor(hdc);
-	SetTextColor(hdc, StarColor);
+		SIZE size = { 0 };
+		SYSTEMTIME st = { 0 };
+		INT CELL = 0;
+		INT XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
 
-	GetTextExtentPoint(hdc, StarSymbol, lstrlenW(StarSymbol), &size);
-	
-	GetSystemTime(&st);
-	srand(st.wMilliseconds);
-	
-	for (int i = 0; i < Proportion * Proportion; i++) {
+		COLORREF DefaultColor = GetTextColor(hdc);
+		SetTextColor(hdc, StarColor);
 
-		INT STARX = rand() % XCELL + XS; // XS - (XS + XCELL)
-		INT STARY = rand() % YCELL + YS; // YS - (YS + YCELL)
+		GetTextExtentPoint(hdc, StarSymbol, lstrlenW(StarSymbol), &size);
 
-		TextOut(hdc, X + STARX - size.cx / 2, Y + STARY - size.cy / 2, StarSymbol, lstrlenW(StarSymbol));
+		GetSystemTime(&st);
+		srand(st.wMilliseconds);
 
-		///////////////////////////
-		//// -->               ////
-		//// +---+---+---+---+ ////
-		//// | 0 | 1 | 2 | 3 | ////
-		//// +---+---+---+---+ ////
-		///////////////////////////
-		
-		XS = XS + XCELL;
-		CELL++;
+		for (int i = 0; i < Proportion * Proportion; i++) {
 
-		/////////////////
-		//// +---+ | ////
-		//// | 0 | | ////
-		//// +---+ V ////
-		//// | 1 |   ////
-		//// +---+   ////
-		//// | 2 |   ////
-		//// +---+   ////
-		//// | 3 |   ////
-		//// +---+   ////
-		/////////////////
+			INT STARX = rand() % XCELL + XS; // XS - (XS + XCELL)
+			INT STARY = rand() % YCELL + YS; // YS - (YS + YCELL)
 
-		if (CELL == Proportion) {
-			CELL = 0;
-			XS = 0;
-			YS = YS + YCELL;
+			TextOut(hdc, X + STARX - size.cx / 2, Y + STARY - size.cy / 2, StarSymbol, lstrlenW(StarSymbol));
+
+			///////////////////////////
+			//// -->               ////
+			//// +---+---+---+---+ ////
+			//// | 0 | 1 | 2 | 3 | ////
+			//// +---+---+---+---+ ////
+			///////////////////////////
+
+			XS = XS + XCELL;
+			CELL++;
+
+			/////////////////
+			//// +---+ | ////
+			//// | 0 | | ////
+			//// +---+ V ////
+			//// | 1 |   ////
+			//// +---+   ////
+			//// | 2 |   ////
+			//// +---+   ////
+			//// | 3 |   ////
+			//// +---+   ////
+			/////////////////
+
+			if (CELL == Proportion) {
+				CELL = 0;
+				XS = 0;
+				YS = YS + YCELL;
+			}
+
 		}
 
-	}
+		SetTextColor(hdc, DefaultColor);
 
-	SetTextColor(hdc, DefaultColor);
+	}
+	else {
+
+		OutputDebugString(L"ERROR - Width or Height Must be non Zero Value!\r\n");
+
+	}
 
 }
 
@@ -202,19 +211,20 @@ VOID AnimationStars::onPaint(HWND hAnimationStars) {
 
 	SelectObject(MemoryDC, StarFont);
 
-	StarColor = LOWORD(GetWindowLong(hAnimationStars, GWL_USERDATA));
-	Proportion = HIWORD(GetWindowLong(hAnimationStars, GWL_USERDATA));
+	StarColor = GetWindowLong(hAnimationStars, GWL_USERDATA);
+	Proportion = GetWindowLong(hAnimationStars, GWL_ID);
 
-	/////////////////////////////////////////////////////////////////////
-	//// +---------------------------------------------------------+ ////
-	//// |                                                         | ////
-	//// | lpCreateParams - LOWORD(StarColor) | HIWORD(Proportion) | ////
-	//// |                                                         | ////
-	//// +---------------------------------------------------------+ ////
-	/////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////
+	//// +----------------------------+ ////
+	//// |                            | ////
+	//// | lpCreateParams - StarColor | ////
+	//// | hMenu - Proportion         | ////
+	//// |                            | ////
+	//// +----------------------------+ ////
+	////////////////////////////////////////
 
-	(StarColor < MIN_RGB || StarColor > MAX_RGB || StarColor == NULL) ? StarColor = RGB(255, 255, 255) : StarColor = StarColor;
-	(Proportion == NULL) ? Proportion = 6 : Proportion = Proportion;
+	(StarColor < MIN_RGB || StarColor > MAX_RGB || StarColor == NULL) ? StarColor = RGB(255, 255, 255) : StarColor = StarColor; // DEFAULT
+	(Proportion == NULL) ? Proportion = 6 : Proportion = Proportion; // DEFAULT
 	
 	SetTextColor(MemoryDC, StarColor);
 
