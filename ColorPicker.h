@@ -56,7 +56,7 @@ private:
 	#pragma region Events
 
 	static VOID onCreate(HWND hColorPicker, LPARAM lParam);
-	static VOID onWindowPosChanged(HWND hColorPicker, LPARAM lParam);
+	static VOID onWindowPosChanging(HWND hColorPicker, LPARAM lParam);
 	static VOID onMouseMove(HWND hColorPicker, WPARAM wParam, LPARAM lParam);
 	static VOID onPaint(HWND hColorPicker);
 

@@ -154,22 +154,27 @@ VOID AnimationStars::onCreate(HWND hAnimationStars, LPARAM lParam) {
 
 	LPCREATESTRUCT window = LPCREATESTRUCT(lParam);
 
-	if (window->hwndParent == NULL || (window->style & WS_CHILD) == NULL ||
-		(window->style & WS_POPUP) != NULL || (window->style & WS_DLGFRAME) != NULL ||
-		(window->style & WS_OVERLAPPED) != NULL || (window->style & WS_SYSMENU) != NULL ||
-		(window->style & WS_THICKFRAME) != NULL) {
-		DestroyWindow(hAnimationStars);
+	if (window->hwndParent != NULL && (window->style & WS_CHILD) != NULL &&
+		(window->style & WS_POPUP) == NULL && (window->style & WS_DLGFRAME) == NULL &&
+		(window->style & WS_OVERLAPPED) == NULL && (window->style & WS_SYSMENU) == NULL &&
+		(window->style & WS_THICKFRAME) == NULL) {
+
+		SetWindowLongPtr(hAnimationStars, GWL_USERDATA, (LONG_PTR)window->lpCreateParams);
+
+		if (window->cx != 0 || window->cy != 0) {
+			SetTimer(hAnimationStars, ASTIMER, SEC / 10, (TIMERPROC)NULL);
+		}
+
 	}
+	else {
 
-	SetWindowLongPtr(hAnimationStars, GWL_USERDATA, (LONG_PTR)window->lpCreateParams);
+		DestroyWindow(hAnimationStars);
 
-	if (window->cx != 0 || window->cy != 0) {
-		SetTimer(hAnimationStars, ASTIMER, SEC / 10, (TIMERPROC)NULL);
 	}
 
 }
 
-VOID AnimationStars::onWindowPosChanged(HWND hAnimationStars, LPARAM lParam) {
+VOID AnimationStars::onWindowPosChanging(HWND hAnimationStars, LPARAM lParam) {
 
 	LPWINDOWPOS window = LPWINDOWPOS(lParam);
 
@@ -264,9 +269,9 @@ LRESULT AnimationStars::AnimationStarsProcedure(HWND hAnimationStars, UINT msg, 
 		onCreate(hAnimationStars, lParam);
 		return 0;
 	}
-	case WM_WINDOWPOSCHANGED:
+	case WM_WINDOWPOSCHANGING:
 	{
-		onWindowPosChanged(hAnimationStars, lParam);
+		onWindowPosChanging(hAnimationStars, lParam);
 		return 0;
 	}
 	case WM_TIMER:

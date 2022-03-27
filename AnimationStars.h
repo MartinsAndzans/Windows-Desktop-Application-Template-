@@ -53,7 +53,7 @@ private:
 	#pragma region Events
 
 	static VOID onCreate(HWND hAnimationStars, LPARAM lParam);
-	static VOID onWindowPosChanged(HWND hAnimationStars, LPARAM lParam);
+	static VOID onWindowPosChanging(HWND hAnimationStars, LPARAM lParam);
 	static VOID onPaint(HWND hAnimationStars);
 	static VOID onTimer(HWND hAnimationStars, WPARAM wParam, LPARAM lParam);
 	static VOID onDestroy(HWND hAnimationStars);

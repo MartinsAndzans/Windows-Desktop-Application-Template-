@@ -213,33 +213,37 @@ VOID ColorPicker::onCreate(HWND hColorPicker, LPARAM lParam) {
 
 	LPCREATESTRUCT window = LPCREATESTRUCT(lParam);
 
-	if (window->hwndParent == NULL || (window->style & WS_CHILD) == NULL ||
-		(window->style & WS_POPUP) != NULL || (window->style & WS_DLGFRAME) != NULL ||
-		(window->style & WS_OVERLAPPED) != NULL || (window->style & WS_SYSMENU) != NULL ||
-		(window->style & WS_THICKFRAME) != NULL) {
-		DestroyWindow(hColorPicker);
-	}
+	if (window->hwndParent != NULL && (window->style & WS_CHILD) != NULL &&
+		(window->style & WS_POPUP) == NULL && (window->style & WS_DLGFRAME) == NULL &&
+		(window->style & WS_OVERLAPPED) == NULL && (window->style & WS_SYSMENU) == NULL &&
+		(window->style & WS_THICKFRAME) == NULL) {
 
-	if (lstrcmpW(window->lpszName, L"SMALL") == 0) {
-		if (window->cx != 0 || window->cy != 0) {
-			window->cx = DimensionsSmall.x, window->cy = DimensionsSmall.y;
-			//SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.x, DimensionsSmall.y, SWP_SHOWWINDOW);
+		if (lstrcmpW(window->lpszName, L"SMALL") == 0) {
+			if (window->cx != 0 || window->cy != 0) {
+				SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.x, DimensionsSmall.y, SWP_SHOWWINDOW);
+			}
 		}
-	}
-	else if (lstrcmpW(window->lpszName, L"LARGE") == 0) {
-		if (window->cx != 0 || window->cy != 0) {
-			SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsLarge.x, DimensionsLarge.y, SWP_SHOWWINDOW);
+		else if (lstrcmpW(window->lpszName, L"LARGE") == 0) {
+			if (window->cx != 0 || window->cy != 0) {
+				SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsLarge.x, DimensionsLarge.y, SWP_SHOWWINDOW);
+			}
 		}
+		else {
+			if (window->cx != 0 || window->cy != 0) {
+				SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.x, DimensionsSmall.y, SWP_SHOWWINDOW);
+			}
+		}
+
 	}
 	else {
-		if (window->cx != 0 || window->cy != 0) {
-			SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.x, DimensionsSmall.y, SWP_SHOWWINDOW);
-		}
+
+		DestroyWindow(hColorPicker);
+
 	}
 
 }
 
-VOID ColorPicker::onWindowPosChanged(HWND hColorPicker, LPARAM lParam) {
+VOID ColorPicker::onWindowPosChanging(HWND hColorPicker, LPARAM lParam) {
 
 	LPWINDOWPOS window = (LPWINDOWPOS)lParam;
 
@@ -248,17 +252,17 @@ VOID ColorPicker::onWindowPosChanged(HWND hColorPicker, LPARAM lParam) {
 	
 	if (lstrcmpW(WindowTitle, L"SMALL") == 0) {
 		if (window->cx != 0 || window->cy != 0) {
-			SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.x, DimensionsSmall.y, SWP_SHOWWINDOW);
+			window->cx = DimensionsSmall.x, window->cy = DimensionsSmall.y;
 		}
 	}
 	else if (lstrcmpW(WindowTitle, L"LARGE") == 0) {
 		if (window->cx != 0 || window->cy != 0) {
-			SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsLarge.x, DimensionsLarge.y, SWP_SHOWWINDOW);
+			window->cx = DimensionsLarge.x, window->cy = DimensionsLarge.y;
 		}
 	}
 	else {
 		if (window->cx != 0 || window->cy != 0) {
-			SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.x, DimensionsSmall.y, SWP_SHOWWINDOW);
+			window->cx = DimensionsSmall.x, window->cy = DimensionsSmall.y;
 		}
 	}
 
@@ -373,9 +377,9 @@ LRESULT ColorPicker::ColorPickerProcedure(HWND hColorPicker, UINT msg, WPARAM wP
 		onCreate(hColorPicker, lParam);
 		return 0;
 	}
-	case WM_WINDOWPOSCHANGED:
+	case WM_WINDOWPOSCHANGING:
 	{
-		onWindowPosChanged(hColorPicker, lParam);
+		onWindowPosChanging(hColorPicker, lParam);
 		return 0;
 	}
 	case WM_MOUSEMOVE:
