@@ -1,4 +1,4 @@
 # Windows-Desktop-Application-Template-
-[Template]
+-Template-
 
 Thi is Windows Desktop Application Template
