@@ -79,13 +79,6 @@ VOID ColorPicker::drawCross(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF CrossC
 	/// <param name="H">Height</param>
 	/// <param name="CrossColor">Cross Color</param>
 
-	if (W == 0 || H == 0) {
-
-		OutputDebugString(L"ERROR [ColorPicker::drawCross] - Width or Height Must be non Zero Value!\r\n");
-		return VOID();
-
-	}
-
 	if (W % 2 != NULL && H % 2 != NULL) {
 
 		CONST INT Proportion = 3;
@@ -441,6 +434,8 @@ LRESULT ColorPicker::ColorPickerProcedure(HWND hColorPicker, UINT msg, WPARAM wP
 	case WM_NCMOUSEMOVE:
 	{
 		LMButtonPressed = FALSE;
+		GetCursorPos(&mousePosition);
+		ScreenToClient(hColorPicker, &mousePosition);
 		GetClientRect(hColorPicker, &Dimensions);
 		RedrawWindow(hColorPicker, &Dimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 		return 0;
@@ -448,6 +443,8 @@ LRESULT ColorPicker::ColorPickerProcedure(HWND hColorPicker, UINT msg, WPARAM wP
 	case WM_LBUTTONDOWN:
 	{
 		LMButtonPressed = TRUE;
+		GetCursorPos(&mousePosition);
+		ScreenToClient(hColorPicker, &mousePosition);
 		GetClientRect(hColorPicker, &Dimensions);
 		RedrawWindow(hColorPicker, &Dimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 		return 0;
@@ -455,6 +452,8 @@ LRESULT ColorPicker::ColorPickerProcedure(HWND hColorPicker, UINT msg, WPARAM wP
 	case WM_LBUTTONUP:
 	{
 		LMButtonPressed = FALSE;
+		GetCursorPos(&mousePosition);
+		ScreenToClient(hColorPicker, &mousePosition);
 		GetClientRect(hColorPicker, &Dimensions);
 		RedrawWindow(hColorPicker, &Dimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 		return 0;

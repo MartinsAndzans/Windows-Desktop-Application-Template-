@@ -393,13 +393,6 @@ public:
 		/// <param name="H">Height</param>
 		/// <param name="CrossColor">Cross Color</param>
 
-		if (W == 0 || H == 0) {
-
-			OutputDebugString(L"ERROR [Draw::drawCross] - Width or Height Must be non Zero Value!\r\n");
-			return VOID();
-
-		}
-
 		if (W % 2 != NULL && H % 2 != NULL) {
 
 			CONST INT Proportion = 3;
