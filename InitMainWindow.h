@@ -5,8 +5,12 @@
 
 #include "Headers.h"
 
+#pragma region LocalMacros
+
 #define ID_DEBUG_TOOL_1 -1
 #define ID_DEBUG_TOOL_2 -2
+
+#pragma endregion
 
 class MainWindow {
 

@@ -19,7 +19,7 @@ class Functions {
 
 public:
 
-	static std::string _itos(int number) {
+	static std::string _itos(int number, int base) {
 
 		/// <summary>
 		/// Converts Integer To String
@@ -29,12 +29,12 @@ public:
 
 		char s[20] = "";
 		std::string string = "";
-		_itoa_s(number, s, 10);
+		_itoa_s(number, s, base);
 		string.insert(0, s);
 		return string;
 	}
 
-	static std::string _dtos(double number) {
+	static std::string _dtos(double number, int base) {
 
 		/// <summary>
 		/// Converts Double To String
@@ -45,10 +45,10 @@ public:
 		char i[20] = "";
 		char f[20] = "";
 		std::string string = "";
-		_itoa_s((int)number, i, 10);
+		_itoa_s((int)number, i, base);
 		double dnumber = number - (int)number;
 		double fnumber = dnumber * 1000000;
-		_itoa_s((int)fnumber, f, 10);
+		_itoa_s((int)fnumber, f, base);
 		string.insert(0, i);
 		string = string + ".";
 		int64_t length = string.length();
@@ -206,7 +206,7 @@ public:
 		return "ERROR -1";
 	}
 
-	static VOID createDynamicControl(HWND *hwnd, LPWSTR Class, LPWSTR Caption, DWORD Styles, RECT Dimensions, HWND ParentWindow, HMENU ID) {
+	static  HWND* createDynamicControl(LPWSTR Class, LPWSTR Caption, DWORD Styles, RECT Dimensions, HWND ParentWindow, HMENU ID) {
 
 		/// <summary>
 		/// Creates Dynamic Control
@@ -220,7 +220,7 @@ public:
 		/// <param name="ParentWindow">Parent Window</param>
 		/// <param name="Id">Control Id</param>
 
-		hwnd = new HWND;
+		HWND *hwnd = new HWND;
 
 		if (!(*hwnd = CreateWindowEx(WS_EX_CLIENTEDGE,
 			Class,
@@ -231,13 +231,7 @@ public:
 			ID,
 			NULL,
 			NULL))) {
-			int error;
-			std::string si;
-			error = GetLastError();
-			std::string text = "ERROR " + (si = _itos(error)) + " - Child Window is not Created!";
-			std::wstring wtext = std::wstring(text.begin(), text.end());
-			MessageBox(HWND_DESKTOP, wtext.c_str(), L"ERROR", MB_OK | MB_ICONERROR);
-			PostQuitMessage(0);
+			return hwnd;
 		}
 	}
 
@@ -251,7 +245,7 @@ public:
 
 		std::string SError;
 		int Error = GetLastError();
-		std::string SErrorMessage = "ERROR " + (SError = _itos(Error)) + AdditionalErrorMessage;
+		std::string SErrorMessage = "ERROR " + (SError = _itos(Error, 10)) + AdditionalErrorMessage;
 
 		MessageBoxA(ParentWindow, SErrorMessage.c_str(), "ERROR", MB_OK | MB_ICONERROR);
 

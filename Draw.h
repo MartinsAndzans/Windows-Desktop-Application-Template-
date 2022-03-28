@@ -306,6 +306,18 @@ public:
 
 	static VOID drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF StarColor, const wchar_t StarSymbol[], INT Proportion) {
 
+		/// <summary>
+		/// This Function Draws Stars
+		/// </summary>
+		/// <param name="hdc">Device Context</param>
+		/// <param name="X">X Coordinate</param>
+		/// <param name="Y">Y Coordinate</param>
+		/// <param name="W">Width</param>
+		/// <param name="H">Height</param>
+		/// <param name="StarColor">Star Color</param>
+		/// <param name="StarSymbol">Star Symbol</param>
+		/// <param name="Proportion">Proportion</param>
+
 		if (W && H != 0) {
 
 			SIZE size = { 0 };
@@ -363,7 +375,65 @@ public:
 		}
 		else {
 
-			OutputDebugString(L"ERROR - Width or Height Must be non Zero Value!\r\n");
+			OutputDebugString(L"ERROR [Draw::drawStars] - Width or Height Must be non Zero Value!\r\n");
+
+		}
+
+	}
+
+	static VOID drawCross(HDC hdc, INT X = 0, INT Y = 0, INT W = 23, INT H = 23, COLORREF CrossColor = BLACK_COLOR) {
+
+		/// <summary>
+		/// This Function Draws Cross
+		/// </summary>
+		/// <param name="hdc">Device Context</param>
+		/// <param name="X">X Coordinate</param>
+		/// <param name="Y">Y Coordinate</param>
+		/// <param name="W">Width</param>
+		/// <param name="H">Height</param>
+		/// <param name="CrossColor">Cross Color</param>
+
+		if (W == 0 || H == 0) {
+
+			OutputDebugString(L"ERROR [Draw::drawCross] - Width or Height Must be non Zero Value!\r\n");
+			return VOID();
+
+		}
+
+		if (W % 2 != NULL && H % 2 != NULL) {
+
+			CONST INT Proportion = 3;
+			INT XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
+
+			YS = H / 2;
+			for (XS = 0; XS <= XE; XS++) {
+
+				if (XS > W / 2 - XCELL / 2 && XS < W / 2 + XCELL / 2) {
+					continue;
+				}
+
+				SetPixel(hdc, X + XS, Y + YS - 1, CrossColor);
+				SetPixel(hdc, X + XS, Y + YS, CrossColor);
+				SetPixel(hdc, X + XS, Y + YS + 1, CrossColor);
+
+			}
+			XS = W / 2;
+			for (YS = 0; YS <= YE; YS++) {
+
+				if (YS > H / 2 - XCELL / 2 && YS < H / 2 + YCELL / 2) {
+					continue;
+				}
+
+				SetPixel(hdc, X + XS - 1, Y + YS, CrossColor);
+				SetPixel(hdc, X + XS, Y + YS, CrossColor);
+				SetPixel(hdc, X + XS + 1, Y + YS, CrossColor);
+
+			}
+
+		}
+		else {
+
+			OutputDebugString(L"ERROR [Draw::drawCross] - Width or Height Must be Odd Number Value!\r\n");
 
 		}
 

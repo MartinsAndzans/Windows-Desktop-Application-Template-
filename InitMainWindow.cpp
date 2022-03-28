@@ -167,11 +167,9 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	CreateDebugTools();
 
-	HWND I = CreateWindowEx(WS_EX_DLGMODALFRAME, L"COLOR PICKER", L"SMALL", WS_CHILD | WS_BORDER | WS_VISIBLE, 160, 10, 0, 0, hMainWindow, (HMENU)0, HInstance(), NULL);
-	CreateWindowEx(WS_EX_DLGMODALFRAME, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 160, 60, 1, 1, hMainWindow, (HMENU)1, HInstance(), NULL);
+	CreateWindowEx(WS_EX_DLGMODALFRAME, L"COLOR PICKER", L"SMALL", WS_CHILD | WS_BORDER | WS_VISIBLE, 160, 10, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)0, HInstance(), NULL);
+	CreateWindowEx(WS_EX_DLGMODALFRAME, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 160, 60, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)1, HInstance(), NULL);
 	CreateWindowEx(WS_EX_DLGMODALFRAME, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 10, 140, 140, hMainWindow, (HMENU)4, HInstance(), (LPVOID)RGB(0, 155, 255));
-
-	SetWindowPos(I, NULL, 160, 10, 1, 1, SWP_SHOWWINDOW);
 
 }
 
@@ -188,7 +186,7 @@ VOID MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	SetFont(hDebugTool1, MainFont);
 	SetFont(hDebugTool2, MainFont);
 
-	std::string SMainWindowDimensions = "Width = " + (Functions::_itos(MainWindowDimensions.right)) + " Height = " + (Functions::_itos(MainWindowDimensions.bottom));
+	std::string SMainWindowDimensions = "Width = " + (Functions::_itos(MainWindowDimensions.right, 10)) + " Height = " + (Functions::_itos(MainWindowDimensions.bottom, 10));
 	SetWindowTextA(hDebugTool2, SMainWindowDimensions.c_str());
 
 	#pragma endregion
@@ -202,7 +200,7 @@ VOID MainWindow::onMouseMove(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 	#pragma region DebugTool1
 
-	std::string SMousePosition = "X = " + (Functions::_itos(mousePosition.x)) + " Y = " + (Functions::_itos(mousePosition.y));
+	std::string SMousePosition = "X = " + (Functions::_itos(mousePosition.x, 10)) + " Y = " + (Functions::_itos(mousePosition.y, 10));
 	SetWindowTextA(hDebugTool1, SMousePosition.c_str());
 
 	#pragma endregion
@@ -271,10 +269,26 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	#define ID_DEFAULT 0xFFFF
 
 	switch (LOWORD(wParam)) {
-	case ID_DEFAULT:
+	case 0:
 	{
 
+		DWORD ID = (DWORD)LOWORD(wParam);
+		DWORD hwnd = (DWORD)HIWORD(wParam);
+		COLORREF Color = (COLORREF)lParam;
 
+		std::cout << "ID: " << Functions::_itos(ID, 10) << "\tHWND: 0x" << Functions::_itos(hwnd, 10) << "\tCOLOR: 0x" << Functions::_itos(Color, 16) << std::endl;
+
+		break;
+
+	}
+	case 1:
+	{
+
+		DWORD ID = (DWORD)LOWORD(wParam);
+		DWORD hwnd = (DWORD)HIWORD(wParam);
+		COLORREF Color = (COLORREF)lParam;
+
+		std::cout << "ID: " << Functions::_itos(ID, 10) << "\tHWND: 0x" << Functions::_itos(hwnd, 10) << "\tCOLOR: 0x" << Functions::_itos(Color, 16) << std::endl;
 
 		break;
 

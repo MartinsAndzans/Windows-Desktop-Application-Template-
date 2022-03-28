@@ -15,9 +15,6 @@ CONST POINT ColorPicker::DimensionsLarge = { 420, 100 };
 
 RECT ColorPicker::Dimensions = { 0 };
 
-HPEN ColorPicker::PenBorder = { 0 };
-HBRUSH ColorPicker::BrushColor = { 0 };
-
 POINT ColorPicker::mousePosition = { 0 };
 
 BOOL ColorPicker::LMButtonPressed = FALSE;
@@ -69,6 +66,64 @@ BOOL ColorPicker::InitColorPicker() {
 // PAINT FUNCTIONS
 
 #pragma region Functions
+
+VOID ColorPicker::drawCross(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF CrossColor) {
+
+	/// <summary>
+	/// This Function Draws Cross
+	/// </summary>
+	/// <param name="hdc">Device Context</param>
+	/// <param name="X">X Coordinate</param>
+	/// <param name="Y">Y Coordinate</param>
+	/// <param name="W">Width</param>
+	/// <param name="H">Height</param>
+	/// <param name="CrossColor">Cross Color</param>
+
+	if (W == 0 || H == 0) {
+
+		OutputDebugString(L"ERROR [ColorPicker::drawCross] - Width or Height Must be non Zero Value!\r\n");
+		return VOID();
+
+	}
+
+	if (W % 2 != NULL && H % 2 != NULL) {
+
+		CONST INT Proportion = 3;
+		INT XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
+
+		YS = H / 2;
+		for (XS = 0; XS <= XE; XS++) {
+
+			if (XS > W / 2 - XCELL / 2 && XS < W / 2 + XCELL / 2) {
+				continue;
+			}
+
+			SetPixel(hdc, X + XS, Y + YS - 1, CrossColor);
+			SetPixel(hdc, X + XS, Y + YS, CrossColor);
+			SetPixel(hdc, X + XS, Y + YS + 1, CrossColor);
+
+		}
+		XS = W / 2;
+		for (YS = 0; YS <= YE; YS++) {
+
+			if (YS > H / 2 - XCELL / 2 && YS < H / 2 + YCELL / 2) {
+				continue;
+			}
+
+			SetPixel(hdc, X + XS - 1, Y + YS, CrossColor);
+			SetPixel(hdc, X + XS, Y + YS, CrossColor);
+			SetPixel(hdc, X + XS + 1, Y + YS, CrossColor);
+
+		}
+
+	}
+	else {
+
+		OutputDebugString(L"ERROR [ColorPicker::drawCross] - Width or Height Must be Odd Number Value!\r\n");
+
+	}
+
+}
 
 INT ColorPicker::drawGradientSmall(HDC hdc, INT X, INT Y, INT W, INT H, INT BorderWidth, COLORREF BorderColor) {
 
@@ -219,17 +274,17 @@ VOID ColorPicker::onCreate(HWND hColorPicker, LPARAM lParam) {
 		(window->style & WS_THICKFRAME) == NULL) {
 
 		if (lstrcmpW(window->lpszName, L"SMALL") == 0) {
-			if (window->cx != 0 || window->cy != 0) {
+			if (window->cx != 0 && window->cy != 0) {
 				SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.x, DimensionsSmall.y, SWP_SHOWWINDOW);
 			}
 		}
 		else if (lstrcmpW(window->lpszName, L"LARGE") == 0) {
-			if (window->cx != 0 || window->cy != 0) {
+			if (window->cx != 0 && window->cy != 0) {
 				SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsLarge.x, DimensionsLarge.y, SWP_SHOWWINDOW);
 			}
 		}
 		else {
-			if (window->cx != 0 || window->cy != 0) {
+			if (window->cx != 0 && window->cy != 0) {
 				SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.x, DimensionsSmall.y, SWP_SHOWWINDOW);
 			}
 		}
@@ -251,17 +306,17 @@ VOID ColorPicker::onWindowPosChanging(HWND hColorPicker, LPARAM lParam) {
 	GetWindowText(hColorPicker, WindowTitle, ARRAYSIZE(WindowTitle));
 	
 	if (lstrcmpW(WindowTitle, L"SMALL") == 0) {
-		if (window->cx != 0 || window->cy != 0) {
+		if (window->cx != 0 && window->cy != 0) {
 			window->cx = DimensionsSmall.x, window->cy = DimensionsSmall.y;
 		}
 	}
 	else if (lstrcmpW(WindowTitle, L"LARGE") == 0) {
-		if (window->cx != 0 || window->cy != 0) {
+		if (window->cx != 0 && window->cy != 0) {
 			window->cx = DimensionsLarge.x, window->cy = DimensionsLarge.y;
 		}
 	}
 	else {
-		if (window->cx != 0 || window->cy != 0) {
+		if (window->cx != 0 && window->cy != 0) {
 			window->cx = DimensionsSmall.x, window->cy = DimensionsSmall.y;
 		}
 	}
@@ -316,24 +371,20 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 		mousePosition.x <= Dimensions.right - BorderWidth && mousePosition.y <= Dimensions.bottom - BorderWidth) {
 
 		COLORREF Color = GetPixel(MemoryDC, mousePosition.x, mousePosition.y);
-		PenBorder = CreatePen(PS_SOLID, BorderWidth, RGB(0, 0, 0)), BrushColor = CreateSolidBrush(Color);
-		SelectObject(MemoryDC, PenBorder), SelectObject(MemoryDC, BrushColor);
-		Ellipse(MemoryDC, mousePosition.x - 10, mousePosition.y - 10, mousePosition.x + 10, mousePosition.y + 10);
-		DWORD Point = MAKEDWORD(mousePosition.x, mousePosition.y);
-		SetWindowLong(hColorPicker, GWL_USERDATA, Point);
+		drawCross(MemoryDC, mousePosition.x - 23 / 2, mousePosition.y - 23 / 2);
+		SetWindowLong(hColorPicker, GWL_USERDATA, MAKELONG(mousePosition.x, mousePosition.y));
 		
-		////////////////////////////////////////////////
-		//// +------------------------------------+ ////
-		//// |                                    | ////
-		//// | WPARAM - LOWORD(ID) | HIWORD(HWND) | ////
-		//// | LPARAM - Color                     | ////
-		//// |                                    | ////
-		//// +------------------------------------+ ////
-		////////////////////////////////////////////////
+		//////////////////////////////////////////////////////
+		//// +------------------------------------------+ ////
+		//// |                                          | ////
+		//// | [out] WPARAM - LOWORD(ID) | HIWORD(HWND) | ////
+		//// | [out] LPARAM - Color                     | ////
+		//// |                                          | ////
+		//// +------------------------------------------+ ////
+		//////////////////////////////////////////////////////
 
 		DWORD ID = GetWindowLong(hColorPicker, GWL_ID);
 		PostMessage(GetParent(hColorPicker), WM_COMMAND, MAKEWPARAM(ID, hColorPicker), Color);
-		DeleteObject(PenBorder), DeleteObject(BrushColor);
 
 	}
 	else {
@@ -342,12 +393,7 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 
 		if (Point != NULL) {
 
-			PenBorder = CreatePen(PS_SOLID, BorderWidth, RGB(0, 0, 0));
-			SelectObject(MemoryDC, PenBorder);
-
-			Ellipse(MemoryDC, LODWORD(Point) - 10, HIDWORD(Point) - 10, LODWORD(Point) + 10, HIDWORD(Point) + 10);
-
-			DeleteObject(PenBorder);
+			drawCross(MemoryDC, LOWORD(Point) - 23 / 2, HIWORD(Point) - 23 / 2);
 
 		}
 

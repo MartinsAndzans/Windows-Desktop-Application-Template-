@@ -8,10 +8,16 @@
 
 #define GWL_USERDATA -21
 
+/*
+
 #define MAKEDWORD(w1, w2) (((DWORD)(BYTE)(w1)) | ((DWORD)(BYTE)(w2) << 8))
 
 #define LODWORD(dw) ((DWORD)(BYTE)(dw))
 #define HIDWORD(dw) ((DWORD)(BYTE)((dw) >> 8))
+
+*/
+
+#define CP_SHOW 10001
 
 #define MAX_CPTITLE_CHAR 40
 #define HInstance() GetModuleHandle(NULL)
@@ -37,9 +43,6 @@ private:
 
 	static RECT Dimensions;
 
-	static HPEN PenBorder;
-	static HBRUSH BrushColor;
-
 	static POINT mousePosition;
 
 	static BOOL LMButtonPressed;
@@ -47,6 +50,8 @@ private:
 #pragma endregion
 
 	#pragma region Functions
+
+	static VOID drawCross(HDC hdc, INT X = 0, INT Y = 0, INT W = 23, INT H = 23, COLORREF Color = RGB(0, 0, 0));
 
 	static INT drawGradientSmall(HDC hdc, INT X = 0, INT Y = 0, INT W = 420, INT H = 40, INT BorderWidth = 2, COLORREF BorderColor = RGB(0, 0, 0));
 	static INT drawGradientLarge(HDC hdc, INT X = 0, INT Y = 0, INT W = 420, INT H = 100, INT BorderWidth = 2, COLORREF BorderColor = RGB(0, 0, 0));

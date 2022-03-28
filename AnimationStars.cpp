@@ -81,6 +81,18 @@ VOID AnimationStars::createStarFont(HFONT Font) {
 
 VOID AnimationStars::drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF StarColor, const wchar_t StarSymbol[], INT Proportion) {
 
+	/// <summary>
+	/// This Function Draws Stars
+	/// </summary>
+	/// <param name="hdc">Device Context</param>
+	/// <param name="X">X Coordinate</param>
+	/// <param name="Y">Y Coordinate</param>
+	/// <param name="W">Width</param>
+	/// <param name="H">Height</param>
+	/// <param name="StarColor">Star Color</param>
+	/// <param name="StarSymbol">Star Symbol</param>
+	/// <param name="Proportion">Proportion</param>
+
 	if (W && H != 0) {
 
 		SIZE size = { 0 };
@@ -138,7 +150,7 @@ VOID AnimationStars::drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF Sta
 	}
 	else {
 
-		OutputDebugString(L"ERROR - Width or Height Must be non Zero Value!\r\n");
+		OutputDebugString(L"ERROR [AnimationStars::drawStars] - Width or Height Must be non Zero Value!\r\n");
 
 	}
 
@@ -161,7 +173,7 @@ VOID AnimationStars::onCreate(HWND hAnimationStars, LPARAM lParam) {
 
 		SetWindowLongPtr(hAnimationStars, GWL_USERDATA, (LONG_PTR)window->lpCreateParams);
 
-		if (window->cx != 0 || window->cy != 0) {
+		if (window->cx != 0 && window->cy != 0) {
 			SetTimer(hAnimationStars, ASTIMER, SEC / 10, (TIMERPROC)NULL);
 		}
 
@@ -178,7 +190,7 @@ VOID AnimationStars::onWindowPosChanging(HWND hAnimationStars, LPARAM lParam) {
 
 	LPWINDOWPOS window = LPWINDOWPOS(lParam);
 
-	if (window->cx != 0 || window->cy != 0) {
+	if (window->cx != 0 && window->cy != 0) {
 		KillTimer(hAnimationStars, ASTIMER);
 		SetTimer(hAnimationStars, ASTIMER, SEC / 10, (TIMERPROC)NULL);
 	}
@@ -219,14 +231,14 @@ VOID AnimationStars::onPaint(HWND hAnimationStars) {
 	StarColor = GetWindowLong(hAnimationStars, GWL_USERDATA);
 	Proportion = GetWindowLong(hAnimationStars, GWL_ID);
 
-	////////////////////////////////////////
-	//// +----------------------------+ ////
-	//// |                            | ////
-	//// | lpCreateParams - StarColor | ////
-	//// | hMenu - Proportion         | ////
-	//// |                            | ////
-	//// +----------------------------+ ////
-	////////////////////////////////////////
+	/////////////////////////////////////////////
+	//// +---------------------------------+ ////
+	//// |                                 | ////
+	//// | [in] lpCreateParams - StarColor | ////
+	//// | [in] hMenu - Proportion         | ////
+	//// |                                 | ////
+	//// +---------------------------------+ ////
+	/////////////////////////////////////////////
 
 	(StarColor < MIN_RGB || StarColor > MAX_RGB || StarColor == NULL) ? StarColor = RGB(255, 255, 255) : StarColor = StarColor; // DEFAULT
 	(Proportion == NULL) ? Proportion = 6 : Proportion = Proportion; // DEFAULT
