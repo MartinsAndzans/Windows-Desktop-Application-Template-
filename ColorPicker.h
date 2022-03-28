@@ -30,7 +30,7 @@ private:
 
 // ATTRIBUTES
 
-#pragma region ColorPickerStaticMembers
+	#pragma region ColorPickerStaticMembers
 
 	static HDC ColorPickerDC;
 	static PAINTSTRUCT ps;
@@ -47,7 +47,7 @@ private:
 
 	static BOOL LMButtonPressed;
 
-#pragma endregion
+	#pragma endregion
 
 	#pragma region Functions
 
