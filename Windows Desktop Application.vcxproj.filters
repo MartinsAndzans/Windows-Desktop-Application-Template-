@@ -38,9 +38,11 @@
     </Filter>
     <Filter Include="Custom Controls\Color Picker">
       <UniqueIdentifier>{f25780ca-147c-4c2c-a0e2-99f022f08bda}</UniqueIdentifier>
+      <Extensions>h;cpp</Extensions>
     </Filter>
     <Filter Include="Custom Controls\Animation Stars">
       <UniqueIdentifier>{91ea52dd-62c0-4482-a945-b452cc96ecc0}</UniqueIdentifier>
+      <Extensions>h;cpp</Extensions>
     </Filter>
     <Filter Include="Resource Files\resources">
       <UniqueIdentifier>{c3d6474a-aaee-4b2c-9570-3de4d223dbcc}</UniqueIdentifier>
@@ -49,6 +51,10 @@
     <Filter Include="Resource Files\Music">
       <UniqueIdentifier>{0e4b0dab-69c9-44d0-8c44-98f7ad1f5507}</UniqueIdentifier>
       <Extensions>wav</Extensions>
+    </Filter>
+    <Filter Include="Custom Controls\Calculator">
+      <UniqueIdentifier>{fc76915f-c888-4997-999b-b314dc68aacd}</UniqueIdentifier>
+      <Extensions>h;cpp</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -63,6 +69,9 @@
     </ClCompile>
     <ClCompile Include="AnimationStars.cpp">
       <Filter>Custom Controls\Animation Stars</Filter>
+    </ClCompile>
+    <ClCompile Include="Calculator.cpp">
+      <Filter>Custom Controls\Calculator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -86,6 +95,9 @@
     </ClInclude>
     <ClInclude Include="Console.h">
       <Filter>Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="Calculator.h">
+      <Filter>Custom Controls\Calculator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

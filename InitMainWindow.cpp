@@ -10,6 +10,8 @@ HDC MainWindow::MainWindowDC = { 0 };
 HDC MainWindow::MemoryDC = { 0 };
 HBITMAP MainWindow::MainBitmap = { 0 };
 
+HBRUSH MainWindow::MainWindowBackgroundBrush = CreateSolidBrush(MainWindowBackgroundColor);
+
 HFONT MainWindow::MainFont = { 0 };
 
 HWND MainWindow::hMainWindow = { 0 };
@@ -47,7 +49,7 @@ BOOL MainWindow::InitMainWindowClass(std::wstring ClassName) {
 	mainwcex.cbClsExtra = 0;
 	mainwcex.cbWndExtra = 0;
 	mainwcex.cbSize = sizeof(WNDCLASSEX);
-	mainwcex.hbrBackground = CreateSolidBrush(MainWindowBackgroundColor);
+	mainwcex.hbrBackground = MainWindowBackgroundBrush;
 	mainwcex.hCursor = LoadCursorFromFile(CursorPath);
 	mainwcex.hIcon = (HICON)LoadImage(NULL, IconPath, IMAGE_ICON, 0, 0, LR_LOADFROMFILE);
 	mainwcex.hIconSm = (HICON)LoadImage(NULL, IconPath, IMAGE_ICON, 0, 0, LR_LOADFROMFILE);
@@ -143,6 +145,8 @@ VOID MainWindow::CreateDebugTools() {
 			PostQuitMessage(0);
 		}
 
+		SetFont(DebugTools[i], MainFont);
+
 	}
 
 	hDebugTool1 = DebugTools[0], hDebugTool2 = DebugTools[1];
@@ -163,12 +167,15 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	AnimationStars::InitAnimationStars();
 
+	Calculator::InitCalculator();
+
 	CreateFonts();
 
 	CreateDebugTools();
 
-	CreateWindowEx(WS_EX_DLGMODALFRAME, L"COLOR PICKER", L"SMALL", WS_CHILD | WS_BORDER | WS_VISIBLE, 160, 10, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)0, HInstance(), NULL);
-	CreateWindowEx(WS_EX_DLGMODALFRAME, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 10, 140, 140, hMainWindow, (HMENU)4, HInstance(), (LPVOID)RGB(0, 155, 255));
+	CreateWindowEx(WS_EX_DLGMODALFRAME, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 150, 5, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)0, HInstance(), NULL);
+	CreateWindowEx(WS_EX_DLGMODALFRAME, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)4, HInstance(), (LPVOID)RGB(0, 155, 255));
+	CreateWindowEx(WS_EX_DLGMODALFRAME, L"CALCULATOR", L"CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 150, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)1, HInstance(), NULL);
 
 }
 
@@ -182,13 +189,12 @@ VOID MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	SetWindowPos(hDebugTool1, NULL, MainWindowDimensions.right - 160, 0, 160, 25, SWP_SHOWWINDOW);
 	SetWindowPos(hDebugTool2, NULL, MainWindowDimensions.right - 240, 30, 240, 25, SWP_SHOWWINDOW);
 
-	SetFont(hDebugTool1, MainFont);
-	SetFont(hDebugTool2, MainFont);
-
 	std::string SMainWindowDimensions = "Width = " + (Functions::_itos(MainWindowDimensions.right, 10)) + " Height = " + (Functions::_itos(MainWindowDimensions.bottom, 10));
 	SetWindowTextA(hDebugTool2, SMainWindowDimensions.c_str());
 
 	#pragma endregion
+
+	RedrawWindow(hMainWindow, &MainWindowDimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 
 }
 

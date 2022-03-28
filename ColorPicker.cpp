@@ -10,6 +10,8 @@ PAINTSTRUCT ColorPicker::ps = { 0 };
 HDC ColorPicker::MemoryDC = { 0 };
 HBITMAP ColorPicker::Bitmap = { 0 };
 
+HBRUSH ColorPicker::ColorPickerBackgroundBrush = CreateSolidBrush(ColorPickerBackgroundColor);
+
 CONST POINT ColorPicker::DimensionsSmall = { 420, 40 };
 CONST POINT ColorPicker::DimensionsLarge = { 420, 100 };
 
@@ -43,7 +45,7 @@ BOOL ColorPicker::InitColorPicker() {
 	ColorPickerEx.cbClsExtra = 0;
 	ColorPickerEx.cbWndExtra = 0;
 	ColorPickerEx.cbSize = sizeof(WNDCLASSEX);
-	ColorPickerEx.hbrBackground = CreateSolidBrush(ColorPickerBackgroundColor);
+	ColorPickerEx.hbrBackground = ColorPickerBackgroundBrush;
 	ColorPickerEx.hCursor = LoadCursor(NULL, IDC_CROSS);
 	ColorPickerEx.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	ColorPickerEx.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
@@ -408,9 +410,9 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 
 #pragma region ColorPickerProcedure
 
-LRESULT ColorPicker::ColorPickerProcedure(HWND hColorPicker, UINT msg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK ColorPicker::ColorPickerProcedure(HWND hColorPicker, UINT Msg, WPARAM wParam, LPARAM lParam) {
 
-	switch (msg) {
+	switch (Msg) {
 	case WM_CREATE:
 	{
 		onCreate(hColorPicker, lParam);
@@ -459,7 +461,8 @@ LRESULT ColorPicker::ColorPickerProcedure(HWND hColorPicker, UINT msg, WPARAM wP
 		return 0;
 	}
 	}
-	return DefWindowProc(hColorPicker, msg, wParam, lParam);
+
+	return DefWindowProc(hColorPicker, Msg, wParam, lParam);
 
 
 }

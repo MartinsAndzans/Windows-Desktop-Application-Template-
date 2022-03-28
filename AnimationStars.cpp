@@ -10,6 +10,8 @@ PAINTSTRUCT AnimationStars::ps = { 0 };
 HDC AnimationStars::MemoryDC = { 0 };
 HBITMAP AnimationStars::Bitmap = { 0 };
 
+HBRUSH AnimationStars::AnimationStarsBackgroundBrush = CreateSolidBrush(AnimationStarsBackgroundColor);
+
 HFONT AnimationStars::StarFont = { 0 };
 
 RECT AnimationStars::Dimensions = { 0 };
@@ -39,7 +41,7 @@ BOOL AnimationStars::InitAnimationStars() {
 	AnimationStarsEx.cbClsExtra = 0;
 	AnimationStarsEx.cbWndExtra = 0;
 	AnimationStarsEx.cbSize = sizeof(WNDCLASSEX);
-	AnimationStarsEx.hbrBackground = CreateSolidBrush(AnimationStarsBackgroundColor);
+	AnimationStarsEx.hbrBackground = AnimationStarsBackgroundBrush;
 	AnimationStarsEx.hCursor = LoadCursor(NULL, IDC_ARROW);
 	AnimationStarsEx.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	AnimationStarsEx.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
@@ -273,9 +275,9 @@ VOID AnimationStars::onDestroy(HWND hAnimationStars) {
 
 #pragma region AnimationStarsProcedure
 
-LRESULT AnimationStars::AnimationStarsProcedure(HWND hAnimationStars, UINT msg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK AnimationStars::AnimationStarsProcedure(HWND hAnimationStars, UINT Msg, WPARAM wParam, LPARAM lParam) {
 
-	switch (msg) {
+	switch (Msg) {
 	case WM_CREATE:
 	{
 		onCreate(hAnimationStars, lParam);
@@ -302,7 +304,8 @@ LRESULT AnimationStars::AnimationStarsProcedure(HWND hAnimationStars, UINT msg, 
 		return 0;
 	}
 	}
-	return DefWindowProc(hAnimationStars, msg, wParam, lParam);
+
+	return DefWindowProc(hAnimationStars, Msg, wParam, lParam);
 
 }
 

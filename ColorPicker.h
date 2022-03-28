@@ -38,6 +38,8 @@ private:
 	static HDC MemoryDC;
 	static HBITMAP Bitmap;
 
+	static HBRUSH ColorPickerBackgroundBrush;
+
 	static CONST POINT DimensionsSmall;
 	static CONST POINT DimensionsLarge;
 
@@ -69,7 +71,7 @@ private:
 
 	#pragma region ColorPickerProcedure
 
-	static LRESULT ColorPickerProcedure(HWND hColorPicker, UINT msg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK ColorPickerProcedure(HWND hColorPicker, UINT Msg, WPARAM wParam, LPARAM lParam);
 
 	#pragma endregion
 

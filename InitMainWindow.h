@@ -24,6 +24,8 @@ private:
 	static HDC MemoryDC;
 	static HBITMAP MainBitmap;
 
+	static HBRUSH MainWindowBackgroundBrush;
+
 	static HFONT MainFont;
 
 	static HWND hMainWindow;

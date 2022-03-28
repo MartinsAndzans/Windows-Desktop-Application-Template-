@@ -32,6 +32,8 @@ private:
 	static HDC MemoryDC;
 	static HBITMAP Bitmap;
 
+	static HBRUSH AnimationStarsBackgroundBrush;
+
 	static HFONT StarFont;
 
 	static RECT Dimensions;
@@ -62,7 +64,7 @@ private:
 
 	#pragma region AnimationStarsProcedure
 
-	static LRESULT AnimationStarsProcedure(HWND hAnimationStars, UINT msg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK AnimationStarsProcedure(HWND hAnimationStars, UINT Msg, WPARAM wParam, LPARAM lParam);
 
 	#pragma endregion
 

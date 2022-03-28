@@ -244,8 +244,7 @@ public:
 		/// <param name="AdditionalErroMessage">Additional Error Message</param>
 
 		std::string SError;
-		int Error = GetLastError();
-		std::string SErrorMessage = "ERROR " + (SError = _itos(Error, 10)) + AdditionalErrorMessage;
+		std::string SErrorMessage = "ERROR " + (SError = _itos(GetLastError(), 10)) + AdditionalErrorMessage;
 
 		MessageBoxA(ParentWindow, SErrorMessage.c_str(), "ERROR", MB_OK | MB_ICONERROR);
 
