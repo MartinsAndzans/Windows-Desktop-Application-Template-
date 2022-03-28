@@ -168,7 +168,6 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 	CreateDebugTools();
 
 	CreateWindowEx(WS_EX_DLGMODALFRAME, L"COLOR PICKER", L"SMALL", WS_CHILD | WS_BORDER | WS_VISIBLE, 160, 10, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)0, HInstance(), NULL);
-	CreateWindowEx(WS_EX_DLGMODALFRAME, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 160, 60, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)1, HInstance(), NULL);
 	CreateWindowEx(WS_EX_DLGMODALFRAME, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 10, 140, 140, hMainWindow, (HMENU)4, HInstance(), (LPVOID)RGB(0, 155, 255));
 
 }
@@ -270,18 +269,6 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 	switch (LOWORD(wParam)) {
 	case 0:
-	{
-
-		DWORD ID = (DWORD)LOWORD(wParam);
-		DWORD hwnd = (DWORD)HIWORD(wParam);
-		COLORREF Color = (COLORREF)lParam;
-
-		std::cout << "ID: " << Functions::_itos(ID, 10) << "\tHWND: 0x" << Functions::_itos(hwnd, 10) << "\tCOLOR: 0x" << Functions::_itos(Color, 16) << std::endl;
-
-		break;
-
-	}
-	case 1:
 	{
 
 		DWORD ID = (DWORD)LOWORD(wParam);
