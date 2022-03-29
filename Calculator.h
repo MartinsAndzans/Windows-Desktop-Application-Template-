@@ -5,11 +5,10 @@
 
 #include <Windows.h>
 #include <string>
-#include <vector>
 
 #define CL_SHOW 20002
 
-#define MAX_CLTITLE_CHAR 200
+#define MAX_CLTITLE_CHAR 80
 #define HInstance() GetModuleHandle(NULL)
 
 #define CalculatorBackgroundColor RGB(255, 255, 255)
@@ -60,7 +59,15 @@ private:
 
 	static HFONT CalculatorFont;
 
-	static std::vector <HMENU> CalculatorControlsID;
+	static HMENU CalculatorControlsID[];
+
+	static CONST INT PADDING;
+
+	static CONST INT BUTTONWIDTH;
+	static CONST INT BUTTONHEIGHT;
+
+	static CONST INT STATICWIDTH;
+	static CONST INT STATICHEIGHT;
 
 	static CONST POINT CalculatorDimensions;
 
@@ -70,9 +77,9 @@ private:
 
 	#pragma region Functions
 
-	static VOID createCalculatorFont(HFONT Font);
+	static HFONT createCalculatorFont();
 
-	static VOID createCalculatorControls(HWND hCalculator);
+	static BOOL createCalculatorControls(HWND hCalculator);
 
 	#pragma endregion
 

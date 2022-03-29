@@ -14,14 +14,22 @@ HBRUSH Calculator::CalculatorBackroundBrush = CreateSolidBrush(CalculatorBackgro
 
 HFONT Calculator::CalculatorFont = { 0 };
 
-std::vector <HMENU> Calculator::CalculatorControlsID = { (HMENU)ID_CL_CLOSE, (HMENU)ID_CL_OPERATION, (HMENU)ID_CL_OUTPUT_RESULT,
+HMENU Calculator::CalculatorControlsID[] = {(HMENU)ID_CL_CLOSE, (HMENU)ID_CL_OPERATION, (HMENU)ID_CL_OUTPUT_RESULT,
 		(HMENU)ID_CL_MULTIPLY, (HMENU)ID_CL_DEVIDE, (HMENU)ID_CL_CLEAR, (HMENU)ID_CL_BACK,
 		(HMENU)ID_CL_NUM1, (HMENU)ID_CL_NUM2, (HMENU)ID_CL_NUM3, (HMENU)ID_CL_SUM,
 		(HMENU)ID_CL_NUM4, (HMENU)ID_CL_NUM5, (HMENU)ID_CL_NUM6, (HMENU)ID_CL_MINUS,
 		(HMENU)ID_CL_NUM7, (HMENU)ID_CL_NUM8, (HMENU)ID_CL_NUM9, (HMENU)ID_CL_PLUSMINUS,
 		(HMENU)ID_CL_MODULE, (HMENU)ID_CL_NUM0, (HMENU)ID_CL_DOT, (HMENU)ID_CL_RESULT };
 
-CONST POINT Calculator::CalculatorDimensions = { 195, 340 };
+CONST INT Calculator::PADDING = 5;
+
+CONST INT Calculator::BUTTONWIDTH = 50;
+CONST INT Calculator::BUTTONHEIGHT = 50;
+
+CONST INT Calculator::STATICWIDTH = Calculator::BUTTONWIDTH * 4 + Calculator::PADDING * 3;
+CONST INT Calculator::STATICHEIGHT = 35;
+
+CONST POINT Calculator::CalculatorDimensions = { Calculator::BUTTONWIDTH * 4 + Calculator::PADDING * 5, Calculator::BUTTONHEIGHT * 6 + Calculator::STATICHEIGHT * 2 + Calculator::PADDING * 9 };
 
 RECT Calculator::Dimensions = { 0 };
 
@@ -39,7 +47,7 @@ BOOL Calculator::InitCalculator() {
 	/// </summary>
 	/// <returns>If Function Succeeded Returns True, but If not False</returns>
 	
-	createCalculatorFont(CalculatorFont);
+	CalculatorFont = createCalculatorFont();
 
 	WNDCLASSEX CalculatorEx = { 0 };
 
@@ -68,9 +76,9 @@ BOOL Calculator::InitCalculator() {
 
 #pragma region Functions
 
-VOID Calculator::createCalculatorFont(HFONT Font) {
+HFONT Calculator::createCalculatorFont() {
 
-	Font = CreateFont(32, 0, 0, 0,
+	HFONT Font = CreateFont(20, 0, 0, 0,
 		FW_BOLD,
 		false,
 		false,
@@ -80,19 +88,25 @@ VOID Calculator::createCalculatorFont(HFONT Font) {
 		CLIP_DEFAULT_PRECIS,
 		CLEARTYPE_QUALITY,
 		VARIABLE_PITCH,
-		L"Times New Roman");
+		L"Segoe UI");
+
+	return Font;
 
 }
 
-VOID Calculator::createCalculatorControls(HWND hCalculator) {
+BOOL Calculator::createCalculatorControls(HWND hCalculator) {
 
-	CONST INT PADDING = 5;
-	INT BUTTONW = 40, STATICW = CalculatorDimensions.x - PADDING * 4, BUTTONH = 40, STATICH = 25;
+	HWND hwnd = { 0 };
+
+	HWND *Outputs = new HWND[2];
+
+	if (Outputs == NULL) {
+		return FALSE;
+	}
 
 	INT XISTATIC = 0, XIBUTTON = 0, YIBUTTON = 0;
 
-	std::vector <HWND> *CalculatorControls = (std::vector <HWND>*)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
-	std::vector <std::wstring> Captions = { L"X", L"", L"",
+	std::wstring Captions[] = {L"X", L"", L"0",
 		L"*", L"/", L"CE", L"<-",
 		L"1", L"2", L"3", L"+",
 		L"4", L"5", L"6", L"-",
@@ -101,77 +115,84 @@ VOID Calculator::createCalculatorControls(HWND hCalculator) {
 
 	// ID_CL_OPERATION | ID_CL_OUTPUT_RESULT
 
-	std::vector <INT> STATICY = { 0 + PADDING * 2 + BUTTONH, 0 + PADDING * 3 + STATICH + BUTTONH };
+	INT STATICY[] = {PADDING * 2 + BUTTONHEIGHT, PADDING * 3 + STATICHEIGHT + BUTTONHEIGHT };
 
 	// OTHER CONTROLS
 
-	std::vector <INT> BUTTONX = { 0 + PADDING, 0 + PADDING * 2 + BUTTONW, 0 + PADDING * 3 + BUTTONW * 2, 0 + PADDING * 4 + BUTTONW * 3 };
-	std::vector <INT> BUTTONY = { 0 + PADDING * 4 + STATICH * 2 + BUTTONH, 0 + PADDING * 5 + STATICH * 2 + BUTTONH * 2, 0 + PADDING * 6 + STATICH * 2 + BUTTONH * 3, 0 + PADDING * 7 + STATICH * 2 + BUTTONH * 4, 0 + PADDING * 8 + STATICH * 2 + BUTTONH * 5 };
+	INT BUTTONX[] = {PADDING, PADDING * 2 + BUTTONWIDTH, PADDING * 3 + BUTTONWIDTH * 2, PADDING * 4 + BUTTONWIDTH * 3};
+	INT BUTTONY[] = {PADDING * 4 + STATICHEIGHT * 2 + BUTTONHEIGHT, PADDING * 5 + STATICHEIGHT * 2 + BUTTONHEIGHT * 2,
+		PADDING * 6 + STATICHEIGHT * 2 + BUTTONHEIGHT * 3, PADDING * 7 + STATICHEIGHT * 2 + BUTTONHEIGHT * 4, PADDING * 8 + STATICHEIGHT * 2 + BUTTONHEIGHT * 5 };
 
-	for (int i = 0; i < CalculatorControlsID.size(); i++) {
+	for (int i = 0; i < ARRAYSIZE(CalculatorControlsID); i++) {
 
 		if (i == 0) {
 
 			// ID_CL_CLOSE
-		
-			CalculatorControls->push_back(CreateWindowEx(WS_EX_STATICEDGE,
+			
+			hwnd = CreateWindowEx(WS_EX_STATICEDGE,
 				L"BUTTON",
 				Captions[i].c_str(),
 				WS_CHILD | WS_BORDER | WS_VISIBLE | BS_CENTER | BS_VCENTER,
-				CalculatorDimensions.x - BUTTONW - PADDING * 3, 0 + PADDING, BUTTONW, BUTTONH,
+				CalculatorDimensions.x - BUTTONWIDTH - PADDING, PADDING, BUTTONWIDTH, BUTTONHEIGHT,
 				hCalculator,
 				CalculatorControlsID[i],
 				HInstance(),
-				NULL));
-
-			SetFont(CalculatorControls->front() + i, CalculatorFont);
+				NULL);
 
 		}
 		else if (i == 1 || i == 2) {
 
 			// ID_CL_OPERATION | ID_CL_OUTPUT_RESULT
 
-			CalculatorControls->push_back(CreateWindowEx(WS_EX_STATICEDGE,
+			hwnd = CreateWindowEx(WS_EX_STATICEDGE,
 				L"STATIC",
 				Captions[i].c_str(),
 				WS_CHILD | WS_BORDER | WS_VISIBLE | SS_OWNERDRAW,
-				0 + PADDING, STATICY[XISTATIC], STATICW, STATICH,
+				PADDING, STATICY[XISTATIC], STATICWIDTH, STATICHEIGHT,
 				hCalculator,
 				CalculatorControlsID[i],
 				HInstance(),
-				NULL));
+				NULL);
 
+			Outputs[i - 1] = hwnd;
+			
 			XISTATIC++;
-
-			SetFont(CalculatorControls->front() + i, CalculatorFont);
 
 		}
 		else {
 
 			// OTHER CONTROLS
 
-			CalculatorControls->push_back(CreateWindowEx(WS_EX_STATICEDGE,
+			hwnd = CreateWindowEx(WS_EX_STATICEDGE,
 				L"BUTTON",
 				Captions[i].c_str(),
 				WS_CHILD | WS_BORDER | WS_VISIBLE | BS_CENTER | BS_VCENTER,
-				BUTTONX[XIBUTTON], BUTTONY[YIBUTTON], BUTTONW, BUTTONH,
+				BUTTONX[XIBUTTON], BUTTONY[YIBUTTON], BUTTONWIDTH, BUTTONHEIGHT,
 				hCalculator,
 				CalculatorControlsID[i],
 				HInstance(),
-				NULL));
+				NULL);
 
 			XIBUTTON++;
-			if (XIBUTTON == BUTTONX.size()) {
+
+			if (XIBUTTON == ARRAYSIZE(BUTTONX)) {
 				XIBUTTON = 0;
 				YIBUTTON++;
 			}
 
-			SetFont(CalculatorControls->front() + i, CalculatorFont);
-
 		}
+
+		if (hwnd == NULL) {
+			return FALSE;
+		}
+
+		SetFont(hwnd, CalculatorFont);
 
 	}
 
+	SetWindowLongPtr(hCalculator, GWLP_USERDATA, (LONG_PTR)Outputs);
+
+	return TRUE;
 
 }
 
@@ -192,12 +213,7 @@ VOID Calculator::onCreate(HWND hCalculator, LPARAM lParam) {
 			SetWindowPos(hCalculator, NULL, window->x, window->y, CalculatorDimensions.x, CalculatorDimensions.y, SWP_SHOWWINDOW);
 		}
 
-		std::vector <HWND> *CalculatorControls = new std::vector <HWND>;
-		if (CalculatorControls != NULL) {
-			SetWindowLongPtr(hCalculator, GWLP_USERDATA, (LONG_PTR)CalculatorControls);
-			createCalculatorControls(hCalculator);
-		}
-		else {
+		if (!createCalculatorControls(hCalculator)) {
 			std::wstring WErrorMessage = L"ERROR " + std::to_wstring(GetLastError()) + L" - Out of Memory!";
 			MessageBox(hCalculator, WErrorMessage.c_str(), L"ERROR", MB_OK | MB_ICONERROR);
 			DestroyWindow(hCalculator);
@@ -226,7 +242,19 @@ VOID Calculator::onDrawItem(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 	LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lParam;
 
+	if (item->CtlID == ID_CL_OPERATION || item->CtlID == ID_CL_OUTPUT_RESULT) {
 
+		SIZE size = { 0 };
+		WCHAR StaticText[MAX_CLTITLE_CHAR] = { 0 };
+		HBRUSH ItemBrush = CreateSolidBrush(RGB(240, 240, 240));
+		FillRect(item->hDC, &item->rcItem, ItemBrush);
+		DeleteObject(ItemBrush);
+		SetBkMode(item->hDC, TRANSPARENT);
+		INT TextLength = GetWindowText(item->hwndItem, StaticText, ARRAYSIZE(StaticText));
+		GetTextExtentPoint(item->hDC, StaticText, TextLength, &size);
+		TextOut(item->hDC, item->rcItem.right - size.cx, item->rcItem.bottom / 2 - size.cy / 2, StaticText, TextLength);
+
+	}
 
 }
 
@@ -251,7 +279,7 @@ VOID Calculator::onPaint(HWND hCalculator) {
 	WCHAR WindowTitle[MAX_CLTITLE_CHAR] = { 0 };
 	GetWindowText(hCalculator, WindowTitle, ARRAYSIZE(WindowTitle));
 	GetTextExtentPoint(MemoryDC, WindowTitle, lstrlenW(WindowTitle), &size);
-	TextOut(MemoryDC, 0 + 5, 5 + 40 / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));
+	TextOut(MemoryDC, PADDING, PADDING + BUTTONWIDTH / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));
 
 	BitBlt(CalculatorDC, 0, 0, Dimensions.right, Dimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
@@ -267,8 +295,84 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 	switch (LOWORD(wParam)) {
 	case ID_CL_CLOSE:
 	{
+
 		DestroyWindow(hCalculator);
 		break;
+
+	}
+	case ID_CL_CLEAR:
+	{
+
+		HWND *Outputs = (HWND*)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
+
+		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
+		GetWindowText(Outputs[1], Result, ARRAYSIZE(Result));
+
+		if (lstrcmpW(Result, L"0") == 0) {
+			SetWindowText(Outputs[0], L"");
+		}
+		else {
+			SetWindowText(Outputs[1], L"0");
+		}
+
+		break;
+
+	}
+	case ID_CL_BACK:
+	{
+
+		HWND *Outputs = (HWND*)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
+
+		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
+		INT ResultLength = GetWindowText(Outputs[1], Result, ARRAYSIZE(Result));
+
+		if (ResultLength == 1) {
+			SetWindowText(Outputs[1], L"0");
+		}
+		else {
+			Result[ResultLength - 1] = L'\0';
+			SetWindowText(Outputs[1], Result);
+		}
+
+		break;
+
+	}
+	case ID_CL_NUM0: case ID_CL_NUM1: case ID_CL_NUM2: case ID_CL_NUM3:
+	case ID_CL_NUM4: case ID_CL_NUM5: case ID_CL_NUM6: case ID_CL_NUM7:
+	case ID_CL_NUM8: case ID_CL_NUM9:
+	{
+
+		HWND *Outputs = (HWND*)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
+
+		WCHAR Num[MAX_CLTITLE_CHAR] = { 0 };
+		GetWindowText((HWND)lParam, Num, ARRAYSIZE(Num));
+		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
+		INT ResultLength = GetWindowText(Outputs[1], Result, ARRAYSIZE(Result));
+		
+		if (ResultLength < 14) {
+			if (lstrcmpW(Result, L"0") == 0) {
+				wcscpy_s(Result, Num);
+				SetWindowText(Outputs[1], Result);
+			}
+			else {
+				wcscat_s(Result, Num);
+				SetWindowText(Outputs[1], Result);
+			}
+		}
+		else {
+			MessageBeep(MB_ICONINFORMATION);
+		}
+
+		break;
+
+	}
+	case ID_CL_DOT:
+	{
+
+
+
+		break;
+
 	}
 	}
 	
@@ -308,8 +412,8 @@ LRESULT CALLBACK Calculator::CalculatorProcedure(HWND hCalculator, UINT Msg, WPA
 	}
 	case WM_DESTROY:
 	{
-		std::vector <HWND> *CalculatorControls = (std::vector <HWND>*)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
-		delete CalculatorControls;
+		HWND *Outputs = (HWND*)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
+		delete[] Outputs;
 		return 0;
 	}
 	}

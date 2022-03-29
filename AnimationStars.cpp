@@ -34,7 +34,7 @@ BOOL AnimationStars::InitAnimationStars() {
 	/// </summary>
 	/// <returns>If Function Succeeded Returns True, but If not False</returns>
 	
-	createStarFont(StarFont);
+	StarFont = createStarFont();
 
 	WNDCLASSEX AnimationStarsEx = { 0 };
 
@@ -65,9 +65,9 @@ BOOL AnimationStars::InitAnimationStars() {
 
 #pragma region Funtions
 
-VOID AnimationStars::createStarFont(HFONT Font) {
+HFONT AnimationStars::createStarFont() {
 
-	Font = CreateFont(32, 0, 0, 0,
+	HFONT Font = CreateFont(20, 0, 0, 0,
 		FW_BOLD,
 		false,
 		false,
@@ -78,6 +78,8 @@ VOID AnimationStars::createStarFont(HFONT Font) {
 		CLEARTYPE_QUALITY,
 		VARIABLE_PITCH,
 		L"Segoe UI");
+
+	return Font;
 
 }
 

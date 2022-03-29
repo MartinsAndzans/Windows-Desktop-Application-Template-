@@ -175,7 +175,7 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	CreateWindowEx(WS_EX_DLGMODALFRAME, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 150, 5, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)0, HInstance(), NULL);
 	CreateWindowEx(WS_EX_DLGMODALFRAME, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)4, HInstance(), (LPVOID)RGB(0, 155, 255));
-	CreateWindowEx(WS_EX_DLGMODALFRAME, L"CALCULATOR", L"CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 150, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)1, HInstance(), NULL);
+	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 150, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)1, HInstance(), NULL);
 
 }
 
@@ -281,7 +281,8 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 		DWORD hwnd = (DWORD)HIWORD(wParam);
 		COLORREF Color = (COLORREF)lParam;
 
-		std::cout << "ID: " << Functions::_itos(ID, 10) << "\tHWND: 0x" << Functions::_itos(hwnd, 10) << "\tCOLOR: 0x" << Functions::_itos(Color, 16) << std::endl;
+		std::cout << "ID: " << Functions::_itos(ID, 10) << "\tHWND: 0x" << Functions::_itos(hwnd, 10) << "\tR: " << Functions::_itos(GetGValue(Color), 10) <<
+			"\tG: " << Functions::_itos(GetGValue(Color), 10) << "\tB: " << Functions::_itos(GetBValue(Color), 10) << std::endl;
 
 		break;
 

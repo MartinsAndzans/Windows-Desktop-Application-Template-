@@ -46,7 +46,7 @@ private:
 
 	#pragma region Functions
 
-	static VOID createStarFont(HFONT Font);
+	static HFONT createStarFont();
 
 	static VOID drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF StarColor, const wchar_t StarSymbol[] = L"*", INT proportion = 6);
 
