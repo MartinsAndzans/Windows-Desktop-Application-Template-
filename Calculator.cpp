@@ -94,6 +94,20 @@ HFONT Calculator::createCalculatorFont() {
 
 }
 
+BOOL Calculator::FindChar(LPWSTR Text, const wchar_t Char, INT TextLength) {
+
+	for (int i = 0; i < TextLength; i++) {
+
+		if (Text[i] == Char) {
+			return TRUE;
+		}
+
+	}
+
+	return FALSE;
+
+}
+
 BOOL Calculator::createCalculatorControls(HWND hCalculator) {
 
 	HWND hwnd = { 0 };
@@ -107,7 +121,7 @@ BOOL Calculator::createCalculatorControls(HWND hCalculator) {
 	INT XISTATIC = 0, XIBUTTON = 0, YIBUTTON = 0;
 
 	std::wstring Captions[] = {L"X", L"", L"0",
-		L"*", L"/", L"CE", L"<-",
+		L"x", L"/", L"CE", L"<-",
 		L"1", L"2", L"3", L"+",
 		L"4", L"5", L"6", L"-",
 		L"7", L"8", L"9", L"+/-",
@@ -279,7 +293,15 @@ VOID Calculator::onPaint(HWND hCalculator) {
 	WCHAR WindowTitle[MAX_CLTITLE_CHAR] = { 0 };
 	GetWindowText(hCalculator, WindowTitle, ARRAYSIZE(WindowTitle));
 	GetTextExtentPoint(MemoryDC, WindowTitle, lstrlenW(WindowTitle), &size);
-	TextOut(MemoryDC, PADDING, PADDING + BUTTONWIDTH / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));
+
+	if (lstrcmpW(WindowTitle, L"") == 0) {
+		wcscpy_s(WindowTitle, L"CALCULATOR");
+		GetTextExtentPoint(MemoryDC, WindowTitle, lstrlenW(WindowTitle), &size);
+		TextOut(MemoryDC, PADDING, PADDING + BUTTONWIDTH / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));
+	}
+	else {
+		TextOut(MemoryDC, PADDING, PADDING + BUTTONWIDTH / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));
+	}
 
 	BitBlt(CalculatorDC, 0, 0, Dimensions.right, Dimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
@@ -324,14 +346,14 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		HWND *Outputs = (HWND*)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
 
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
-		INT ResultLength = GetWindowText(Outputs[1], Result, ARRAYSIZE(Result));
+		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
 		if (ResultLength == 1) {
-			SetWindowText(Outputs[1], L"0");
+			SetWindowText(*(Outputs + 1), L"0");
 		}
 		else {
 			Result[ResultLength - 1] = L'\0';
-			SetWindowText(Outputs[1], Result);
+			SetWindowText(*(Outputs + 1), Result);
 		}
 
 		break;
@@ -347,16 +369,16 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		WCHAR Num[MAX_CLTITLE_CHAR] = { 0 };
 		GetWindowText((HWND)lParam, Num, ARRAYSIZE(Num));
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
-		INT ResultLength = GetWindowText(Outputs[1], Result, ARRAYSIZE(Result));
+		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 		
-		if (ResultLength < 14) {
+		if (ResultLength < MAX_RESULT_LENGTH) {
 			if (lstrcmpW(Result, L"0") == 0) {
 				wcscpy_s(Result, Num);
-				SetWindowText(Outputs[1], Result);
+				SetWindowText(*(Outputs + 1), Result);
 			}
 			else {
 				wcscat_s(Result, Num);
-				SetWindowText(Outputs[1], Result);
+				SetWindowText(*(Outputs + 1), Result);
 			}
 		}
 		else {
@@ -369,7 +391,63 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 	case ID_CL_DOT:
 	{
 
+		HWND *Outputs = (HWND*)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
 
+		WCHAR Dot[MAX_CLTITLE_CHAR] = { 0 };
+		GetWindowText((HWND)lParam, Dot, ARRAYSIZE(Dot));
+		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
+		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
+
+		if (!FindChar(Result, L'.', ResultLength) && ResultLength < MAX_RESULT_LENGTH) {
+			wcscat_s(Result, Dot);
+			SetWindowText(*(Outputs + 1), Result);
+		}
+		else {
+			MessageBeep(MB_ICONINFORMATION);
+		}
+
+		break;
+
+	}
+	case ID_CL_PLUSMINUS:
+	{
+
+		HWND *Outputs = (HWND*)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
+
+		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
+		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
+
+		if (!FindChar(Result, L'-', ResultLength)) {
+			WCHAR ResultMinus[MAX_CLTITLE_CHAR] = { 0 };
+			wcscpy_s(ResultMinus, L"-");
+			wcscat_s(ResultMinus, Result);
+			SetWindowText(*(Outputs + 1), ResultMinus);
+		}
+		else {
+			WCHAR ResultPlus[MAX_CLTITLE_CHAR] = { 0 };
+			for (int i = 0; i < ResultLength - 1; i++) {
+				ResultPlus[i] = Result[i + 1];
+			}
+			SetWindowText(*(Outputs + 1), ResultPlus);
+		}
+
+		break;
+
+	}
+	case ID_CL_MULTIPLY: case ID_CL_DEVIDE: case ID_CL_SUM: case ID_CL_MINUS: case ID_CL_MODULE:
+	{
+
+		HWND *Outputs = (HWND*)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
+
+		WCHAR Operator[MAX_CLTITLE_CHAR] = { 0 };
+		GetWindowText((HWND)lParam, Operator, ARRAYSIZE(Operator));
+		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
+		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
+
+		wcscat_s(Result, L" "), wcscat_s(Result, Operator);
+
+		SetWindowText(*(Outputs + 0), Result);
+		SetWindowText(*(Outputs + 1), L"0");
 
 		break;
 

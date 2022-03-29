@@ -8,6 +8,8 @@
 
 #define CL_SHOW 20002
 
+#define MAX_RESULT_LENGTH 14
+
 #define MAX_CLTITLE_CHAR 80
 #define HInstance() GetModuleHandle(NULL)
 
@@ -78,6 +80,8 @@ private:
 	#pragma region Functions
 
 	static HFONT createCalculatorFont();
+
+	static BOOL FindChar(LPWSTR Text, const wchar_t Char, INT TextLength);
 
 	static BOOL createCalculatorControls(HWND hCalculator);
 
