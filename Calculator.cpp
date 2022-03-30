@@ -94,115 +94,7 @@ HFONT Calculator::createCalculatorFont() {
 
 }
 
-DOUBLE Calculator::_atod(LPWSTR Text) {
-
-	CONST POINTS ASCII_NUMBERS = { 48, 57 }; // 0 - 9
-	CONST SHORT ASCII_MINUS = 45; // -
-
-	UINT LEFT = 1;
-	DOUBLE RIGHT = 0.1;
-
-	BOOL MINUS = FALSE;
-
-	DOUBLE Number = 0.00;
-
-	INT DotPosition = FindChar(Text, L'.', lstrlenW(Text));
-
-	if (DotPosition != -1 || 0) {
-
-		// 123456789.123456789
-
-		for (int i = DotPosition - 1; i >= 0; i--) {
-			INT ASCII = (int)Text[i];
-			if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y) {
-				Number = Number + (ASCII - ASCII_NUMBERS.x) * LEFT;
-				LEFT = LEFT * 10;
-			}
-			else {
-				(ASCII == ASCII_MINUS) ? MINUS = TRUE : MINUS = FALSE;
-				break;
-			}
-		}
-		for (int i = DotPosition + 1; i < lstrlenW(Text); i++) {
-			INT ASCII = (int)Text[i];
-			if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y) {
-				Number = Number + (ASCII - ASCII_NUMBERS.x) * RIGHT;
-				RIGHT = RIGHT / 10;
-			}
-			else {
-				break;
-			}
-		}
-
-		if (MINUS == TRUE) {
-			Number = Number * -1;
-		}
-
-		return Number;
-
-	}
-	if (DotPosition != -1) {
-
-		//.123456789
-
-		for (int i = DotPosition + 1; i < lstrlenW(Text); i++) {
-			INT ASCII = (int)Text[i];
-			if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y) {
-				Number = Number + (ASCII - ASCII_NUMBERS.x) * RIGHT;
-				RIGHT = RIGHT / 10;
-			}
-			else {
-				break;
-			}
-		}
-
-		if (MINUS == TRUE) {
-			Number = Number * -1;
-		}
-
-		return Number;
-
-	}
-	if (DotPosition == -1) {
-
-		// 123456789
-
-		INT NumberLength = -1;
-
-		for (int i = 0; i < lstrlenW(Text); i++) {
-			INT ASCII = (int)Text[i];
-			if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y || ASCII == ASCII_MINUS) {
-				NumberLength++;
-			}
-			else {
-				break;
-			}
-		}
-		for (int i = NumberLength; i >= 0; i--) {
-			INT ASCII = (int)Text[i];
-			if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y) {
-				Number = Number + (ASCII - ASCII_NUMBERS.x) * LEFT;
-				LEFT = LEFT * 10;
-			}
-			else {
-				(ASCII == ASCII_MINUS) ? MINUS = TRUE : MINUS = FALSE;
-				break;
-			}
-		}
-
-		if (MINUS == TRUE) {
-			Number = Number * -1;
-		}
-
-		return Number;
-
-	}
-
-	return Number;
-	
-}
-
-INT Calculator::FindChar(LPWSTR Text, const wchar_t Char, INT TextLength) {
+INT Calculator::FindChar(const wchar_t *Text, const wchar_t Char, INT TextLength) {
 
 	for (int i = 0; i < TextLength; i++) {
 
@@ -216,7 +108,7 @@ INT Calculator::FindChar(LPWSTR Text, const wchar_t Char, INT TextLength) {
 
 }
 
-LPWSTR Calculator::RoundDouble(LPWSTR Text, INT TextLength) {
+BOOL Calculator::RoundDouble(LPWSTR Text, INT TextLength) {
 
 	if (FindChar(Text, L'.', TextLength) != -1) {
 
@@ -225,19 +117,19 @@ LPWSTR Calculator::RoundDouble(LPWSTR Text, INT TextLength) {
 			if (Text[TextLength - i - 1] == L'0' || Text[TextLength - i - 1] == L'.') {
 				if (Text[TextLength - i - 1] == L'.') {
 					Text[TextLength - i - 1] = L'\0';
-					return Text;
+					return TRUE;
 				}
 				Text[TextLength - i - 1] = L'\0';
 			}
 			else {
-				return Text;
+				return TRUE;
 			}
 
 		}
 
 	}
 
-	return Text;
+	return FALSE;
 
 }
 
@@ -451,6 +343,15 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 	case ID_CL_CLOSE:
 	{
 
+		//////////////////////////////////////////////////////
+		//// +------------------------------------------+ ////
+		//// |                                          | ////
+		//// | [out] WPARAM - LOWORD(ID) | HIWORD(HWND) | ////
+		//// | [out] LPARAM - DestroyWindow             | ////
+		//// |                                          | ////
+		//// +------------------------------------------+ ////
+		//////////////////////////////////////////////////////
+
 		DWORD ID = GetWindowLong(hCalculator, GWL_ID);
 		PostMessage(GetParent(hCalculator), WM_COMMAND, MAKEWPARAM(ID, hCalculator), DestroyWindow(hCalculator));
 		break;
@@ -482,7 +383,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
 		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
-		if (ResultLength == 1 || lstrcmpW(Result, WINFINITY) == 0 || lstrcmpW(Result, WDEVISION_BY_ZERO) == 0 || (ResultLength == 2 && Result[0] == L'-')) {
+		if (ResultLength == 1 || lstrcmpW(Result, WDEVISION_ZERO_BY_ZERO) == 0 || lstrcmpW(Result, WDEVISION_BY_ZERO) == 0 || (ResultLength == 2 && Result[0] == L'-')) {
 			SetWindowText(*(Outputs + 1), L"0");
 		}
 		else {
@@ -505,7 +406,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
 		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
-		if (lstrcmpW(Result, WINFINITY) == 0 || lstrcmpW(Result, WDEVISION_BY_ZERO) == 0) {
+		if (lstrcmpW(Result, WDEVISION_ZERO_BY_ZERO) == 0 || lstrcmpW(Result, WDEVISION_BY_ZERO) == 0) {
 			wcscpy_s(Result, Num);
 			SetWindowText(*(Outputs + 1), Result);
 			break;
@@ -538,7 +439,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
 		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
-		if (lstrcmpW(Result, WINFINITY) == 0 || lstrcmpW(Result, WDEVISION_BY_ZERO) == 0) {
+		if (lstrcmpW(Result, WDEVISION_ZERO_BY_ZERO) == 0 || lstrcmpW(Result, WDEVISION_BY_ZERO) == 0) {
 			wcscpy_s(Result, L"0.");
 			SetWindowText(*(Outputs + 1), Result);
 			break;
@@ -563,7 +464,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
 		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
-		if (lstrcmpW(Result, WINFINITY) == 0 || lstrcmpW(Result, WDEVISION_BY_ZERO) == 0) {
+		if (lstrcmpW(Result, WDEVISION_ZERO_BY_ZERO) == 0 || lstrcmpW(Result, WDEVISION_BY_ZERO) == 0) {
 			wcscpy_s(Result, L"-0");
 			SetWindowText(*(Outputs + 1), Result);
 			break;
@@ -571,8 +472,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 		if (FindChar(Result, L'-', ResultLength) == -1) {
 			WCHAR ResultMinus[MAX_CLTITLE_CHAR] = { 0 };
-			wcscpy_s(ResultMinus, L"-");
-			wcscat_s(ResultMinus, Result);
+			wcscpy_s(ResultMinus, L"-"), wcscat_s(ResultMinus, Result);
 			SetWindowText(*(Outputs + 1), ResultMinus);
 		}
 		else {
@@ -596,7 +496,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
 		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
-		if (Result[ResultLength - 1] != L'.' && lstrcmpW(Result, WINFINITY) != 0 && lstrcmpW(Result, WDEVISION_BY_ZERO) != 0) {
+		if (Result[ResultLength - 1] != L'.' && lstrcmpW(Result, WDEVISION_ZERO_BY_ZERO) != 0 && lstrcmpW(Result, WDEVISION_BY_ZERO) != 0) {
 
 			wcscat_s(Result, L" "), wcscat_s(Result, Operator);
 
@@ -621,104 +521,224 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
 		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
-		if (Result[ResultLength - 1] != L'.' && Operation[0] != L'\0' && lstrcmpW(Result, WINFINITY) != 0 && lstrcmpW(Result, WDEVISION_BY_ZERO) != 0) {
+		if (Result[ResultLength - 1] != L'.' && lstrcmpW(Operation, L"") != 0 && lstrcmpW(Result, WDEVISION_ZERO_BY_ZERO) != 0 && lstrcmpW(Result, WDEVISION_BY_ZERO) != 0) {
+
+			#pragma region Multiply
+
 			if (FindChar(Operation, L'x', OperationLength) != -1) {
+
+				// Clear Value After Operator
 				INT OperatorPosition = Calculator::FindChar(Operation, L'x', lstrlenW(Operation));
 				for (int i = OperatorPosition + 1; i < lstrlenW(Operation); i++) {
 					Operation[i] = L'\0';
 				}
-				DOUBLE Num1 = Calculator::_atod(Operation);
-				DOUBLE Num2 = Calculator::_atod(Result);
+				//
+
+				// Mathematical Operation
+				DOUBLE Num1 = _wtof(Operation);
+				DOUBLE Num2 = _wtof(Result);
 				DOUBLE Multiply = Num1 * Num2;
+				//
+				
+				// Operation Output
 				wcscat_s(Operation, L" "), wcscat_s(Operation, Result), wcscat_s(Operation, L" =");
+				//
+
+				// Result Output
 				std::wstring WMultiply = std::to_wstring(Multiply);
-				wcscpy_s(Result, Calculator::RoundDouble((LPWSTR)WMultiply.c_str(), (int)WMultiply.size()));
+				WCHAR UMultiply[MAX_CLTITLE_CHAR] = { 0 };
+				wcscpy_s(UMultiply, WMultiply.c_str());
+				Calculator::RoundDouble(UMultiply, lstrlenW(UMultiply));
+				wcscpy_s(Result, UMultiply);
+				//
+
 				SetWindowText(*(Outputs + 0), Operation);
 				SetWindowText(*(Outputs + 1), Result);
+
 				break;
+
 			}
+
+			#pragma endregion
+
+			#pragma region Devide
+
 			if (FindChar(Operation, L'/', OperationLength) != -1) {
+
+				// Clear Value After Operator
 				INT OperatorPosition = Calculator::FindChar(Operation, L'/', lstrlenW(Operation));
 				for (int i = OperatorPosition + 1; i < lstrlenW(Operation); i++) {
 					Operation[i] = L'\0';
 				}
-				DOUBLE Num1 = Calculator::_atod(Operation);
-				DOUBLE Num2 = Calculator::_atod(Result);
+				//
+
+				// Mathematical Operation
+				DOUBLE Num1 = _wtof(Operation);
+				DOUBLE Num2 = _wtof(Result);
 				DOUBLE Devide = 0;
+				//
+
+				// Operation Output
+				wcscat_s(Operation, L" "), wcscat_s(Operation, Result), wcscat_s(Operation, L" =");
+				//
+
+				// Check For Invalid Operations
 				if (Num1 == 0 && Num2 == 0) {
-					wcscat_s(Operation, L" "), wcscat_s(Operation, Result), wcscat_s(Operation, L" =");
-					wcscpy_s(Result, WINFINITY);
+					wcscpy_s(Result, WDEVISION_ZERO_BY_ZERO);
+					goto SetWindowTextPointDevide;
 				}
-				else if (Num2 == 0) {
-					wcscat_s(Operation, L" "), wcscat_s(Operation, Result), wcscat_s(Operation, L" =");
+				if (Num2 == 0) {
 					wcscpy_s(Result, WDEVISION_BY_ZERO);
+					goto SetWindowTextPointDevide;
 				}
-				else {
+				//
+				
+				// Result Output
+				if (Num2 != 0) {
 					Devide = Num1 / Num2;
-					wcscat_s(Operation, L" "), wcscat_s(Operation, Result), wcscat_s(Operation, L" =");
 					std::wstring WDevide = std::to_wstring(Devide);
-					wcscpy_s(Result, Calculator::RoundDouble((LPWSTR)WDevide.c_str(), (int)WDevide.size()));
+					WCHAR UDevide[MAX_CLTITLE_CHAR] = { 0 };
+					wcscpy_s(UDevide, WDevide.c_str());
+					Calculator::RoundDouble(UDevide, lstrlenW(UDevide));
+					wcscpy_s(Result, UDevide);
 				}
+				//
+
+				SetWindowTextPointDevide:
 				SetWindowText(*(Outputs + 0), Operation);
 				SetWindowText(*(Outputs + 1), Result);
+
 				break;
 			}
+
+			#pragma endregion
+
+			#pragma region Sum
+
 			if (FindChar(Operation, L'+', OperationLength) != -1) {
+
+				// Clear Value After Operator
 				INT OperatorPosition = Calculator::FindChar(Operation, L'+', lstrlenW(Operation));
 				for (int i = OperatorPosition + 1; i < lstrlenW(Operation); i++) {
 					Operation[i] = L'\0';
 				}
-				DOUBLE Num1 = Calculator::_atod(Operation);
-				DOUBLE Num2 = Calculator::_atod(Result);
+				//
+
+				// Mathematical Operation
+				DOUBLE Num1 = _wtof(Operation);
+				DOUBLE Num2 = _wtof(Result);
 				DOUBLE Sum = Num1 + Num2;
+				//
+
+				// Operation Output
 				wcscat_s(Operation, L" "), wcscat_s(Operation, Result), wcscat_s(Operation, L" =");
+				//
+
+				// Result Output
 				std::wstring WSum = std::to_wstring(Sum);
-				wcscpy_s(Result, Calculator::RoundDouble((LPWSTR)WSum.c_str(), (int)WSum.size()));
+				WCHAR USum[MAX_CLTITLE_CHAR] = { 0 };
+				wcscpy_s(USum, WSum.c_str());
+				Calculator::RoundDouble(USum, lstrlenW(USum));
+				wcscpy_s(Result, USum);
+				//
+
 				SetWindowText(*(Outputs + 0), Operation);
 				SetWindowText(*(Outputs + 1), Result);
+
 				break;
 			}
+
+			#pragma endregion
+
+			#pragma region Minus
+
 			if (FindChar(Operation, L'-', OperationLength) != -1) {
+
+				// Clear Value After Operator
 				INT OperatorPosition = Calculator::FindChar(Operation, L'-', lstrlenW(Operation));
 				for (int i = OperatorPosition + 1; i < lstrlenW(Operation); i++) {
 					Operation[i] = L'\0';
 				}
-				DOUBLE Num1 = Calculator::_atod(Operation);
-				DOUBLE Num2 = Calculator::_atod(Result);
+				//
+
+				// Mathematical Operation
+				DOUBLE Num1 = _wtof(Operation);
+				DOUBLE Num2 = _wtof(Result);
 				DOUBLE Minus = Num1 - Num2;
+				//
+
+				// Operation Output
 				wcscat_s(Operation, L" "), wcscat_s(Operation, Result), wcscat_s(Operation, L" =");
+				//
+
+				// Result Output
 				std::wstring WMinus = std::to_wstring(Minus);
-				wcscpy_s(Result, Calculator::RoundDouble((LPWSTR)WMinus.c_str(), (int)WMinus.size()));
+				WCHAR UMinus[MAX_CLTITLE_CHAR] = { 0 };
+				wcscpy_s(UMinus, WMinus.c_str());
+				Calculator::RoundDouble(UMinus, lstrlenW(UMinus));
+				wcscpy_s(Result, UMinus);
+				//
+
 				SetWindowText(*(Outputs + 0), Operation);
 				SetWindowText(*(Outputs + 1), Result);
+
 				break;
 			}
+
+			#pragma endregion
+
+			#pragma region Module
+
 			if (FindChar(Operation, L'%', OperationLength) != -1) {
+
+				// Clear Value After Operator
 				INT OperatorPosition = Calculator::FindChar(Operation, L'%', lstrlenW(Operation));
 				for (int i = OperatorPosition + 1; i < lstrlenW(Operation); i++) {
 					Operation[i] = L'\0';
 				}
-				DOUBLE Num1 = Calculator::_atod(Operation);
-				DOUBLE Num2 = Calculator::_atod(Result);
+				//
+
+				// Mathematical Operation
+				DOUBLE Num1 = _wtof(Operation);
+				DOUBLE Num2 = _wtof(Result);
 				INT Module = 0;
+				//
+
+				// Operation Output
+				wcscat_s(Operation, L" "), wcscat_s(Operation, Result), wcscat_s(Operation, L" =");
+				//
+
+				// Check For Invalid Operations
 				if (Num1 == 0 && Num2 == 0) {
-					wcscat_s(Operation, L" "), wcscat_s(Operation, Result), wcscat_s(Operation, L" =");
-					wcscpy_s(Result, WINFINITY);
+					wcscpy_s(Result, WDEVISION_ZERO_BY_ZERO);
+					goto SetWindowTextPointModule;
 				}
-				else if (Num2 == 0) {
-					wcscat_s(Operation, L" "), wcscat_s(Operation, Result), wcscat_s(Operation, L" =");
+				if (Num2 == 0) {
 					wcscpy_s(Result, WDEVISION_BY_ZERO);
+					goto SetWindowTextPointModule;
 				}
-				else {
+				//
+
+				// Result Output
+				if (Num2 != 0) {
 					Module = (int)Num1 % (int)Num2;
-					wcscat_s(Operation, L" "), wcscat_s(Operation, Result), wcscat_s(Operation, L" =");
 					std::wstring WModule = std::to_wstring(Module);
-					wcscpy_s(Result, Calculator::RoundDouble((LPWSTR)WModule.c_str(), (int)WModule.size()));
+					WCHAR UModule[MAX_CLTITLE_CHAR] = { 0 };
+					wcscpy_s(UModule, WModule.c_str());
+					Calculator::RoundDouble(UModule, lstrlenW(UModule));
+					wcscpy_s(Result, UModule);
 				}
+				//
+
+				SetWindowTextPointModule:
 				SetWindowText(*(Outputs + 0), Operation);
 				SetWindowText(*(Outputs + 1), Result);
+
 				break;
 			}
+
+			#pragma endregion
+
 		}
 		else {
 			MessageBeep(MB_ICONINFORMATION);

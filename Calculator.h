@@ -10,10 +10,10 @@
 
 #define MAX_RESULT_LENGTH 8
 
-#define WINFINITY L"Infinity"
-#define WDEVISION_BY_ZERO L"Cannot Devide By Zero"
+#define WDEVISION_ZERO_BY_ZERO L"Undefined"
+#define WDEVISION_BY_ZERO L"Infinity"
 
-#define MAX_CLTITLE_CHAR 200
+#define MAX_CLTITLE_CHAR 256
 #define HInstance() GetModuleHandle(NULL)
 
 #define CalculatorBackgroundColor RGB(255, 255, 255)
@@ -84,10 +84,8 @@ private:
 
 	static HFONT createCalculatorFont();
 
-	static INT FindChar(LPWSTR Text, const wchar_t Char, INT TextLength);
-	static LPWSTR RoundDouble(LPWSTR Text, INT TextLength);
-
-	static DOUBLE _atod(LPWSTR Text);
+	static INT FindChar(const wchar_t *Text, const wchar_t Char, INT TextLength);
+	static BOOL RoundDouble(LPWSTR Text, INT TextLength);
 
 	static BOOL createCalculatorControls(HWND hCalculator);
 

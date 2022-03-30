@@ -51,6 +51,8 @@ public:
 
 			// 123456789.123456789
 
+			// |1|2|3|4.
+			//
 			for (int i = DotPosition - 1; i >= 0; i--) {
 				INT ASCII = (int)Text[i];
 				if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y) {
@@ -62,6 +64,8 @@ public:
 					break;
 				}
 			}
+			// .|1|2|3|4
+			//
 			for (int i = DotPosition + 1; i < lstrlenW(Text); i++) {
 				INT ASCII = (int)Text[i];
 				if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y) {
@@ -84,6 +88,8 @@ public:
 
 			//.123456789
 
+			// .|1|2|3|4
+			//
 			for (int i = DotPosition + 1; i < lstrlenW(Text); i++) {
 				INT ASCII = (int)Text[i];
 				if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y) {
@@ -108,6 +114,8 @@ public:
 
 			INT NumberLength = -1;
 
+			// |1|2|3|4|
+			//
 			for (int i = 0; i < lstrlenW(Text); i++) {
 				INT ASCII = (int)Text[i];
 				if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y || ASCII == ASCII_MINUS) {
@@ -202,7 +210,7 @@ public:
 					buffer = LocalLock(CopyData);
 				}
 				if (buffer != NULL) {
-					memcpy(buffer, (VOID*)text.c_str(), sizeof(WCHAR) * textLength + 1);
+					memcpy(buffer, (void*)text.c_str(), sizeof(WCHAR) * textLength + 1);
 					LocalUnlock(CopyData);
 					SetClipboardData(CF_UNICODETEXT, CopyData);
 					LocalFree(CopyData);
@@ -237,7 +245,7 @@ public:
 					buffer = LocalLock(CopyData);
 				}
 				if (buffer != NULL) {
-					memcpy(buffer, (VOID*)text.c_str(), sizeof(CHAR) * textLength + 1);
+					memcpy(buffer, (void*)text.c_str(), sizeof(CHAR) * textLength + 1);
 					LocalUnlock(CopyData);
 					SetClipboardData(CF_TEXT, CopyData);
 					LocalFree(CopyData);
@@ -276,6 +284,7 @@ public:
 			if (buffer != NULL) {
 				TextFromClipboard = (wchar_t*)buffer;
 				LocalUnlock(ClipboardData);
+				LocalFree(ClipboardData);
 				CloseClipboard();
 				return TextFromClipboard;
 			}
@@ -316,6 +325,7 @@ public:
 			if (buffer != NULL) {
 				TextFromClipboard = (char*)buffer;
 				LocalUnlock(ClipboardData);
+				LocalFree(ClipboardData);
 				CloseClipboard();
 				return TextFromClipboard;
 			}
