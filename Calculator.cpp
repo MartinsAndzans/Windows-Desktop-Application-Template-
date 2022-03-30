@@ -94,17 +94,146 @@ HFONT Calculator::createCalculatorFont() {
 
 }
 
-BOOL Calculator::FindChar(LPWSTR Text, const wchar_t Char, INT TextLength) {
+DOUBLE Calculator::_atod(LPWSTR Text) {
+
+	CONST POINTS ASCII_NUMBERS = { 48, 57 }; // 0 - 9
+	CONST SHORT ASCII_MINUS = 45; // -
+
+	UINT LEFT = 1;
+	DOUBLE RIGHT = 0.1;
+
+	BOOL MINUS = FALSE;
+
+	DOUBLE Number = 0.00;
+
+	INT DotPosition = FindChar(Text, L'.', lstrlenW(Text));
+
+	if (DotPosition != -1 || 0) {
+
+		// 123456789.123456789
+
+		for (int i = DotPosition - 1; i >= 0; i--) {
+			INT ASCII = (int)Text[i];
+			if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y) {
+				Number = Number + (ASCII - ASCII_NUMBERS.x) * LEFT;
+				LEFT = LEFT * 10;
+			}
+			else {
+				(ASCII == ASCII_MINUS) ? MINUS = TRUE : MINUS = FALSE;
+				break;
+			}
+		}
+		for (int i = DotPosition + 1; i < lstrlenW(Text); i++) {
+			INT ASCII = (int)Text[i];
+			if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y) {
+				Number = Number + (ASCII - ASCII_NUMBERS.x) * RIGHT;
+				RIGHT = RIGHT / 10;
+			}
+			else {
+				break;
+			}
+		}
+
+		if (MINUS == TRUE) {
+			Number = Number * -1;
+		}
+
+		return Number;
+
+	}
+	if (DotPosition != -1) {
+
+		//.123456789
+
+		for (int i = DotPosition + 1; i < lstrlenW(Text); i++) {
+			INT ASCII = (int)Text[i];
+			if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y) {
+				Number = Number + (ASCII - ASCII_NUMBERS.x) * RIGHT;
+				RIGHT = RIGHT / 10;
+			}
+			else {
+				break;
+			}
+		}
+
+		if (MINUS == TRUE) {
+			Number = Number * -1;
+		}
+
+		return Number;
+
+	}
+	if (DotPosition == -1) {
+
+		// 123456789
+
+		INT NumberLength = -1;
+
+		for (int i = 0; i < lstrlenW(Text); i++) {
+			INT ASCII = (int)Text[i];
+			if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y || ASCII == ASCII_MINUS) {
+				NumberLength++;
+			}
+			else {
+				break;
+			}
+		}
+		for (int i = NumberLength; i >= 0; i--) {
+			INT ASCII = (int)Text[i];
+			if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y) {
+				Number = Number + (ASCII - ASCII_NUMBERS.x) * LEFT;
+				LEFT = LEFT * 10;
+			}
+			else {
+				(ASCII == ASCII_MINUS) ? MINUS = TRUE : MINUS = FALSE;
+				break;
+			}
+		}
+
+		if (MINUS == TRUE) {
+			Number = Number * -1;
+		}
+
+		return Number;
+
+	}
+
+	return Number;
+	
+}
+
+INT Calculator::FindChar(LPWSTR Text, const wchar_t Char, INT TextLength) {
 
 	for (int i = 0; i < TextLength; i++) {
 
 		if (Text[i] == Char) {
-			return TRUE;
+			return i;
 		}
 
 	}
 
-	return FALSE;
+	return -1;
+
+}
+
+LPWSTR Calculator::Round(LPWSTR Text, INT TextLength) {
+
+	for (int i = 0; i < TextLength; i++) {
+
+		if (Text[TextLength - i - 1] == L'0' || Text[TextLength - i - 1] == L'.') {
+			if (Text[TextLength - i - 1] == L'.') {
+				Text[TextLength - i - 1] = L'\0';
+				return Text;
+			}
+			Text[TextLength - i - 1] = L'\0';
+		}
+		else {
+			return Text;
+		}
+
+	}
+
+	return Text;
 
 }
 
@@ -168,7 +297,7 @@ BOOL Calculator::createCalculatorControls(HWND hCalculator) {
 				HInstance(),
 				NULL);
 
-			Outputs[i - 1] = hwnd;
+			*(Outputs + (i - 1)) = hwnd;
 			
 			XISTATIC++;
 
@@ -328,13 +457,13 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		HWND *Outputs = (HWND*)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
 
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
-		GetWindowText(Outputs[1], Result, ARRAYSIZE(Result));
+		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
 		if (lstrcmpW(Result, L"0") == 0) {
-			SetWindowText(Outputs[0], L"");
+			SetWindowText(*(Outputs + 0), L"");
 		}
 		else {
-			SetWindowText(Outputs[1], L"0");
+			SetWindowText(*(Outputs + 1), L"0");
 		}
 
 		break;
@@ -348,7 +477,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
 		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
-		if (ResultLength == 1) {
+		if (ResultLength == 1 || lstrcmpW(Result, WINFINITY) == 0 || lstrcmpW(Result, WDEVISION_BY_ZERO) == 0 || (ResultLength == 2 && Result[0] == L'-')) {
 			SetWindowText(*(Outputs + 1), L"0");
 		}
 		else {
@@ -370,6 +499,12 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		GetWindowText((HWND)lParam, Num, ARRAYSIZE(Num));
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
 		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
+
+		if (lstrcmpW(Result, WINFINITY) == 0 || lstrcmpW(Result, WDEVISION_BY_ZERO) == 0) {
+			wcscpy_s(Result, Num);
+			SetWindowText(*(Outputs + 1), Result);
+			break;
+		}
 		
 		if (ResultLength < MAX_RESULT_LENGTH) {
 			if (lstrcmpW(Result, L"0") == 0) {
@@ -398,7 +533,13 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
 		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
-		if (!FindChar(Result, L'.', ResultLength) && ResultLength < MAX_RESULT_LENGTH) {
+		if (lstrcmpW(Result, WINFINITY) == 0 || lstrcmpW(Result, WDEVISION_BY_ZERO) == 0) {
+			wcscpy_s(Result, L"0.");
+			SetWindowText(*(Outputs + 1), Result);
+			break;
+		}
+
+		if (FindChar(Result, L'.', ResultLength) == -1 && ResultLength < MAX_RESULT_LENGTH) {
 			wcscat_s(Result, Dot);
 			SetWindowText(*(Outputs + 1), Result);
 		}
@@ -417,7 +558,13 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
 		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
-		if (!FindChar(Result, L'-', ResultLength)) {
+		if (lstrcmpW(Result, WINFINITY) == 0 || lstrcmpW(Result, WDEVISION_BY_ZERO) == 0) {
+			wcscpy_s(Result, L"-0");
+			SetWindowText(*(Outputs + 1), Result);
+			break;
+		}
+
+		if (FindChar(Result, L'-', ResultLength) == -1) {
 			WCHAR ResultMinus[MAX_CLTITLE_CHAR] = { 0 };
 			wcscpy_s(ResultMinus, L"-");
 			wcscat_s(ResultMinus, Result);
@@ -444,10 +591,111 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
 		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
-		wcscat_s(Result, L" "), wcscat_s(Result, Operator);
+		if (Result[ResultLength - 1] != L'.' && lstrcmpW(Result, WINFINITY) != 0 && lstrcmpW(Result, WDEVISION_BY_ZERO) != 0) {
 
-		SetWindowText(*(Outputs + 0), Result);
-		SetWindowText(*(Outputs + 1), L"0");
+			wcscat_s(Result, L" "), wcscat_s(Result, Operator), wcscat_s(Result, L" ");
+
+			SetWindowText(*(Outputs + 0), Result);
+			SetWindowText(*(Outputs + 1), L"0");
+
+		}
+		else {
+			MessageBeep(MB_ICONINFORMATION);
+		}
+
+		break;
+
+	}
+	case ID_CL_RESULT:
+	{
+
+		HWND *Outputs = (HWND*)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
+
+		WCHAR Operation[MAX_CLTITLE_CHAR] = { 0 };
+		INT OperationLength = GetWindowText(*(Outputs + 0), Operation, ARRAYSIZE(Operation));
+		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
+		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
+
+		if (Result[ResultLength - 1] != L'.' && Operation[0] != L'\0' && lstrcmpW(Result, WINFINITY) != 0 && lstrcmpW(Result, WDEVISION_BY_ZERO) != 0) {
+			if (FindChar(Operation, L'x', OperationLength) != -1) {
+				INT OperatorPosition = Calculator::FindChar(Operation, L'x', lstrlenW(Operation));
+				for (int i = OperatorPosition + 2; i < lstrlenW(Operation); i++) {
+					Operation[i] = L'\0';
+				}
+				DOUBLE Num1 = Calculator::_atod(Operation);
+				DOUBLE Num2 = Calculator::_atod(Result);
+				DOUBLE Multiply = Num1 * Num2;
+				wcscat_s(Operation, Result), wcscat_s(Operation, L" = ");
+				std::wstring WMultiply = std::to_wstring(Multiply);
+				wcscpy_s(Result, Calculator::Round((LPWSTR)WMultiply.c_str(), (int)WMultiply.size()));
+				SetWindowText(*(Outputs + 0), Operation);
+				SetWindowText(*(Outputs + 1), Result);
+				break;
+			}
+			if (FindChar(Operation, L'/', OperationLength) != -1) {
+				INT OperatorPosition = Calculator::FindChar(Operation, L'/', lstrlenW(Operation));
+				for (int i = OperatorPosition + 2; i < lstrlenW(Operation); i++) {
+					Operation[i] = L'\0';
+				}
+				DOUBLE Num1 = Calculator::_atod(Operation);
+				DOUBLE Num2 = Calculator::_atod(Result);
+				DOUBLE Devide = 0;
+				if (Num1 == 0 && Num2 == 0) {
+					wcscat_s(Operation, Result), wcscat_s(Operation, L" = ");
+					wcscpy_s(Result, WINFINITY);
+				}
+				else if (Num2 == 0) {
+					wcscat_s(Operation, Result), wcscat_s(Operation, L" = ");
+					wcscpy_s(Result, WDEVISION_BY_ZERO);
+				}
+				else {
+					DOUBLE Devide = Num1 / Num2;
+					wcscat_s(Operation, Result), wcscat_s(Operation, L" = ");
+					std::wstring WDevide = std::to_wstring(Devide);
+					wcscpy_s(Result, Calculator::Round((LPWSTR)WDevide.c_str(), (int)WDevide.size()));
+				}
+				SetWindowText(*(Outputs + 0), Operation);
+				SetWindowText(*(Outputs + 1), Result);
+				break;
+			}
+			if (FindChar(Operation, L'+', OperationLength) != -1) {
+				INT OperatorPosition = Calculator::FindChar(Operation, L'+', lstrlenW(Operation));
+				for (int i = OperatorPosition + 2; i < lstrlenW(Operation); i++) {
+					Operation[i] = L'\0';
+				}
+				DOUBLE Num1 = Calculator::_atod(Operation);
+				DOUBLE Num2 = Calculator::_atod(Result);
+				DOUBLE Sum = Num1 + Num2;
+				wcscat_s(Operation, Result), wcscat_s(Operation, L" = ");
+				std::wstring WSum = std::to_wstring(Sum);
+				wcscpy_s(Result, Calculator::Round((LPWSTR)WSum.c_str(), (int)WSum.size()));
+				SetWindowText(*(Outputs + 0), Operation);
+				SetWindowText(*(Outputs + 1), Result);
+				break;
+			}
+			if (FindChar(Operation, L'-', OperationLength) != -1) {
+				INT OperatorPosition = Calculator::FindChar(Operation, L'-', lstrlenW(Operation));
+				for (int i = OperatorPosition + 2; i < lstrlenW(Operation); i++) {
+					Operation[i] = L'\0';
+				}
+				DOUBLE Num1 = Calculator::_atod(Operation);
+				DOUBLE Num2 = Calculator::_atod(Result);
+				DOUBLE Minus = Num1 - Num2;
+				wcscat_s(Operation, Result), wcscat_s(Operation, L" = ");
+				std::wstring WMinus = std::to_wstring(Minus);
+				wcscpy_s(Result, Calculator::Round((LPWSTR)WMinus.c_str(), (int)WMinus.size()));
+				SetWindowText(*(Outputs + 0), Operation);
+				SetWindowText(*(Outputs + 1), Result);
+				break;
+			}
+			if (FindChar(Operation, L'%', OperationLength) != -1) {
+
+				break;
+			}
+		}
+		else {
+			MessageBeep(MB_ICONINFORMATION);
+		}
 
 		break;
 

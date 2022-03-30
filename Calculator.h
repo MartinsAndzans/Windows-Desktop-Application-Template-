@@ -8,9 +8,12 @@
 
 #define CL_SHOW 20002
 
-#define MAX_RESULT_LENGTH 14
+#define MAX_RESULT_LENGTH 10
 
-#define MAX_CLTITLE_CHAR 80
+#define WINFINITY L"Infinity"
+#define WDEVISION_BY_ZERO L"Cannot Devide By Zero"
+
+#define MAX_CLTITLE_CHAR 200
 #define HInstance() GetModuleHandle(NULL)
 
 #define CalculatorBackgroundColor RGB(255, 255, 255)
@@ -81,7 +84,10 @@ private:
 
 	static HFONT createCalculatorFont();
 
-	static BOOL FindChar(LPWSTR Text, const wchar_t Char, INT TextLength);
+	static INT FindChar(LPWSTR Text, const wchar_t Char, INT TextLength);
+	static LPWSTR Round(LPWSTR Text, INT TextLength);
+
+	static DOUBLE _atod(LPWSTR Text);
 
 	static BOOL createCalculatorControls(HWND hCalculator);
 
