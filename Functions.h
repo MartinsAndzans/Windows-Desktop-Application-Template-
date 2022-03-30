@@ -19,6 +19,128 @@ class Functions {
 
 public:
 
+	static INT FindChar(LPWSTR Text, const wchar_t Char, INT TextLength) {
+
+		for (int i = 0; i < TextLength; i++) {
+
+			if (Text[i] == Char) {
+				return i;
+			}
+
+		}
+
+		return -1;
+
+	}
+
+	static DOUBLE _atod(LPWSTR Text) {
+
+		CONST POINTS ASCII_NUMBERS = { 48, 57 }; // 0 - 9
+		CONST SHORT ASCII_MINUS = 45; // -
+
+		UINT LEFT = 1;
+		DOUBLE RIGHT = 0.1;
+
+		BOOL MINUS = FALSE;
+
+		DOUBLE Number = 0.00;
+
+		INT DotPosition = FindChar(Text, L'.', lstrlenW(Text));
+
+		if (DotPosition != -1 || 0) {
+
+			// 123456789.123456789
+
+			for (int i = DotPosition - 1; i >= 0; i--) {
+				INT ASCII = (int)Text[i];
+				if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y) {
+					Number = Number + (ASCII - ASCII_NUMBERS.x) * LEFT;
+					LEFT = LEFT * 10;
+				}
+				else {
+					(ASCII == ASCII_MINUS) ? MINUS = TRUE : MINUS = FALSE;
+					break;
+				}
+			}
+			for (int i = DotPosition + 1; i < lstrlenW(Text); i++) {
+				INT ASCII = (int)Text[i];
+				if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y) {
+					Number = Number + (ASCII - ASCII_NUMBERS.x) * RIGHT;
+					RIGHT = RIGHT / 10;
+				}
+				else {
+					break;
+				}
+			}
+
+			if (MINUS == TRUE) {
+				Number = Number * -1;
+			}
+
+			return Number;
+
+		}
+		if (DotPosition != -1) {
+
+			//.123456789
+
+			for (int i = DotPosition + 1; i < lstrlenW(Text); i++) {
+				INT ASCII = (int)Text[i];
+				if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y) {
+					Number = Number + (ASCII - ASCII_NUMBERS.x) * RIGHT;
+					RIGHT = RIGHT / 10;
+				}
+				else {
+					break;
+				}
+			}
+
+			if (MINUS == TRUE) {
+				Number = Number * -1;
+			}
+
+			return Number;
+
+		}
+		if (DotPosition == -1) {
+
+			// 123456789
+
+			INT NumberLength = -1;
+
+			for (int i = 0; i < lstrlenW(Text); i++) {
+				INT ASCII = (int)Text[i];
+				if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y || ASCII == ASCII_MINUS) {
+					NumberLength++;
+				}
+				else {
+					break;
+				}
+			}
+			for (int i = NumberLength; i >= 0; i--) {
+				INT ASCII = (int)Text[i];
+				if (ASCII >= ASCII_NUMBERS.x && ASCII <= ASCII_NUMBERS.y) {
+					Number = Number + (ASCII - ASCII_NUMBERS.x) * LEFT;
+					LEFT = LEFT * 10;
+				}
+				else {
+					(ASCII == ASCII_MINUS) ? MINUS = TRUE : MINUS = FALSE;
+					break;
+				}
+			}
+
+			if (MINUS == TRUE) {
+				Number = Number * -1;
+			}
+
+			return Number;
+
+		}
+
+		return Number;
+
+	}
+
 	static std::string _itos(int number, int base) {
 
 		/// <summary>
@@ -27,14 +149,14 @@ public:
 		/// <param name="number">Integer Type Number To Be Converted</param>
 		/// <returns>Converted Number</returns>
 
-		char s[20] = "";
-		std::string string = "";
-		_itoa_s(number, s, base);
-		string.insert(0, s);
-		return string;
+		CHAR String[256] = { 0 };
+		_itoa_s(number, String, base);
+		std::string RString = String;
+		return RString;
+
 	}
 
-	static std::string _dtos(double number, int base) {
+	static std::string _dtos(double number, int NumbersR) {
 
 		/// <summary>
 		/// Converts Double To String
@@ -42,18 +164,22 @@ public:
 		/// <param name="number">Double Type Number To Be Converted</param>
 		/// <returns>Converted Number</returns>
 
-		char i[20] = "";
-		char f[20] = "";
-		std::string string = "";
-		_itoa_s((int)number, i, base);
-		double dnumber = number - (int)number;
-		double fnumber = dnumber * 1000000;
-		_itoa_s((int)fnumber, f, base);
-		string.insert(0, i);
-		string = string + ".";
-		int64_t length = string.length();
-		string.insert(length, f);
-		return string;
+		int FNumber = 1;
+
+		for (int i = NumbersR; i > 1; i--) {
+			FNumber = FNumber * 10;
+		}
+
+		CHAR StringL[256] = { 0 }, StringR[256] = { 0 };
+		_itoa_s((int)number, StringL, 10);
+		double RNumberD = number - (int)number;
+		int RNumberI = (int)(RNumberD * FNumber);
+		_itoa_s(RNumberI, StringR, 10);
+		CHAR Double[256] = { 0 };
+		strcpy_s(Double, StringL), strcat_s(Double, "."), strcat_s(Double, StringR);
+		std::string RDouble = Double;
+		return RDouble;
+
 	}
 
 	static bool copyTextToClipboard(HWND hwnd, std::wstring text, SIZE_T textLength) {

@@ -189,7 +189,7 @@ VOID MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	SetWindowPos(hDebugTool1, NULL, MainWindowDimensions.right - 160, 0, 160, 25, SWP_SHOWWINDOW);
 	SetWindowPos(hDebugTool2, NULL, MainWindowDimensions.right - 240, 30, 240, 25, SWP_SHOWWINDOW);
 
-	std::string SMainWindowDimensions = "Width = " + (Functions::_itos(MainWindowDimensions.right, 10)) + " Height = " + (Functions::_itos(MainWindowDimensions.bottom, 10));
+	std::string SMainWindowDimensions = "Width = " + Functions::_itos(MainWindowDimensions.right, 10) + " Height = " + Functions::_itos(MainWindowDimensions.bottom, 10);
 	SetWindowTextA(hDebugTool2, SMainWindowDimensions.c_str());
 
 	#pragma endregion
@@ -205,7 +205,7 @@ VOID MainWindow::onMouseMove(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 	#pragma region DebugTool1
 
-	std::string SMousePosition = "X = " + (Functions::_itos(mousePosition.x, 10)) + " Y = " + (Functions::_itos(mousePosition.y, 10));
+	std::string SMousePosition = "X = " + Functions::_itos(mousePosition.x, 10) + " Y = " + Functions::_itos(mousePosition.y, 10);
 	SetWindowTextA(hDebugTool1, SMousePosition.c_str());
 
 	#pragma endregion
