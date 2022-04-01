@@ -56,6 +56,10 @@
       <UniqueIdentifier>{fc76915f-c888-4997-999b-b314dc68aacd}</UniqueIdentifier>
       <Extensions>h;cpp</Extensions>
     </Filter>
+    <Filter Include="Custom Controls\Drop Files">
+      <UniqueIdentifier>{11b7017e-0c22-40f0-9c6f-0976435c27c2}</UniqueIdentifier>
+      <Extensions>h;cpp</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp">
