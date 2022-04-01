@@ -21,7 +21,7 @@ HMENU Calculator::CalculatorControlsID[] = {(HMENU)ID_CL_CLOSE, (HMENU)ID_CL_OPE
 		(HMENU)ID_CL_NUM7, (HMENU)ID_CL_NUM8, (HMENU)ID_CL_NUM9, (HMENU)ID_CL_PLUSMINUS,
 		(HMENU)ID_CL_MODULE, (HMENU)ID_CL_NUM0, (HMENU)ID_CL_DOT, (HMENU)ID_CL_RESULT };
 
-CONST INT Calculator::PADDING = 5;
+CONST INT Calculator::PADDING = 10;
 
 CONST INT Calculator::BUTTONWIDTH = 50;
 CONST INT Calculator::BUTTONHEIGHT = 50;
@@ -29,7 +29,7 @@ CONST INT Calculator::BUTTONHEIGHT = 50;
 CONST INT Calculator::STATICWIDTH = Calculator::BUTTONWIDTH * 4 + Calculator::PADDING * 3;
 CONST INT Calculator::STATICHEIGHT = 35;
 
-CONST POINT Calculator::CalculatorDimensions = { Calculator::BUTTONWIDTH * 4 + Calculator::PADDING * 5, Calculator::BUTTONHEIGHT * 6 + Calculator::STATICHEIGHT * 2 + Calculator::PADDING * 9 };
+CONST POINT Calculator::CalculatorDimensions = { Calculator::STATICWIDTH + Calculator::PADDING * 2, Calculator::BUTTONHEIGHT * 6 + Calculator::STATICHEIGHT * 2 + Calculator::PADDING * 9 };
 
 RECT Calculator::Dimensions = { 0 };
 
