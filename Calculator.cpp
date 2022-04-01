@@ -123,7 +123,7 @@ std::wstring Calculator::_ditow(int64_t Value) {
 	while (Value != 0) {
 
 		INT Module = Value % 10 + ASCI_VALUE_ZERO; // Get Last Value Number       //
-		Value = Value / 10;  // Clear Last Value Number                           // Generates Reverse Value
+		Value = Value / 10;  // Remove Last Value Number                          // Generates Reverse Value
 		ReverseWValue = ReverseWValue + (wchar_t)((char)Module); // Reverse Value //
 
 	}
@@ -178,7 +178,7 @@ BOOL Calculator::_ftow(DOUBLE Value, wchar_t (&Buffer)[256 * 2 + 1], INT Precisi
 
 }
 
-INT Calculator::FindChar(const wchar_t *Text, const wchar_t Char, INT TextLength) {
+INT Calculator::FindChar(wchar_t (&Text)[], const wchar_t Char, INT TextLength) {
 
 	for (int i = 0; i < TextLength; i++) {
 
@@ -192,18 +192,18 @@ INT Calculator::FindChar(const wchar_t *Text, const wchar_t Char, INT TextLength
 
 }
 
-BOOL Calculator::RoundDouble(LPWSTR Text, INT TextLength) {
+BOOL Calculator::RoundDouble(wchar_t(&Text)[], INT TextLength) {
 
 	if (FindChar(Text, L'.', TextLength) != -1) {
 
-		for (int i = 0; i < TextLength; i++) {
+		for (int i = TextLength - 1; i >= 0 ; i--) {
 
-			if (Text[TextLength - i - 1] == L'0' || Text[TextLength - i - 1] == L'.') {
-				if (Text[TextLength - i - 1] == L'.') {
-					Text[TextLength - i - 1] = L'\0';
+			if (Text[i] == L'0' || Text[i] == L'.') {
+				if (Text[i] == L'.') {
+					Text[i] = L'\0';
 					return TRUE;
 				}
-				Text[TextLength - i - 1] = L'\0';
+				Text[i] = L'\0';
 			}
 			else {
 				return TRUE;

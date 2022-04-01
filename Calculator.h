@@ -86,8 +86,8 @@ private:
 
 	static HFONT createCalculatorFont();
 
-	static INT FindChar(const wchar_t* Text, const wchar_t Char, INT TextLength);
-	static BOOL RoundDouble(LPWSTR Text, INT TextLength);
+	static INT FindChar(wchar_t(&Text)[], const wchar_t Char, INT TextLength);
+	static BOOL RoundDouble(wchar_t(&Text)[], INT TextLength);
 
 	static std::wstring _ditow(int64_t Value);
 
