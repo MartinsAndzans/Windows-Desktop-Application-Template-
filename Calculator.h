@@ -5,13 +5,15 @@
 
 #include <Windows.h>
 #include <string>
+#include <math.h>
 
 #define CL_SHOW 20002
 
 #define MAX_RESULT_LENGTH 8
 
-#define WDEVISION_ZERO_BY_ZERO L"Undefined"
-#define WDEVISION_BY_ZERO L"Infinity"
+#define DEVISION_ZERO_BY_ZERO L"Undefined"
+#define DEVISION_BY_ZERO L"Infinity"
+#define RESULT_IS_TOO_LARGE L"Result Is Too Large"
 
 #define MAX_CLTITLE_CHAR 256
 #define HInstance() GetModuleHandle(NULL)
@@ -84,8 +86,12 @@ private:
 
 	static HFONT createCalculatorFont();
 
-	static INT FindChar(const wchar_t *Text, const wchar_t Char, INT TextLength);
+	static INT FindChar(const wchar_t* Text, const wchar_t Char, INT TextLength);
 	static BOOL RoundDouble(LPWSTR Text, INT TextLength);
+
+	static std::wstring _ditow(int64_t Value);
+
+	static BOOL _ftow(DOUBLE Value, wchar_t (&Buffer)[256 * 2 + 1], INT Precision);
 
 	static BOOL createCalculatorControls(HWND hCalculator);
 

@@ -43,7 +43,7 @@ VOID BroadcastMessages() {
 		}
 
 		if (MainWindow::Msg.message == WM_QUIT) {
-			return;
+			break;
 		}
 
 		TranslateMessage(&MainWindow::Msg);

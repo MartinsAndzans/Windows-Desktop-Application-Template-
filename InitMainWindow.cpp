@@ -102,6 +102,23 @@ BOOL MainWindow::CreateMainWindow(std::wstring ClassName, std::wstring WindowTit
 
 #pragma endregion
 
+// OVERLOADED OPERATORS
+
+#pragma region OverloadedOperators
+
+BOOL operator== (POINT &Left, POINT &Right) {
+
+	if (Left.x == Right.x && Left.y == Right.y) {
+		return true;
+	}
+	else {
+		return false;
+	}
+
+}
+
+#pragma endregion
+
 // FUNCTIONS
 
 #pragma region Functions
@@ -173,8 +190,8 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	CreateDebugTools();
 
-	CreateWindowEx(WS_EX_DLGMODALFRAME, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 150, 5, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)0, HInstance(), NULL);
-	CreateWindowEx(WS_EX_DLGMODALFRAME, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)4, HInstance(), (LPVOID)RGB(0, 155, 255));
+	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 150, 5, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)0, HInstance(), NULL);
+	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)4, HInstance(), (LPVOID)RGB(0, 155, 255));
 	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"SUPER CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 150, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)1, HInstance(), NULL);
 
 }

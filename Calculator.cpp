@@ -94,6 +94,90 @@ HFONT Calculator::createCalculatorFont() {
 
 }
 
+std::wstring Calculator::_ditow(int64_t Value) {
+
+	// 1234 % 10 = 4 | 1234 / 10 = 123 || 123 % 10 = 3 | 123 / 10 = 12 || 12 % 10 = 2 | 12 / 10 = 1 || 1 % 10 = 1 | 1 / 10 = 0
+
+	CONST SHORT ASCI_VALUE_ZERO = 48;
+
+	BOOL Minus = FALSE;
+	std::wstring WValue = L"";
+
+	if (Value == INT64_MIN) { //
+		WValue = L"OVERFLOW"; // OVERFLOW
+		return WValue;        //
+	}
+
+	if (Value == 0) {
+		WValue = L"0";
+		return WValue;
+	}
+
+	if (Value * -1 > 0) { // -Value * -1 = Value | Value * -1 = -Value
+		Minus = TRUE;
+		Value = Value * -1;
+	}
+
+	std::wstring ReverseWValue = L"";
+
+	while (Value != 0) {
+
+		INT Module = Value % 10 + ASCI_VALUE_ZERO; // Get Last Value Number       //
+		Value = Value / 10;  // Clear Last Value Number                           // Generates Reverse Value
+		ReverseWValue = ReverseWValue + (wchar_t)((char)Module); // Reverse Value //
+
+	}
+
+	if (Minus == TRUE) {
+		ReverseWValue = ReverseWValue + L"-";
+	}
+
+	while (ReverseWValue.length() != 0) {
+
+		WValue = WValue + ReverseWValue[ReverseWValue.length() - 1]; //
+		ReverseWValue.pop_back();                                    // Generates Normal Value
+		ReverseWValue.shrink_to_fit();                               //
+		
+	}
+
+	return WValue;
+
+}
+
+BOOL Calculator::_ftow(DOUBLE Value, wchar_t (&Buffer)[256 * 2 + 1], INT Precision) {
+
+	std::wstring Integer = _ditow((int64_t)Value); // Converts Integer Portion of Double
+	wcscat_s(Buffer, Integer.c_str());             // Converts Integer Portion of Double
+
+	if (Integer == L"OVERFLOW") {
+		return FALSE;
+	}
+
+	wcscat_s(Buffer, L"."); // Add Dot
+
+	Value = Value - (int64_t)Value; // Clear Integer Portion of Double
+
+	if (Value * -1 > 0) { // -Value * -1 = Value | Value * -1 = -Value
+		Value = Value * -1;
+	}
+
+	for (int i = 1; i <= Precision; i++) { //
+		Value = Value / 0.1;               // Move Decimal Portion of Double To Left
+	}                                      //
+
+	Value = round(Value);
+
+	std::wstring Decimal = _ditow((int64_t)Value); // Converts Decimal Portion of Double
+	wcscat_s(Buffer, Decimal.c_str());             // Converts Decimal Portion of Double
+
+	if (Decimal == L"OVERFLOW") {
+		return FALSE;
+	}
+
+	return TRUE;
+
+}
+
 INT Calculator::FindChar(const wchar_t *Text, const wchar_t Char, INT TextLength) {
 
 	for (int i = 0; i < TextLength; i++) {
@@ -383,7 +467,8 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
 		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
-		if (ResultLength == 1 || lstrcmpW(Result, WDEVISION_ZERO_BY_ZERO) == 0 || lstrcmpW(Result, WDEVISION_BY_ZERO) == 0 || (ResultLength == 2 && Result[0] == L'-')) {
+		if (ResultLength == 1 || lstrcmpW(Result, DEVISION_ZERO_BY_ZERO) == 0 || lstrcmpW(Result, DEVISION_BY_ZERO) == 0 ||
+			(ResultLength == 2 && Result[0] == L'-') || lstrcmpW(Result, RESULT_IS_TOO_LARGE) == 0) {
 			SetWindowText(*(Outputs + 1), L"0");
 		}
 		else {
@@ -406,7 +491,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
 		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
-		if (lstrcmpW(Result, WDEVISION_ZERO_BY_ZERO) == 0 || lstrcmpW(Result, WDEVISION_BY_ZERO) == 0) {
+		if (lstrcmpW(Result, DEVISION_ZERO_BY_ZERO) == 0 || lstrcmpW(Result, DEVISION_BY_ZERO) == 0 || lstrcmpW(Result, RESULT_IS_TOO_LARGE) == 0) {
 			wcscpy_s(Result, Num);
 			SetWindowText(*(Outputs + 1), Result);
 			break;
@@ -415,6 +500,10 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		if (ResultLength < MAX_RESULT_LENGTH) {
 			if (lstrcmpW(Result, L"0") == 0) {
 				wcscpy_s(Result, Num);
+				SetWindowText(*(Outputs + 1), Result);
+			}
+			else if (lstrcmpW(Result, L"-0") == 0) {
+				wcscpy_s(Result, L"-"), wcscat_s(Result, Num);
 				SetWindowText(*(Outputs + 1), Result);
 			}
 			else {
@@ -439,7 +528,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
 		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
-		if (lstrcmpW(Result, WDEVISION_ZERO_BY_ZERO) == 0 || lstrcmpW(Result, WDEVISION_BY_ZERO) == 0) {
+		if (lstrcmpW(Result, DEVISION_ZERO_BY_ZERO) == 0 || lstrcmpW(Result, DEVISION_BY_ZERO) == 0 || lstrcmpW(Result, RESULT_IS_TOO_LARGE) == 0) {
 			wcscpy_s(Result, L"0.");
 			SetWindowText(*(Outputs + 1), Result);
 			break;
@@ -464,7 +553,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
 		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
-		if (lstrcmpW(Result, WDEVISION_ZERO_BY_ZERO) == 0 || lstrcmpW(Result, WDEVISION_BY_ZERO) == 0) {
+		if (lstrcmpW(Result, DEVISION_ZERO_BY_ZERO) == 0 || lstrcmpW(Result, DEVISION_BY_ZERO) == 0 || lstrcmpW(Result, RESULT_IS_TOO_LARGE) == 0) {
 			wcscpy_s(Result, L"-0");
 			SetWindowText(*(Outputs + 1), Result);
 			break;
@@ -496,7 +585,8 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
 		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
-		if (Result[ResultLength - 1] != L'.' && lstrcmpW(Result, WDEVISION_ZERO_BY_ZERO) != 0 && lstrcmpW(Result, WDEVISION_BY_ZERO) != 0) {
+		if (Result[ResultLength - 1] != L'.' && lstrcmpW(Result, DEVISION_ZERO_BY_ZERO) != 0 &&
+			lstrcmpW(Result, DEVISION_BY_ZERO) != 0 && lstrcmpW(Result, RESULT_IS_TOO_LARGE) != 0) {
 
 			wcscat_s(Result, L" "), wcscat_s(Result, Operator);
 
@@ -521,7 +611,8 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		WCHAR Result[MAX_CLTITLE_CHAR] = { 0 };
 		INT ResultLength = GetWindowText(*(Outputs + 1), Result, ARRAYSIZE(Result));
 
-		if (Result[ResultLength - 1] != L'.' && lstrcmpW(Operation, L"") != 0 && lstrcmpW(Result, WDEVISION_ZERO_BY_ZERO) != 0 && lstrcmpW(Result, WDEVISION_BY_ZERO) != 0) {
+		if (Result[ResultLength - 1] != L'.' && lstrcmpW(Operation, L"") != 0 &&
+			lstrcmpW(Result, DEVISION_ZERO_BY_ZERO) != 0 && lstrcmpW(Result, DEVISION_BY_ZERO) != 0 && lstrcmpW(Result, RESULT_IS_TOO_LARGE) != 0) {
 
 			#pragma region Multiply
 
@@ -545,11 +636,14 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				//
 
 				// Result Output
-				std::wstring WMultiply = std::to_wstring(Multiply);
-				WCHAR UMultiply[MAX_CLTITLE_CHAR] = { 0 };
-				wcscpy_s(UMultiply, WMultiply.c_str());
-				Calculator::RoundDouble(UMultiply, lstrlenW(UMultiply));
-				wcscpy_s(Result, UMultiply);
+				WCHAR UMultiply[256 * 2 + 1] = { 0 };
+				if (_ftow(Multiply, UMultiply, 6)) {
+					Calculator::RoundDouble(UMultiply, lstrlenW(UMultiply));
+					wcscpy_s(Result, UMultiply);
+				}
+				else {
+					wcscpy_s(Result, RESULT_IS_TOO_LARGE);
+				}
 				//
 
 				SetWindowText(*(Outputs + 0), Operation);
@@ -584,11 +678,11 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 				// Check For Invalid Operations
 				if (Num1 == 0 && Num2 == 0) {
-					wcscpy_s(Result, WDEVISION_ZERO_BY_ZERO);
+					wcscpy_s(Result, DEVISION_ZERO_BY_ZERO);
 					goto SetWindowTextPointDevide;
 				}
 				if (Num2 == 0) {
-					wcscpy_s(Result, WDEVISION_BY_ZERO);
+					wcscpy_s(Result, DEVISION_BY_ZERO);
 					goto SetWindowTextPointDevide;
 				}
 				//
@@ -596,11 +690,14 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				// Result Output
 				if (Num2 != 0) {
 					Devide = Num1 / Num2;
-					std::wstring WDevide = std::to_wstring(Devide);
-					WCHAR UDevide[MAX_CLTITLE_CHAR] = { 0 };
-					wcscpy_s(UDevide, WDevide.c_str());
-					Calculator::RoundDouble(UDevide, lstrlenW(UDevide));
-					wcscpy_s(Result, UDevide);
+					WCHAR UDevide[256 * 2 + 1] = { 0 };
+					if (_ftow(Devide, UDevide, 6)) {
+						Calculator::RoundDouble(UDevide, lstrlenW(UDevide));
+						wcscpy_s(Result, UDevide);
+					}
+					else {
+						wcscpy_s(Result, RESULT_IS_TOO_LARGE);
+					}
 				}
 				//
 
@@ -635,11 +732,14 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				//
 
 				// Result Output
-				std::wstring WSum = std::to_wstring(Sum);
-				WCHAR USum[MAX_CLTITLE_CHAR] = { 0 };
-				wcscpy_s(USum, WSum.c_str());
-				Calculator::RoundDouble(USum, lstrlenW(USum));
-				wcscpy_s(Result, USum);
+				WCHAR USum[256 * 2 + 1] = { 0 };
+				if (_ftow(Sum, USum, 6)) {
+					Calculator::RoundDouble(USum, lstrlenW(USum));
+					wcscpy_s(Result, USum);
+				}
+				else {
+					wcscpy_s(Result, RESULT_IS_TOO_LARGE);
+				}
 				//
 
 				SetWindowText(*(Outputs + 0), Operation);
@@ -672,11 +772,14 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				//
 
 				// Result Output
-				std::wstring WMinus = std::to_wstring(Minus);
-				WCHAR UMinus[MAX_CLTITLE_CHAR] = { 0 };
-				wcscpy_s(UMinus, WMinus.c_str());
-				Calculator::RoundDouble(UMinus, lstrlenW(UMinus));
-				wcscpy_s(Result, UMinus);
+				WCHAR UMinus[256 * 2 + 1] = { 0 };
+				if (_ftow(Minus, UMinus, 6)) {
+					Calculator::RoundDouble(UMinus, lstrlenW(UMinus));
+					wcscpy_s(Result, UMinus);
+				}
+				else {
+					wcscpy_s(Result, RESULT_IS_TOO_LARGE);
+				}
 				//
 
 				SetWindowText(*(Outputs + 0), Operation);
@@ -710,23 +813,27 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 				// Check For Invalid Operations
 				if (Num1 == 0 && Num2 == 0) {
-					wcscpy_s(Result, WDEVISION_ZERO_BY_ZERO);
+					wcscpy_s(Result, DEVISION_ZERO_BY_ZERO);
 					goto SetWindowTextPointModule;
 				}
 				if (Num2 == 0) {
-					wcscpy_s(Result, WDEVISION_BY_ZERO);
+					wcscpy_s(Result, DEVISION_BY_ZERO);
 					goto SetWindowTextPointModule;
 				}
 				//
 
 				// Result Output
 				if (Num2 != 0) {
+					Num1 = round(Num1), Num2 = round(Num2);
 					Module = (int)Num1 % (int)Num2;
-					std::wstring WModule = std::to_wstring(Module);
-					WCHAR UModule[MAX_CLTITLE_CHAR] = { 0 };
-					wcscpy_s(UModule, WModule.c_str());
-					Calculator::RoundDouble(UModule, lstrlenW(UModule));
-					wcscpy_s(Result, UModule);
+					WCHAR UModule[256 * 2 + 1] = { 0 };
+					if (_ftow(Module, UModule, 6)) {
+						Calculator::RoundDouble(UModule, lstrlenW(UModule));
+						wcscpy_s(Result, UModule);
+					}
+					else {
+						wcscpy_s(Result, RESULT_IS_TOO_LARGE);
+					}
 				}
 				//
 
