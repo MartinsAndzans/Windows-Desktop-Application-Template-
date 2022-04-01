@@ -122,9 +122,9 @@ std::wstring Calculator::_ditow(int64_t Value) {
 
 	while (Value != 0) {
 
-		INT Module = Value % 10 + ASCI_VALUE_ZERO; // Get Last Value Number       //
+		INT Character = Value % 10 + ASCI_VALUE_ZERO; // Get Last Value Number    //
 		Value = Value / 10;  // Remove Last Value Number                          // Generates Reverse Value
-		ReverseWValue = ReverseWValue + (wchar_t)((char)Module); // Reverse Value //
+		ReverseWValue = ReverseWValue + (wchar_t)((char)Character); // Reverse Value //
 
 	}
 
