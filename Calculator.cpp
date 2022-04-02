@@ -168,8 +168,8 @@ BOOL Calculator::_ftow(DOUBLE Value, wchar_t (&Buffer)[256 * 2 + 1], INT Precisi
 	}                                                                      //
 
 	for (int i = DecimalPrecision; i <= Precision; i++) { //
-		Value = Value / 0.1;                             // Move Decimal Portion of Double To Left
-	}                                                    //
+		Value = Value / 0.1;                              // Move Decimal Portion of Double To Left
+	}                                                     //
 
 	Value = round(Value);
 
