@@ -77,6 +77,9 @@
     <ClCompile Include="Calculator.cpp">
       <Filter>Custom Controls\Calculator</Filter>
     </ClCompile>
+    <ClCompile Include="DropFiles.cpp">
+      <Filter>Custom Controls\Drop Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers.h">
@@ -102,6 +105,9 @@
     </ClInclude>
     <ClInclude Include="Calculator.h">
       <Filter>Custom Controls\Calculator</Filter>
+    </ClInclude>
+    <ClInclude Include="DropFiles.h">
+      <Filter>Custom Controls\Drop Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

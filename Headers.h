@@ -16,6 +16,7 @@
 #include "ColorPicker.h"
 #include "AnimationStars.h"
 #include "Calculator.h"
+#include "DropFiles.h"
 #include "Console.h"
 
 #pragma endregion

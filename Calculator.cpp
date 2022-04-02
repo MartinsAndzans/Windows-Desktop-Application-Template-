@@ -44,6 +44,7 @@ BOOL Calculator::InitCalculator() {
 	/// <summary>
 	/// OPTIONAL FUNCTION
 	/// CREATES CLASS "CALCULATOR"
+	/// CALCULATOR X, Y = { 250, 460 }
 	/// </summary>
 	/// <returns>If Function Succeeded Returns True, but If not False</returns>
 	

@@ -75,7 +75,7 @@ BOOL MainWindow::CreateMainWindow(std::wstring ClassName, std::wstring WindowTit
 	INT ScreenWidth = GetSystemMetrics(SM_CXSCREEN);
 	INT ScreenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-	hMainWindow = CreateWindowEx(WS_EX_ACCEPTFILES,
+	hMainWindow = CreateWindowEx(NULL,
 		ClassName.c_str(),
 		WindowTitle.c_str(),
 		WS_OVERLAPPEDWINDOW,
@@ -186,6 +186,8 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	Calculator::InitCalculator();
 
+	DropFiles::InitDropFiles();
+
 	CreateFonts();
 
 	CreateDebugTools();
@@ -197,6 +199,7 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 150, 5, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)0, HInstance(), NULL);
 	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)1, HInstance(), &parameters);
 	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"SUPER CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 150, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)2, HInstance(), NULL);
+	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"", WS_CHILD | WS_BORDER | WS_VISIBLE, 260, 110, 200, 100, hMainWindow, (HMENU)3, HInstance(), NULL);
 
 }
 
