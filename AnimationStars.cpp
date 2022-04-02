@@ -175,7 +175,14 @@ VOID AnimationStars::onCreate(HWND hAnimationStars, LPARAM lParam) {
 		(window->style & WS_OVERLAPPED) == NULL && (window->style & WS_SYSMENU) == NULL &&
 		(window->style & WS_THICKFRAME) == NULL) {
 
-		SetWindowLongPtr(hAnimationStars, GWL_USERDATA, (LONG_PTR)window->lpCreateParams);
+		LPPARAMETERS parameters = (LPPARAMETERS)window->lpCreateParams;
+
+		if (parameters != NULL) {
+			DWORD* Styles = new DWORD[2];
+			*(Styles + 0) = parameters->StarColor;
+			*(Styles + 1) = parameters->Proportion;
+			SetWindowLongPtr(hAnimationStars, GWLP_USERDATA, (LONG_PTR)Styles);
+		}
 
 		if (window->cx != 0 && window->cy != 0) {
 			SetTimer(hAnimationStars, ASTIMER, SEC / 10, (TIMERPROC)NULL);
@@ -232,19 +239,23 @@ VOID AnimationStars::onPaint(HWND hAnimationStars) {
 
 	SelectObject(MemoryDC, StarFont);
 
-	StarColor = GetWindowLong(hAnimationStars, GWL_USERDATA);
-	Proportion = GetWindowLong(hAnimationStars, GWL_ID);
+	DWORD *Styles = (DWORD*)GetWindowLongPtr(hAnimationStars, GWLP_USERDATA);
 
-	/////////////////////////////////////////////
-	//// +---------------------------------+ ////
-	//// |                                 | ////
-	//// | [in] lpCreateParams - StarColor | ////
-	//// | [in] hMenu - Proportion         | ////
-	//// |                                 | ////
-	//// +---------------------------------+ ////
-	/////////////////////////////////////////////
+	if (Styles != NULL) {
+		StarColor = *(Styles + 0);
+		Proportion = *(Styles + 1);
+	}
+	
+	/////////////////////////////////////////////////
+	//// +-------------------------------------+ ////
+	//// |                                     | ////
+	//// | [in] struct PARAMETERS - StarColor  | ////
+	//// | [in] struct PARAMETERS - Proportion | ////
+	//// |                                     | ////
+	//// +-------------------------------------+ ////
+	/////////////////////////////////////////////////
 
-	(StarColor < MIN_RGB || StarColor > MAX_RGB || StarColor == NULL) ? StarColor = RGB(255, 255, 255) : StarColor = StarColor; // DEFAULT
+	(StarColor < MIN_RGB || StarColor > MAX_RGB || Styles == NULL) ? StarColor = RGB(255, 255, 255) : StarColor = StarColor; // DEFAULT
 	(Proportion == NULL) ? Proportion = 6 : Proportion = Proportion; // DEFAULT
 	
 	SetTextColor(MemoryDC, StarColor);
@@ -262,12 +273,6 @@ VOID AnimationStars::onPaint(HWND hAnimationStars) {
 	DeleteObject(Bitmap);
 
 	EndPaint(hAnimationStars, &ps);
-
-}
-
-VOID AnimationStars::onDestroy(HWND hAnimationStars) {
-
-	KillTimer(hAnimationStars, ASTIMER);
 
 }
 
@@ -302,7 +307,11 @@ LRESULT CALLBACK AnimationStars::AnimationStarsProcedure(HWND hAnimationStars, U
 	}
 	case WM_DESTROY:
 	{
-		onDestroy(hAnimationStars);
+		KillTimer(hAnimationStars, ASTIMER);
+		DWORD *Styles = (DWORD*)GetWindowLongPtr(hAnimationStars, GWLP_USERDATA);
+		if (Styles != NULL) {
+			delete[] Styles;
+		}
 		return 0;
 	}
 	}

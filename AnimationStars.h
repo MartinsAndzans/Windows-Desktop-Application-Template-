@@ -13,7 +13,10 @@
 #define MIN_RGB 0x00000000
 #define MAX_RGB 0x00FFFFFF
 
-#define GWL_USERDATA -21
+typedef struct PARAMETERS {
+	COLORREF StarColor;
+	INT Proportion;
+}*LPPARAMETERS;
 
 #define MAX_ASTITLE_CHAR 200
 #define HInstance() GetModuleHandle(NULL)
@@ -58,7 +61,6 @@ private:
 	static VOID onWindowPosChanging(HWND hAnimationStars, LPARAM lParam);
 	static VOID onPaint(HWND hAnimationStars);
 	static VOID onTimer(HWND hAnimationStars, WPARAM wParam, LPARAM lParam);
-	static VOID onDestroy(HWND hAnimationStars);
 
 	#pragma endregion
 

@@ -161,15 +161,15 @@ BOOL Calculator::_ftow(DOUBLE Value, wchar_t (&Buffer)[256 * 2 + 1], INT Precisi
 		Value = Value * -1;
 	}
 
-	INT ZERO = 1;                                              //
-	while ((int64_t)(Value / 0.1) == 0 && ZERO <= Precision) { //         +-+
-		wcscat_s(Buffer, L"0");                                // Check 0.|0|1
-		Value = Value / 0.1, ZERO++;                           //         +-+
-	}                                                          //
+	INT DecimalPrecsion = 1;                                              //
+	while ((int64_t)(Value / 0.1) == 0 && DecimalPrecsion <= Precision) { //                  +-+
+ 		wcscat_s(Buffer, L"0");                                           // Check For This 0.|0|1
+		Value = Value / 0.1, DecimalPrecsion++;                           //                  +-+
+	}                                                                     //
 
-	for (int i = 1; i <= Precision; i++) { //
-		Value = Value / 0.1;               // Move Decimal Portion of Double To Left
-	}                                      //
+	for (int i = DecimalPrecsion; i <= Precision; i++) { //
+		Value = Value / 0.1;                             // Move Decimal Portion of Double To Left
+	}                                                    //
 
 	Value = round(Value);
 
