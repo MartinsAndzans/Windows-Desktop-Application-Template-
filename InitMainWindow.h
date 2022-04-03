@@ -56,7 +56,6 @@ private:
 	static VOID onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
 	static VOID onPaint(HWND hMainWindow);
 	static VOID onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
-	static VOID onDropFiles(HWND hMainWindow, WPARAM wParam);
 
 	#pragma endregion
 

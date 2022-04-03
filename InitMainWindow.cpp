@@ -200,7 +200,7 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)1, HInstance(), &parameters);
 	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"SUPER CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 150, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)2, HInstance(), NULL);
 	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"", WS_CHILD | WS_BORDER | WS_VISIBLE, 260, 110, 220, 120, hMainWindow, (HMENU)3, HInstance(), NULL);
-
+	
 }
 
 VOID MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
@@ -315,21 +315,6 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 }
 
-VOID MainWindow::onDropFiles(HWND hMainWindow, WPARAM wParam) {
-
-	HDROP DroppedFile = (HDROP)wParam;
-	CHAR buffer[MAX_CHAR_STRING] = { 0 };
-	INT FileCount = DragQueryFileA(DroppedFile, 0xFFFFFFFF, buffer, ARRAYSIZE(buffer));
-	for (int i = 0; i < FileCount; i++) {
-		DragQueryFileA(DroppedFile, i, buffer, ARRAYSIZE(buffer));
-		std::cout << buffer << std::endl;
-	}
-	if (DroppedFile != NULL) {
-		DragFinish(DroppedFile);
-	}
-
-}
-
 #pragma endregion
 
 // MAIN WINDOW PROCEDURE
@@ -376,11 +361,6 @@ LRESULT CALLBACK MainWindow::MainWindowProcedure(HWND hMainWindow, UINT Msg, WPA
 	case WM_COMMAND:
 	{
 		onCommand(hMainWindow, wParam, lParam);
-		RETURN 0;
-	}
-	case WM_DROPFILES:
-	{
-		onDropFiles(hMainWindow, wParam);
 		RETURN 0;
 	}
 	case WM_CLOSE:
