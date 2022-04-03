@@ -288,16 +288,6 @@ public:
 
 	}
 
-	static VOID SetPixelxPW(HDC hdc, int px, int py, COLORREF Color, size_t pw) {
-
-		for (int pxs = 0; pxs <= pw; pxs++) {
-			for (int pys = 0; pys <= pw; pys++) {
-				SetPixel(hdc, px + pxs, py + pys, Color);
-			}
-		}
-
-	}
-
 	static VOID drawMatrix(HDC hdc, RECT MatrixDimensions) {
 
 
@@ -395,7 +385,7 @@ public:
 
 		if (W % 2 != NULL && H % 2 != NULL) {
 
-			CONST INT Proportion = 3;
+			CONST SHORT Proportion = 3;
 			INT XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
 
 			YS = H / 2;
@@ -413,7 +403,7 @@ public:
 			XS = W / 2;
 			for (YS = 0; YS <= YE; YS++) {
 
-				if (YS > H / 2 - XCELL / 2 && YS < H / 2 + YCELL / 2) {
+				if (YS > H / 2 - YCELL / 2 && YS < H / 2 + YCELL / 2) {
 					continue;
 				}
 

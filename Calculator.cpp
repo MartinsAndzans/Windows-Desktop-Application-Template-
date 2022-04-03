@@ -21,7 +21,7 @@ HMENU Calculator::CalculatorControlsID[] = {(HMENU)ID_CL_CLOSE, (HMENU)ID_CL_OPE
 		(HMENU)ID_CL_NUM7, (HMENU)ID_CL_NUM8, (HMENU)ID_CL_NUM9, (HMENU)ID_CL_PLUSMINUS,
 		(HMENU)ID_CL_MODULE, (HMENU)ID_CL_NUM0, (HMENU)ID_CL_DOT, (HMENU)ID_CL_RESULT };
 
-CONST INT Calculator::PADDING = 10;
+CONST SHORT Calculator::PADDING = 10;
 
 CONST INT Calculator::BUTTONWIDTH = 50;
 CONST INT Calculator::BUTTONHEIGHT = 50;
@@ -97,7 +97,9 @@ HFONT Calculator::createCalculatorFont() {
 
 std::wstring Calculator::_ditow(int64_t Value) {
 
-	// 1234 % 10 = 4 | 1234 / 10 = 123 || 123 % 10 = 3 | 123 / 10 = 12 || 12 % 10 = 2 | 12 / 10 = 1 || 1 % 10 = 1 | 1 / 10 = 0
+	//  +-+						     +-+
+	// 1|2| % 10 = 2 | 12 / 10 = 1 | |1| % 10 = 1 | 1 / 10 = 0
+	//  +-+                          +-+
 
 	CONST SHORT ASCI_VALUE_ZERO = 48;
 

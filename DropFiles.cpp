@@ -17,6 +17,8 @@ HBRUSH DropFiles::DropFilesBackroundBrush = { 0 };
 
 HFONT DropFiles::DropFilesFont = { 0 };
 
+POINT DropFiles::MousePosition = { 0 };
+
 RECT DropFiles::Dimensions = { 0 };
 
 #pragma endregion
@@ -76,6 +78,48 @@ HFONT DropFiles::createDropFilesFont() {
 
 }
 
+VOID DropFiles::drawArrow(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF Color) {
+
+	CONST SHORT Proportion = 3;
+	INT OFFSET = 0;
+	INT XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
+
+	// XS    |    |    XE
+	// ******+----+****** YS
+	// ******|    |******
+	// ******|    |******
+	// ******|    |******
+	// ******|    |******
+	// ******+----+******--
+	// ******|    |******
+	// ******|    |******
+	// ******|    |******
+	// ******|    |******
+	// ***+----------+***--
+	// ****\        /****
+	// *****\      /*****
+	// ******\    /******
+	// *******\  /*******
+	// ********\/******** YE
+
+	for (YS = 0; YS <= YE; YS++) {
+
+		if (YS >= YCELL * 2) {
+			for (XS = XCELL / 2 + OFFSET; XS <= XCELL * 2 + XCELL / 2 - OFFSET; XS++) {
+				SetPixel(hdc, X + XS, Y + YS, Color);
+			}
+			OFFSET++;
+			continue;
+		}
+
+		for (XS = XCELL; XS <= XCELL * 2; XS++){
+			SetPixel(hdc, X + XS, Y + YS, Color);
+		}
+
+	}
+
+}
+
 #pragma endregion
 
 //EVENTS
@@ -102,6 +146,16 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 }
 
+VOID DropFiles::onMouseMove(HWND hDropFiles, WPARAM wParam, LPARAM lParam) {
+
+	GetCursorPos(&MousePosition);
+	ScreenToClient(hDropFiles, &MousePosition);
+
+	GetClientRect(hDropFiles, &Dimensions);
+	RedrawWindow(hDropFiles, &Dimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
+
+}
+
 VOID DropFiles::onPaint(HWND hDropFiles) {
 
 	GetClientRect(hDropFiles, &Dimensions);
@@ -118,6 +172,57 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 	DeleteObject(BackgroundBrush);
 
 	SelectObject(MemoryDC, DropFilesFont);
+	SetTextColor(MemoryDC, TextColor);
+
+	CONST SHORT BorderProportion = 20, BorderPadding = 4, BorderWidth = 2;
+	INT BorderXCell = Dimensions.right / BorderProportion, BorderYCell = Dimensions.bottom / BorderProportion;
+	BOOL DRAW = TRUE;
+
+	for (int x = 0; x <= Dimensions.right - BorderPadding * 2; x++) {
+
+		if (DRAW == FALSE) {
+			BorderXCell--;
+			if (BorderXCell == 0) {
+				BorderXCell = Dimensions.right / BorderProportion;
+				DRAW = TRUE;
+			}
+			continue;
+		}
+
+		for (int w = 0; w < BorderWidth; w++) {
+			SetPixel(MemoryDC, Dimensions.left + BorderPadding + x, Dimensions.top + BorderPadding + w, TextColor);
+			SetPixel(MemoryDC, Dimensions.left + BorderPadding + x, Dimensions.bottom - BorderPadding - w, TextColor);
+		}
+		BorderXCell--;
+		if (BorderXCell == 0) {
+			BorderXCell = Dimensions.right / BorderProportion;
+			DRAW = FALSE;
+		}
+
+	}
+	DRAW = TRUE;
+	for (int y = 0; y <= Dimensions.bottom - BorderPadding * 2; y++) {
+
+		if (DRAW == FALSE) {
+			BorderYCell--;
+			if (BorderYCell == 0) {
+				BorderYCell = Dimensions.bottom / BorderProportion;
+				DRAW = TRUE;
+			}
+			continue;
+		}
+
+		for (int w = 0; w < BorderWidth; w++) {
+			SetPixel(MemoryDC, Dimensions.left + BorderPadding + w, Dimensions.top + BorderPadding + y, TextColor);
+			SetPixel(MemoryDC, Dimensions.right - BorderPadding - w, Dimensions.top + BorderPadding + y, TextColor);
+		}
+		BorderYCell--;
+		if (BorderYCell == 0) {
+			BorderYCell = Dimensions.bottom / BorderProportion;
+			DRAW = FALSE;
+		}
+
+	}
 
 	SIZE size = { 0 };
 	WCHAR WindowTitle[MAX_DFTITLE_CHAR] = { 0 };
@@ -125,7 +230,7 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 	GetTextExtentPoint(MemoryDC, WindowTitle, lstrlenW(WindowTitle), &size);
 
 	if (lstrcmpW(WindowTitle, L"") == 0) {
-		wcscpy_s(WindowTitle, L"VV Drop Files Here VV");
+		wcscpy_s(WindowTitle, L"Drop Files Here");
 		GetTextExtentPoint(MemoryDC, WindowTitle, lstrlenW(WindowTitle), &size);
 		TextOut(MemoryDC, Dimensions.right / 2 - size.cx / 2, Dimensions.bottom / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));
 	}
@@ -133,7 +238,11 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 		TextOut(MemoryDC, Dimensions.right / 2 - size.cx / 2, Dimensions.bottom / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));
 	}
 
-
+	//if () {
+		CONST SHORT PADDING = 20;
+		INT ArrowWidth = Dimensions.right / 3, ArrowHeight = Dimensions.bottom - PADDING * 2;
+		drawArrow(MemoryDC, Dimensions.right / 2 - ArrowWidth / 2, Dimensions.bottom / 2 - ArrowHeight / 2, ArrowWidth, ArrowHeight, TextColor);
+	//}
 
 	BitBlt(DropFilesDC, 0, 0, Dimensions.right, Dimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
@@ -170,6 +279,11 @@ LRESULT CALLBACK DropFiles::DropFilesProcedure(HWND hDropFiles, UINT Msg, WPARAM
 	case WM_CREATE:
 	{
 		onCreate(hDropFiles, lParam);
+		return 0;
+	}
+	case WM_MOUSEMOVE:
+	{
+		onMouseMove(hDropFiles, wParam, lParam);
 		return 0;
 	}
 	case WM_PAINT:

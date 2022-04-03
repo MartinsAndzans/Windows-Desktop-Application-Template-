@@ -28,6 +28,8 @@ private:
 
 	static HFONT DropFilesFont;
 
+	static POINT MousePosition;
+
 	static RECT Dimensions;
 
 #pragma endregion
@@ -36,12 +38,14 @@ private:
 
 	static HFONT createDropFilesFont();
 
+	static VOID drawArrow(HDC hdc, INT X = 0, INT Y = 0, INT W = 23, INT H = 23, COLORREF Color = RGB(0, 0, 0));
+
 #pragma endregion
 
 #pragma region Events
 
 	static VOID onCreate(HWND hDropFiles, LPARAM lParam);
-	static VOID onWindowPosChanging(HWND hDropFiles, LPARAM lParam);
+	static VOID onMouseMove(HWND hDropFiles, WPARAM wParam, LPARAM lParam);
 	static VOID onPaint(HWND hDropFiles);
 	static VOID onDropFiles(HWND hDropFiles, WPARAM wParam);
 

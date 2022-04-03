@@ -68,7 +68,7 @@ private:
 
 	static HMENU CalculatorControlsID[];
 
-	static CONST INT PADDING;
+	static CONST SHORT PADDING;
 
 	static CONST INT BUTTONWIDTH;
 	static CONST INT BUTTONHEIGHT;

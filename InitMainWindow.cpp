@@ -192,14 +192,14 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	CreateDebugTools();
 
-	PARAMETERS parameters = { 0 };
+	ASSTYLES parameters = { 0 };
 	parameters.StarColor = RGB(0, 155, 255);
 	parameters.Proportion = 4;
 
 	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 150, 5, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)0, HInstance(), NULL);
 	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)1, HInstance(), &parameters);
 	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"SUPER CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 150, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)2, HInstance(), NULL);
-	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"", WS_CHILD | WS_BORDER | WS_VISIBLE, 260, 110, 200, 100, hMainWindow, (HMENU)3, HInstance(), NULL);
+	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"", WS_CHILD | WS_BORDER | WS_VISIBLE, 260, 110, 220, 120, hMainWindow, (HMENU)3, HInstance(), NULL);
 
 }
 

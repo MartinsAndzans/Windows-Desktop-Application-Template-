@@ -175,7 +175,7 @@ VOID AnimationStars::onCreate(HWND hAnimationStars, LPARAM lParam) {
 		(window->style & WS_OVERLAPPED) == NULL && (window->style & WS_SYSMENU) == NULL &&
 		(window->style & WS_THICKFRAME) == NULL) {
 
-		LPPARAMETERS parameters = (LPPARAMETERS)window->lpCreateParams;
+		LPASSTYLES parameters = (LPASSTYLES)window->lpCreateParams;
 
 		if (parameters != NULL) {
 			DWORD* Styles = new DWORD[2];

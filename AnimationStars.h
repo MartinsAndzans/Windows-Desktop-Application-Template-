@@ -13,10 +13,10 @@
 #define MIN_RGB 0x00000000
 #define MAX_RGB 0x00FFFFFF
 
-typedef struct PARAMETERS {
+typedef struct ASSTYLES {
 	COLORREF StarColor;
 	INT Proportion;
-}*LPPARAMETERS;
+}*LPASSTYLES;
 
 #define MAX_ASTITLE_CHAR 200
 #define HInstance() GetModuleHandle(NULL)
