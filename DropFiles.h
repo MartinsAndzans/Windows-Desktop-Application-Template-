@@ -6,6 +6,11 @@
 #include <Windows.h>
 #include <string>
 
+typedef struct DFSTYLES {
+	COLORREF BackgroundColor;
+	COLORREF TextColor;
+}*LPDFSTYLES;
+
 #define MAX_DFTITLE_CHAR 256
 #define HInstance() GetModuleHandle(NULL)
 

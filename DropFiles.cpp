@@ -206,6 +206,18 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 		DragAcceptFiles(hDropFiles, TRUE);
 
+		LPDFSTYLES parameters = (LPDFSTYLES)window->lpCreateParams;
+
+		DWORD *Styles = new DWORD[sizeof(DFSTYLES)];
+		ZeroMemory(Styles, sizeof(DFSTYLES));
+
+		if (window->lpCreateParams != NULL) {
+			*(Styles + 0) = parameters->BackgroundColor;
+			*(Styles + 1) = parameters->TextColor;
+		}
+
+		SetWindowLongPtr(hDropFiles, GWLP_USERDATA, (LONG_PTR)Styles);
+
 	}
 	else {
 
@@ -226,12 +238,29 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
+
+	DWORD *Styles = (DWORD*)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
+
+	(*(Styles + 0) != NULL) ? DropFilesBackgroundColor = *(Styles + 0) : DropFilesBackgroundColor = RGB(255, 255, 255);
+	(*(Styles + 1) != NULL) ? TextColor = *(Styles + 1) : TextColor = RGB(0, 0, 0);
+
 	HBRUSH BackgroundBrush = CreateSolidBrush(DropFilesBackgroundColor);
 	FillRect(MemoryDC, &Dimensions, BackgroundBrush);
 	DeleteObject(BackgroundBrush);
 
 	SelectObject(MemoryDC, DropFilesFont);
 	SetTextColor(MemoryDC, TextColor);
+
+	/////////////////////////////////////////////////////
+	//// +-----------------------------------------+ ////
+	//// |                                         | ////
+	//// | [in] struct DFSTYLES - BackgroundColor  | ////
+	//// | [in] struct DFSTYLES - TextColor        | ////
+	//// |                                         | ////
+	//// +-----------------------------------------+ ////
+	/////////////////////////////////////////////////////
+
+	// BORDER
 
 	CONST SHORT BorderProportion = 20, BorderPadding = 4, BorderWidth = 2;
 
@@ -248,6 +277,10 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 	drawLineWithSpaces(MemoryDC, Dimensions.right - BorderPadding - BorderWidth, Dimensions.top + BorderPadding,
 		Dimensions.bottom - BorderPadding * 2, BorderWidth, BorderProportion, TextColor, TRUE);
 
+	////
+
+	// TEXT
+
 	SIZE size = { 0 };
 	WCHAR WindowTitle[MAX_DFTITLE_CHAR] = { 0 };
 	GetWindowText(hDropFiles, WindowTitle, ARRAYSIZE(WindowTitle));
@@ -261,6 +294,8 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 	else {
 		TextOut(MemoryDC, Dimensions.right / 2 - size.cx / 2, Dimensions.bottom / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));
 	}
+
+	////
 
 	if (FileDroped) {
 		CONST SHORT PADDING = 20;
@@ -343,6 +378,12 @@ LRESULT CALLBACK DropFiles::DropFilesProcedure(HWND hDropFiles, UINT Msg, WPARAM
 	case WM_DROPFILES:
 	{
 		onDropFiles(hDropFiles, wParam);
+		return 0;
+	}
+	case WM_DESTROY:
+	{
+		DWORD *Styles = (DWORD*)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
+		delete[] Styles;
 		return 0;
 	}
 	}

@@ -167,7 +167,8 @@ BOOL Calculator::_ftow(DOUBLE Value, wchar_t (&Buffer)[256 * 2 + 1], INT Precisi
 	INT DecimalPrecision = 1;                                              //
 	while ((int64_t)(Value / 0.1) == 0 && DecimalPrecision <= Precision) { //                  +-+
  		wcscat_s(Buffer, L"0");                                            // Check For This 0.|0|1
-		Value = Value / 0.1, DecimalPrecision++;                           //                  +-+
+		Value = Value / 0.1;                                               //                  +-+
+		DecimalPrecision++;                                                //
 	}                                                                      //
 
 	for (int i = DecimalPrecision; i <= Precision; i++) { //

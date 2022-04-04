@@ -192,14 +192,18 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	CreateDebugTools();
 
-	ASSTYLES parameters = { 0 };
-	parameters.StarColor = RGB(0, 155, 255);
-	parameters.Proportion = 4;
+	ASSTYLES asparameters = { 0 };
+	asparameters.StarColor = RGB(0, 155, 255);
+	asparameters.Proportion = 4;
+
+	DFSTYLES dfparameters = { 0 };
+	dfparameters.BackgroundColor = RGB(250, 250, 0);
+	dfparameters.TextColor = RGB(0, 0, 255);
 
 	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 150, 5, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)0, HInstance(), NULL);
-	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)1, HInstance(), &parameters);
+	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)1, HInstance(), &asparameters);
 	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"SUPER CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 150, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)2, HInstance(), NULL);
-	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"", WS_CHILD | WS_BORDER | WS_VISIBLE, 260, 110, 220, 120, hMainWindow, (HMENU)3, HInstance(), NULL);
+	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"", WS_CHILD | WS_BORDER | WS_VISIBLE, 260, 110, 220, 120, hMainWindow, (HMENU)3, HInstance(), &dfparameters);
 	
 }
 
