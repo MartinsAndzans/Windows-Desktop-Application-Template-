@@ -97,9 +97,13 @@ HFONT Calculator::createCalculatorFont() {
 
 std::wstring Calculator::_ditow(int64_t Value) {
 
-	//  +-+						     +-+
-	// 1|2| % 10 = 2 | 12 / 10 = 1 | |1| % 10 = 1 | 1 / 10 = 0
-	//  +-+                          +-+
+	/// <summary>
+	/// Converts Integer To WString
+	/// </summary>
+	/// <param name="Value">Integer Type Number To Be Converted</param>
+	/// <returns>Converted Number</returns>
+
+	// 1234 % 10 = 4 | 1234 / 10 = 123 || 123 % 10 = 3 | 123 / 10 = 12 || 12 % 10 = 2 | 12 / 10 = 1 | 1 % 10 = 1 | 1 / 10 = 0
 
 	CONST SHORT ASCI_VALUE_ZERO = 48;
 
@@ -111,25 +115,20 @@ std::wstring Calculator::_ditow(int64_t Value) {
 		return WValue;        //
 	}
 
-	if (Value == 0) {
-		WValue = L"0";
-		return WValue;
-	}
+	std::wstring ReverseWValue = L"";
 
 	if (Value * -1 > 0) { // -Value * -1 = Value | Value * -1 = -Value
 		Minus = TRUE;
 		Value = Value * -1;
 	}
 
-	std::wstring ReverseWValue = L"";
-
-	while (Value != 0) {
+	do {
 
 		INT Character = Value % 10 + ASCI_VALUE_ZERO; // Get Last Value Number       //
 		Value = Value / 10;  // Remove Last Value Number                             // Generates Reverse Value
 		ReverseWValue = ReverseWValue + (wchar_t)((char)Character); // Reverse Value //
 
-	}
+	} while (Value != 0);
 
 	if (Minus == TRUE) {
 		ReverseWValue = ReverseWValue + L"-";
@@ -232,6 +231,7 @@ BOOL Calculator::createCalculatorControls(HWND hCalculator) {
 	HWND hwnd = { 0 };
 
 	HWND *Outputs = new HWND[2];
+	ZeroMemory(Outputs, sizeof(HWND) * 2);
 
 	if (Outputs == NULL) {
 		return FALSE;

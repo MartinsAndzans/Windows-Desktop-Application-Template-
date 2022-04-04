@@ -19,6 +19,67 @@ class Functions {
 
 public:
 
+	static std::wstring _itow(int64_t Value) {
+
+		/// <summary>
+		/// Converts Integer To WString
+		/// </summary>
+		/// <param name="Value">Integer Type Number To Be Converted</param>
+		/// <returns>Converted Number</returns>
+
+		// 1234 % 10 = 4 | 1234 / 10 = 123 || 123 % 10 = 3 | 123 / 10 = 12 || 12 % 10 = 2 | 12 / 10 = 1 | 1 % 10 = 1 | 1 / 10 = 0
+
+		CONST SHORT ASCI_VALUE_ZERO = 48;
+
+		BOOL Minus = FALSE;
+		std::wstring WValue = L"";
+
+		if (Value == INT64_MIN) { //
+			WValue = L"OVERFLOW"; // OVERFLOW
+			return WValue;        //
+		}
+
+		std::wstring ReverseWValue = L"";
+
+		if (Value * -1 > 0) { // -Value * -1 = Value | Value * -1 = -Value
+			Minus = TRUE;
+			Value = Value * -1;
+		}
+
+		do {
+
+			INT Character = Value % 10 + ASCI_VALUE_ZERO; // Get Last Value Number       //
+			Value = Value / 10;  // Remove Last Value Number                             // Generates Reverse Value
+			ReverseWValue = ReverseWValue + (wchar_t)((char)Character); // Reverse Value //
+
+		} while (Value != 0);
+
+		if (Minus == TRUE) {
+			ReverseWValue = ReverseWValue + L"-";
+		}
+
+		while (ReverseWValue.length() != 0) {
+
+			WValue = WValue + ReverseWValue[ReverseWValue.length() - 1]; //
+			ReverseWValue.pop_back();                                    // Generates Normal Value
+			ReverseWValue.shrink_to_fit();                               //
+
+		}
+
+		return WValue;
+
+	}
+
+	static std::wstring _dtow(DOUBLE Value) {
+
+		std::wstring WValue = L"";
+
+
+
+		return WValue;
+
+	}
+
 	static INT FindChar(LPWSTR Text, const wchar_t Char, INT TextLength) {
 
 		for (int i = 0; i < TextLength; i++) {
@@ -33,68 +94,26 @@ public:
 
 	}
 
-	static std::string _itos(int number, int base) {
-
-		/// <summary>
-		/// Converts Integer To String
-		/// </summary>
-		/// <param name="number">Integer Type Number To Be Converted</param>
-		/// <returns>Converted Number</returns>
-
-		CHAR String[256] = { 0 };
-		_itoa_s(number, String, base);
-		std::string RString = String;
-		return RString;
-
-	}
-
-	static std::string _dtos(double number, int NumbersR) {
-
-		/// <summary>
-		/// Converts Double To String
-		/// </summary>
-		/// <param name="number">Double Type Number To Be Converted</param>
-		/// <returns>Converted Number</returns>
-
-		int FNumber = 1;
-
-		for (int i = NumbersR; i > 1; i--) {
-			FNumber = FNumber * 10;
-		}
-
-		CHAR StringL[256] = { 0 }, StringR[256] = { 0 };
-		_itoa_s((int)number, StringL, 10);
-		double RNumberD = number - (int)number;
-		int RNumberI = (int)(RNumberD * FNumber);
-		_itoa_s(RNumberI, StringR, 10);
-		CHAR Double[256] = { 0 };
-		strcpy_s(Double, StringL), strcat_s(Double, "."), strcat_s(Double, StringR);
-		std::string RDouble = Double;
-		return RDouble;
-
-	}
-
-	static bool copyTextToClipboard(HWND hwnd, std::wstring text, SIZE_T textLength) {
+	static bool copyTextToClipboard(HWND hwnd, std::wstring text) {
 
 		/// <summary>
 		/// This Function Puts Text into ClipBoard
 		/// </summary>
 		/// <param name="hwnd">newClipBoardOwner</param>
 		/// <param name="text">Text into ClipBoard</param>
-		/// <param name="textLength">Text Length Without null Terminator</param>
 		/// <returns>If Function Succeeded Returns True, but If not False</returns>
 
-		if (textLength != 0) {
+		if (text.length() != 0) {
 			if (OpenClipboard(hwnd)) {
 				HLOCAL CopyData = { 0 };
 				VOID *buffer = NULL;
 				EmptyClipboard();
-				CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(WCHAR) * textLength + 1);
+				CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(WCHAR) * text.length());
 				if (CopyData != NULL) {
 					buffer = LocalLock(CopyData);
 				}
 				if (buffer != NULL) {
-					memcpy(buffer, (void*)text.c_str(), sizeof(WCHAR) * textLength + 1);
+					memcpy(buffer, (void*)text.c_str(), sizeof(WCHAR) * text.length());
 					LocalUnlock(CopyData);
 					SetClipboardData(CF_UNICODETEXT, CopyData);
 					LocalFree(CopyData);
@@ -109,27 +128,26 @@ public:
 
 	}
 
-	static bool copyTextToClipboard(HWND hwnd, std::string text, SIZE_T textLength) {
+	static bool copyTextToClipboard(HWND hwnd, std::string text) {
 
 		/// <summary>
 		/// This Function Puts Text into ClipBoard
 		/// </summary>
 		/// <param name="hwnd">newClipBoardOwner</param>
 		/// <param name="text">Text into ClipBoard</param>
-		/// <param name="textLength">Text Length Without null Terminator</param>
 		/// <returns>If Function Succeeded Returns True, but If not False</returns>
 
-		if (textLength != 0) {
+		if (text.length()) {
 			if (OpenClipboard(hwnd)) {
 				HLOCAL CopyData = { 0 };
 				VOID *buffer = NULL;
 				EmptyClipboard();
-				CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(CHAR) * textLength + 1);
+				CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(CHAR) * text.length());
 				if (CopyData != NULL) {
 					buffer = LocalLock(CopyData);
 				}
 				if (buffer != NULL) {
-					memcpy(buffer, (void*)text.c_str(), sizeof(CHAR) * textLength + 1);
+					memcpy(buffer, (void*)text.c_str(), sizeof(CHAR) * text.length());
 					LocalUnlock(CopyData);
 					SetClipboardData(CF_TEXT, CopyData);
 					LocalFree(CopyData);
@@ -173,14 +191,12 @@ public:
 				return TextFromClipboard;
 			}
 			CloseClipboard();
-			INT error = 0;
-			std::wstring werror = L"ERROR " + std::to_wstring(error = GetLastError()) + L" - In Clipboard No Text Data!\r\n";
+			std::wstring werror = L"ERROR " + _itow(GetLastError()) + L" - In Clipboard No Text Data!\r\n";
 			OutputDebugString(werror.c_str());
 			return L"ERROR -2";
 		}
 		CloseClipboard();
-		INT error = 0;
-		std::wstring werror = L"ERROR" + std::to_wstring(error = GetLastError()) + L" - Clipboard is taken by another program!\r\n";
+		std::wstring werror = L"ERROR" + _itow(GetLastError()) + L" - Clipboard is taken by another program!\r\n";
 		OutputDebugString(werror.c_str());
 		return L"ERROR -1";
 	}
@@ -199,7 +215,7 @@ public:
 
 		if (OpenClipboard(hwnd)) {
 			HLOCAL ClipboardData = { 0 };
-			VOID* buffer = NULL;
+			VOID *buffer = NULL;
 			std::string TextFromClipboard = "";
 			ClipboardData = LocalAlloc(LMEM_MOVEABLE | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(std::string));
 			if (ClipboardData != NULL) {
@@ -214,14 +230,12 @@ public:
 				return TextFromClipboard;
 			}
 			CloseClipboard();
-			INT error = 0;
-			std::wstring werror = L"ERROR " + std::to_wstring(error = GetLastError()) + L" - In Clipboard No Text Data!\r\n";
+			std::wstring werror = L"ERROR " + _itow(GetLastError()) + L" - In Clipboard No Text Data!\r\n";
 			OutputDebugString(werror.c_str());
 			return "ERROR -2";
 		}
 		CloseClipboard();
-		INT error = 0;
-		std::wstring werror = L"ERROR" + std::to_wstring(error = GetLastError()) + L" - Clipboard is taken by another program!\r\n";
+		std::wstring werror = L"ERROR" + _itow(GetLastError()) + L" - Clipboard is taken by another program!\r\n";
 		OutputDebugString(werror.c_str());
 		return "ERROR -1";
 	}
@@ -241,6 +255,7 @@ public:
 		/// <param name="Id">Control Id</param>
 
 		HWND *hwnd = new HWND;
+		ZeroMemory(hwnd, sizeof(HWND));
 
 		if (!(*hwnd = CreateWindowEx(WS_EX_CLIENTEDGE,
 			Class,
@@ -255,18 +270,17 @@ public:
 		}
 	}
 
-	static VOID ShowError(HWND ParentWindow = HWND_DESKTOP, std::string AdditionalErrorMessage = " - Error") {
+	static VOID ShowError(HWND ParentWindow = HWND_DESKTOP, std::wstring AdditionalErrorMessage = L" - Error") {
 
 		/// <summary>
 		/// Shows Error Message
 		/// </summary>
 		/// <param name="ParentWindow">Parent Window</param>
 		/// <param name="AdditionalErroMessage">Additional Error Message</param>
+		
+		std::wstring ErrorMessage = L"ERROR " + _itow(GetLastError()) + AdditionalErrorMessage;
 
-		std::string SError;
-		std::string SErrorMessage = "ERROR " + (SError = _itos(GetLastError(), 10)) + AdditionalErrorMessage;
-
-		MessageBoxA(ParentWindow, SErrorMessage.c_str(), "ERROR", MB_OK | MB_ICONERROR);
+		MessageBox(ParentWindow, ErrorMessage.c_str(), L"ERROR", MB_OK | MB_ICONERROR);
 
 	}
 

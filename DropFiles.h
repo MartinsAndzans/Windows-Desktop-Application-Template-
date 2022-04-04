@@ -43,7 +43,7 @@ private:
 
 	static HFONT createDropFilesFont();
 
-	static VOID drawLineWithSpaces(HDC hdc, INT X, INT Y, INT LineLength, INT LineWidth, UINT Proportion, COLORREF Color, BOOL VerticalLine = FALSE);
+	static VOID drawLineWithSpaces(HDC hdc, INT X = 0, INT Y = 0, INT LineLength = 100, INT LineWidth = 2, UINT Proportion = 20, COLORREF Color = RGB(0, 0, 0), BOOL VerticalLine = FALSE);
 	static VOID drawArrow(HDC hdc, INT X = 0, INT Y = 0, INT W = 20, INT H = 20, COLORREF Color = RGB(0, 0, 0));
 
 #pragma endregion

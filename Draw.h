@@ -100,7 +100,7 @@ public:
 		// Rectangle
 
 		for (XS = BorderWidth; XS <= XE - BorderWidth; XS++) {
-			for (YS = 0 + BorderWidth; YS <= YE - BorderWidth; YS++) {
+			for (YS = BorderWidth; YS <= YE - BorderWidth; YS++) {
 				SetPixel(hdc, X + XS, Y + YS, RectangleColor);
 			}
 		}
@@ -422,7 +422,7 @@ public:
 
 	}
 
-	static VOID drawGrid(HDC hdc, INT X = 0, INT Y = 0, INT W = 80, INT H = 80, SIZE_T CellSize = 1, COLORREF GridFirstColor = WHITE_COLOR, COLORREF GridSecondColor = BLACK_COLOR) {
+	static VOID drawGrid(HDC hdc, INT X = 0, INT Y = 0, INT W = 80, INT H = 80, SIZE_T CellSize = 4, COLORREF GridFirstColor = WHITE_COLOR, COLORREF GridSecondColor = BLACK_COLOR) {
 
 		INT XS = 0, XE = W, YS = 0, YE = H;
 		COLORREF GridColor = GridFirstColor;
@@ -430,95 +430,11 @@ public:
 		for (YS = 0; YS <= YE; YS++) {
 			for (XS = 0; XS <= XE; XS = XS++) {
 				//for (int cell = 0; cell <= CellSize; cell++) {
-					SetPixel(hdc, X + XS, Y + YS, GridColor);
+				SetPixel(hdc, X + XS, Y + YS, GridColor);
 				//}
 				(GridColor == GridFirstColor) ? GridColor = GridSecondColor : GridColor = GridFirstColor;
 			}
 		}
-
-	}
-
-	static INT CustomButton(HDC hdc, POINT mousePosition, INT ID, HFONT Font,
-		INT X = 0, INT Y = 0, INT W = 160, INT H = 60,
-		INT BorderWidth = 2, std::wstring Caption = L"BUTTON", COLORREF BorderColor = BLACK_COLOR,
-		COLORREF TextColor = BLACK_COLOR, COLORREF ButtonColor = WHITE_COLOR) {
-
-		#ifndef MOUSE_HOVER
-		#define MOUSE_HOVER 0
-		#endif
-		#ifndef MOUSE_CLICKED
-		#define MOUSE_CLICKED 1
-		#endif
-
-		/// <summary>
-		/// This Function Initialize Custom Button
-		//////
-		/// GLOBAL VARIABLES
-		///
-		/// POINT mousePosition;
-		/// INT Event
-		/// 
-		/// WM_PAINT
-		///
-		/// Event = CustomButton(HDC hdc, POINT mousePosition);
-		/// 
-		/// WM_MOUSEMOVE
-		/// 
-		/// GetCursorPos(&mousePosition);
-		/// ScreenToClient(hMainWindow, &mousePosition);
-		/// 
-		/// if (mousePosition.x >= X - 10 && mousePosition.y >= Y - 10 &&
-		///	mousePosition.x <= X + W + 10 && mousePosition.y <= Y + H + 10) {
-		///	RedrawWindow(hMainWindow, &MainWindowDimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
-		/// }
-		//////
-		/// </summary>
-		/// <param name="hdc">Device Context</param>
-		/// <param name="mousePosition">Mouse Position on Client Area</param>
-		/// <param name="ID">Button Unique Identifire</param>
-		/// <param name="X">X Coordinate</param>
-		/// <param name="Y">Y Coordinate</param>
-		/// <param name="W">Width</param>
-		/// <param name="H">Height</param>
-		/// <param name="BorderWidth">Border Width</param>
-		/// <param name="Caption">Button Caption</param>
-		/// <param name="BorderColor">Border Color</param>
-		/// <param name="TextColor">Text Color</param>
-		/// <param name="ButtonColor">Buttton Color</param>
-		/// <returns>
-		/// If Left Mouse Button Clicked Returns Event Code + Button Identifire, but If Mouse Hovers Over Button Returns Event Code + Button Identifire
-		/// Event Codes:
-		/// MOUSE_CLICKED Button Clicked
-		/// MOUSE_HOVER Mouse Hovers Over Button
-		/// </returns>
-
-		SIZE size;
-		INT ButtonSizeChange = 5;
-
-		SetTextColor(hdc, TextColor);
-		SelectObject(hdc, Font);
-
-		if (GetAsyncKeyState(VK_LBUTTON) && mousePosition.x >= X + BorderWidth && mousePosition.y >= Y + BorderWidth &&
-			mousePosition.x <= X + W - BorderWidth && mousePosition.y <= Y + H - BorderWidth) {
-			drawRectangle(hdc, X, Y, W, H, BorderWidth, ButtonColor, BorderColor);
-			GetTextExtentPoint(hdc, Caption.c_str(), (int)Caption.length(), &size);
-			TextOut(hdc, X + W / 2 - size.cx / 2, Y + H / 2 - size.cy / 2, Caption.c_str(), (int)Caption.length());
-			return MOUSE_CLICKED + ID;
-		}
-		else if (!GetAsyncKeyState(VK_LBUTTON) && mousePosition.x >= X + BorderWidth && mousePosition.y >= Y + BorderWidth &&
-			mousePosition.x <= X + W - BorderWidth && mousePosition.y <= Y + H - BorderWidth) {
-			drawRectangle(hdc, X - ButtonSizeChange, Y - ButtonSizeChange, W + ButtonSizeChange * 2, H + ButtonSizeChange * 2, BorderWidth, ButtonColor, BorderColor);
-			GetTextExtentPoint(hdc, Caption.c_str(), (int)Caption.length(), &size);
-			TextOut(hdc, X + W / 2 - size.cx / 2, Y + H / 2 - size.cy / 2, Caption.c_str(), (int)Caption.length());
-			return MOUSE_HOVER + ID;
-		}
-		else {
-			drawRectangle(hdc, X, Y, W, H, BorderWidth, ButtonColor, BorderColor);
-			GetTextExtentPoint(hdc, Caption.c_str(), (int)Caption.length(), &size);
-			TextOut(hdc, X + W / 2 - size.cx / 2, Y + H / 2 - size.cy / 2, Caption.c_str(), (int)Caption.length());
-			return 0;
-		}
-		return 0;
 
 	}
 

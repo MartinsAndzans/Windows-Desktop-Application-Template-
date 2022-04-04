@@ -298,35 +298,31 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 	////
 
 	if (FileDroped) {
-		CONST SHORT PADDING = 20;
-		for (int y = 0; y < Dimensions.bottom; y++) {
-			for (int x = 0; x < Dimensions.right; x++) {
-				if (y % 2 != NULL) {
-					if (x % 2 != NULL) {
-						SetPixel(MemoryDC, x, y, TextColor + 0x009C9C9C);
-					}
-					else if (x % 2 == NULL) {
-						continue;
-					}
+		// * * * *
+		//  * * * 
+		BOOL DRAWPIXEL = TRUE;
+		for (int x = 0; x <= Dimensions.right; x++) {
+			for (int y = 0; y <= Dimensions.bottom; y++) {
+				if (DRAWPIXEL) {
+					DRAWPIXEL = FALSE;
+					SetPixel(MemoryDC, x, y, TextColor + 0x009C9C9C); // Color + 0x009C9C9C = Lighter Color
 				}
-				else if (y % 2 == NULL) {
-					if (x % 2 == NULL) {
-						SetPixel(MemoryDC, x, y, TextColor + 0x009C9C9C);
-					}
-					else if (x % 2 != NULL) {
-						continue;
-					}
+				else {
+					DRAWPIXEL = TRUE;
+					continue;
 				}
 			}
+			(x % 2 != NULL) ? (DRAWPIXEL) ? DRAWPIXEL = FALSE : DRAWPIXEL = TRUE : DRAWPIXEL = DRAWPIXEL; // If Odd Number
 		}
-		INT ArrowWidth = Dimensions.right / 3, ArrowHeight = Dimensions.bottom - PADDING * 2;
+		CONST SHORT ArrowPadding = 20;
+		INT ArrowWidth = Dimensions.right / 3, ArrowHeight = Dimensions.bottom - ArrowPadding * 2;
 		drawArrow(MemoryDC, Dimensions.right / 2 - ArrowWidth / 2, Dimensions.bottom / 2 - ArrowHeight / 2, ArrowWidth, ArrowHeight, TextColor);
 	}
 
 	BitBlt(DropFilesDC, 0, 0, Dimensions.right, Dimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
 	if (FileDroped) {
-		Sleep(200);
+		Sleep(200); // 200 MilliSeconds Delay
 		FileDroped = FALSE;
 		RedrawWindow(hDropFiles, &Dimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 	}
