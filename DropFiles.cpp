@@ -299,7 +299,7 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 
 	if (FileDroped) {
 		CONST SHORT PADDING = 20;
-		for (int y = 0; y < Dimensions.right; y++) {
+		for (int y = 0; y < Dimensions.bottom; y++) {
 			for (int x = 0; x < Dimensions.right; x++) {
 				if (y % 2 != NULL) {
 					if (x % 2 != NULL) {
