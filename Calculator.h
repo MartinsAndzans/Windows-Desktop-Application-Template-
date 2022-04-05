@@ -89,8 +89,8 @@ private:
 	static INT FindChar(wchar_t(&Text)[], const wchar_t Char, INT TextLength);
 	static BOOL RoundDouble(wchar_t(&Text)[], INT TextLength);
 
-	static std::wstring _ditow(int64_t Value);
-	static BOOL _ftow(DOUBLE Value, wchar_t (&Buffer)[256 * 2 + 1], INT Precision);
+	static std::wstring _itow(int64_t Value);
+	static BOOL _ftow(DOUBLE Value, wchar_t(&Buffer)[256], UINT Precision);
 
 	static BOOL createCalculatorControls(HWND hCalculator);
 

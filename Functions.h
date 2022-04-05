@@ -22,24 +22,21 @@ public:
 	static std::wstring _itow(int64_t Value) {
 
 		/// <summary>
-		/// Converts Integer To WString
+		/// Converts Integer To WStringValue
 		/// </summary>
-		/// <param name="Value">Integer Type Number To Be Converted</param>
-		/// <returns>Converted Number</returns>
+		/// <param name="Value">Integer Type Value To Be Converted</param>
+		/// <returns>Converted Value</returns>
 
 		// 1234 % 10 = 4 | 1234 / 10 = 123 || 123 % 10 = 3 | 123 / 10 = 12 || 12 % 10 = 2 | 12 / 10 = 1 | 1 % 10 = 1 | 1 / 10 = 0
 
+		BOOL Minus = FALSE;
 		CONST SHORT ASCI_VALUE_ZERO = 48;
 
-		BOOL Minus = FALSE;
-		std::wstring WValue = L"";
+		std::wstring WStringValue = L"";
 
 		if (Value == INT64_MIN) { //
-			WValue = L"OVERFLOW"; // OVERFLOW
-			return WValue;        //
-		}
-
-		std::wstring ReverseWValue = L"";
+			return L"OVERFLOW";   // OVERFLOW
+		}                         //
 
 		if (Value * -1 > 0) { // -Value * -1 = Value | Value * -1 = -Value
 			Minus = TRUE;
@@ -48,35 +45,53 @@ public:
 
 		do {
 
-			INT Character = Value % 10 + ASCI_VALUE_ZERO; // Get Last Value Number       //
-			Value = Value / 10;  // Remove Last Value Number                             // Generates Reverse Value
-			ReverseWValue = ReverseWValue + (wchar_t)((char)Character); // Reverse Value //
+			CHAR Char = Value % 10 + ASCI_VALUE_ZERO; // Get Last Number - Char Value 0 | 48 - 9 | 57
+			Value = Value / 10;  // Remove Last Value Number
+			WStringValue.insert(WStringValue.begin(), 1, (wchar_t)Char); // WString Value
 
 		} while (Value != 0);
 
 		if (Minus == TRUE) {
-			ReverseWValue = ReverseWValue + L"-";
+			WStringValue.insert(WStringValue.begin(), 1, L'-');
 		}
 
-		while (ReverseWValue.length() != 0) {
-
-			WValue = WValue + ReverseWValue[ReverseWValue.length() - 1]; //
-			ReverseWValue.pop_back();                                    // Generates Normal Value
-			ReverseWValue.shrink_to_fit();                               //
-
-		}
-
-		return WValue;
+		return WStringValue;
 
 	}
 
-	static std::wstring _dtow(DOUBLE Value) {
+	static std::wstring _ftow(DOUBLE Value, UINT Precision) {
 
-		std::wstring WValue = L"";
+		/// <summary>
+		/// Converts Double To WStringValue
+		/// </summary>
+		/// <param name="Value">Double Type Value To Be Converted</param>
+		/// <param name="Precision"></param>
+		/// <returns>Converted Value</returns>
 
+		std::wstring WStringValue = L"";
 
+		CONST SHORT ASCII_VALUE_ZERO = 48;
 
-		return WValue;
+		if ((WStringValue = _itow((int64_t)Value)) == L"OVERFLOW") { return L"OVERFLOW"; } // Convert Integer Portion of Value - |1234|.1234
+		Value = Value - (int64_t)Value; // Clear Integer Portion of Value - |0|.1234
+
+		WStringValue = WStringValue + L"."; // Add Dot
+
+		if (Value * -1 > 0) { Value = Value * -1; } // -Value * -1 = Value || Value * -1 = -Value
+
+		for (UINT I = 0; I < Precision; I++) {
+			Value = Value / 0.1; // 0.1234 / 0.1 = 1.234 <-
+			if ((int64_t)Value == 0) {
+				CHAR Char = (INT)Value + ASCII_VALUE_ZERO; // Char Value  0 | 48 - 9 | 57
+				WStringValue = WStringValue + (wchar_t)Char; // Char Value To Symbol
+			}
+		}
+
+		Value = round(Value);
+
+		if ((WStringValue = WStringValue + _itow((int64_t)Value)) == L"OVERFLOW") { return L"OVERFLOW"; }  // Convert Decimal Portion of Value - 1234.|1234|
+
+		return WStringValue;
 
 	}
 
@@ -281,6 +296,24 @@ public:
 		std::wstring ErrorMessage = L"ERROR " + _itow(GetLastError()) + AdditionalErrorMessage;
 
 		MessageBox(ParentWindow, ErrorMessage.c_str(), L"ERROR", MB_OK | MB_ICONERROR);
+
+	}
+
+	static VOID SaveBitmapToFile(HBITMAP Bitmap, std::string FilePath) {
+
+		std::fstream image;
+
+		SIZE BitmapSize = { 0 };
+		GetBitmapDimensionEx(Bitmap, &BitmapSize);
+
+		BITMAPFILEHEADER type = { 0 };
+		type.bfSize = sizeof(Bitmap);
+		type.bfType = IMAGE_BITMAP;
+		type.bfOffBits = sizeof(BITMAPFILEHEADER);
+
+		BITMAPINFOHEADER info;
+		info.biSize = sizeof(info);
+
 
 	}
 

@@ -150,8 +150,7 @@ VOID DropFiles::drawLineWithSpaces(HDC hdc, INT X, INT Y, INT LineLength, INT Li
 VOID DropFiles::drawArrow(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF Color) {
 
 	CONST SHORT Proportion = 3;
-	INT OFFSET = 0;
-	INT XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
+	INT OFFSET = 0, XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
 
 	// XS    |    |    XE
 	// ******+----+****** YS

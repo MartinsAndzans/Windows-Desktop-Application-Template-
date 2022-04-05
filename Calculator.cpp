@@ -95,27 +95,24 @@ HFONT Calculator::createCalculatorFont() {
 
 }
 
-std::wstring Calculator::_ditow(int64_t Value) {
+std::wstring Calculator::_itow(int64_t Value) {
 
 	/// <summary>
 	/// Converts Integer To WString
 	/// </summary>
-	/// <param name="Value">Integer Type Number To Be Converted</param>
-	/// <returns>Converted Number</returns>
+	/// <param name="Value">Integer Type Value To Be Converted</param>
+	/// <returns>Converted Value</returns>
 
 	// 1234 % 10 = 4 | 1234 / 10 = 123 || 123 % 10 = 3 | 123 / 10 = 12 || 12 % 10 = 2 | 12 / 10 = 1 | 1 % 10 = 1 | 1 / 10 = 0
 
+	BOOL Minus = FALSE;
 	CONST SHORT ASCI_VALUE_ZERO = 48;
 
-	BOOL Minus = FALSE;
-	std::wstring WValue = L"";
+	std::wstring WStringValue = L"";
 
 	if (Value == INT64_MIN) { //
-		WValue = L"OVERFLOW"; // OVERFLOW
-		return WValue;        //
-	}
-
-	std::wstring ReverseWValue = L"";
+		return L"OVERFLOW";   // OVERFLOW
+	}                         //
 
 	if (Value * -1 > 0) { // -Value * -1 = Value | Value * -1 = -Value
 		Minus = TRUE;
@@ -124,64 +121,46 @@ std::wstring Calculator::_ditow(int64_t Value) {
 
 	do {
 
-		INT Character = Value % 10 + ASCI_VALUE_ZERO; // Get Last Value Number       //
-		Value = Value / 10;  // Remove Last Value Number                             // Generates Reverse Value
-		ReverseWValue = ReverseWValue + (wchar_t)((char)Character); // Reverse Value //
+		CHAR Char = Value % 10 + ASCI_VALUE_ZERO; // Get Last Number - Char Value 0 | 48 - 9 | 57
+		Value = Value / 10;  // Remove Last Value Number
+		WStringValue.insert(WStringValue.begin(), 1, (wchar_t)Char); // WString Value
 
 	} while (Value != 0);
 
 	if (Minus == TRUE) {
-		ReverseWValue = ReverseWValue + L"-";
+		WStringValue.insert(WStringValue.begin(), 1, L'-');
 	}
 
-	while (ReverseWValue.length() != 0) {
-
-		WValue = WValue + ReverseWValue[ReverseWValue.length() - 1]; //
-		ReverseWValue.pop_back();                                    // Generates Normal Value
-		ReverseWValue.shrink_to_fit();                               //
-		
-	}
-
-	return WValue;
+	return WStringValue;
 
 }
 
-BOOL Calculator::_ftow(DOUBLE Value, wchar_t (&Buffer)[256 * 2 + 1], INT Precision) {
+BOOL Calculator::_ftow(DOUBLE Value, wchar_t (&Buffer)[256], UINT Precision) {
 
-	std::wstring Integer = _ditow((int64_t)Value); // Converts Integer Portion of Double
-	wcscat_s(Buffer, Integer.c_str());             // Converts Integer Portion of Double
+	std::wstring WStringValue = L"";
 
-	if (Integer == L"OVERFLOW") {
-		return FALSE;
+	CONST SHORT ASCII_VALUE_ZERO = 48;
+
+	if ((WStringValue = _itow((int64_t)Value)) == L"OVERFLOW") { return FALSE; } // Convert Integer Portion of Value - |1234|.1234
+	Value = Value - (int64_t)Value; // Clear Integer Portion of Value - |0|.1234
+
+	WStringValue = WStringValue + L"."; // Add Dot
+
+	if (Value * -1 > 0) { Value = Value * -1; } // -Value * -1 = Value || Value * -1 = -Value
+
+	for (UINT I = 0; I < Precision; I++) {
+		Value = Value / 0.1; // 0.1234 / 0.1 = 1.234 <-
+		if ((int64_t)Value == 0) {
+			CHAR Char = (INT)Value + ASCII_VALUE_ZERO; // Char Value  0 | 48 - 9 | 57
+			WStringValue = WStringValue + (wchar_t)Char; // Char Value To Symbol
+		}
 	}
-
-	wcscat_s(Buffer, L"."); // Add Dot
-
-	Value = Value - (int64_t)Value; // Clear Integer Portion of Double
-
-	if (Value * -1 > 0) { // -Value * -1 = Value | Value * -1 = -Value
-		Value = Value * -1;
-	}
-
-	INT DecimalPrecision = 1;                                              //
-	while ((int64_t)(Value / 0.1) == 0 && DecimalPrecision <= Precision) { //                  +-+
- 		wcscat_s(Buffer, L"0");                                            // Check For This 0.|0|1
-		Value = Value / 0.1;                                               //                  +-+
-		DecimalPrecision++;                                                //
-	}                                                                      //
-
-	for (int i = DecimalPrecision; i <= Precision; i++) { //
-		Value = Value / 0.1;                              // Move Decimal Portion of Double To Left
-	}                                                     //
 
 	Value = round(Value);
 
-	std::wstring Decimal = _ditow((int64_t)Value); // Converts Decimal Portion of Double
-	wcscat_s(Buffer, Decimal.c_str());             // Converts Decimal Portion of Double
+	if ((WStringValue = WStringValue + _itow((int64_t)Value)) == L"OVERFLOW") { return FALSE; }  // Convert Decimal Portion of Value - 1234.|1234|
 
-	if (Decimal == L"OVERFLOW") {
-		return FALSE;
-	}
+	wcscpy_s(Buffer, WStringValue.c_str());
 
 	return TRUE;
 
@@ -646,7 +625,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				//
 
 				// Result Output
-				WCHAR UMultiply[256 * 2 + 1] = { 0 };
+				WCHAR UMultiply[256] = { 0 };
 				if (_ftow(Multiply, UMultiply, 6)) {
 					Calculator::RoundDouble(UMultiply, lstrlenW(UMultiply));
 					wcscpy_s(Result, UMultiply);
@@ -700,7 +679,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				// Result Output
 				if (Num2 != 0) {
 					Devide = Num1 / Num2;
-					WCHAR UDevide[256 * 2 + 1] = { 0 };
+					WCHAR UDevide[256] = { 0 };
 					if (_ftow(Devide, UDevide, 6)) {
 						Calculator::RoundDouble(UDevide, lstrlenW(UDevide));
 						wcscpy_s(Result, UDevide);
@@ -742,7 +721,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				//
 
 				// Result Output
-				WCHAR USum[256 * 2 + 1] = { 0 };
+				WCHAR USum[256] = { 0 };
 				if (_ftow(Sum, USum, 6)) {
 					Calculator::RoundDouble(USum, lstrlenW(USum));
 					wcscpy_s(Result, USum);
@@ -782,7 +761,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				//
 
 				// Result Output
-				WCHAR UMinus[256 * 2 + 1] = { 0 };
+				WCHAR UMinus[256] = { 0 };
 				if (_ftow(Minus, UMinus, 6)) {
 					Calculator::RoundDouble(UMinus, lstrlenW(UMinus));
 					wcscpy_s(Result, UMinus);
@@ -836,7 +815,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				if (Num2 != 0) {
 					Num1 = round(Num1), Num2 = round(Num2);
 					Module = (int)Num1 % (int)Num2;
-					WCHAR UModule[256 * 2 + 1] = { 0 };
+					WCHAR UModule[256] = { 0 };
 					if (_ftow(Module, UModule, 6)) {
 						Calculator::RoundDouble(UModule, lstrlenW(UModule));
 						wcscpy_s(Result, UModule);
