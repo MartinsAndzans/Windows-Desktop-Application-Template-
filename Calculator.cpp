@@ -326,7 +326,7 @@ VOID Calculator::onCreate(HWND hCalculator, LPARAM lParam) {
 		}
 
 		if (!createCalculatorControls(hCalculator)) {
-			std::wstring WErrorMessage = L"ERROR " + std::to_wstring(GetLastError()) + L" - Out of Memory!";
+			std::wstring WErrorMessage = L"ERROR " + _itow(GetLastError()) + L" - Out of Memory!";
 			MessageBox(hCalculator, WErrorMessage.c_str(), L"ERROR", MB_OK | MB_ICONERROR);
 			DestroyWindow(hCalculator);
 		}
