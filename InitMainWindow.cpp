@@ -106,13 +106,25 @@ BOOL MainWindow::CreateMainWindow(std::wstring ClassName, std::wstring WindowTit
 
 #pragma region OverloadedOperators
 
-BOOL operator== (POINT &Left, POINT &Right) {
+BOOL operator==(POINT &Left, POINT &Right) {
 
 	if (Left.x == Right.x && Left.y == Right.y) {
-		return true;
+		return TRUE;
 	}
 	else {
-		return false;
+		return FALSE;
+	}
+
+}
+
+BOOL operator==(POINT &mousePosition, RECT &Rectangle) {
+
+	if (mousePosition.x >= Rectangle.left && mousePosition.x <= Rectangle.right &&
+		mousePosition.y >= Rectangle.top && mousePosition.y >= Rectangle.bottom) {
+		return TRUE;
+	}
+	else {
+		return FALSE;
 	}
 
 }
@@ -181,15 +193,11 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 	MainWindow::hMainWindow = hMainWindow;
 
 	ColorPicker::InitColorPicker();
-
 	AnimationStars::InitAnimationStars();
-
 	Calculator::InitCalculator();
-
 	DropFiles::InitDropFiles();
 
 	CreateFonts();
-
 	CreateDebugTools();
 
 	ASSTYLES asparameters = { 0 };

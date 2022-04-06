@@ -12,12 +12,12 @@
 
 #include "Functions.h"
 #include "Draw.h"
+#include "Console.h"
 
 #include "ColorPicker.h"
 #include "AnimationStars.h"
 #include "Calculator.h"
 #include "DropFiles.h"
-#include "Console.h"
 
 #pragma endregion
 
@@ -77,6 +77,26 @@
 
 #define SetFont(hwnd, font) SendMessage(hwnd, WM_SETFONT, (WPARAM)font, NULL)
 #define SetIcon(hwnd, type, hicon) SendMessage(hwnd, WM_SETICON, (WPARAM)type, (LPARAM)hicon)
+
+#pragma endregion
+
+#pragma region WindowMacros
+
+#define MaximizeWindow(hwnd) SendMessage(hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, NULL)
+#define MinimizeWindow(hwnd) SendMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, NULL)
+#define RestoreWindow(hwnd) SendMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE, NULL)
+
+#pragma endregion
+
+#pragma region ListBoxMacros
+
+#define ListBox_AddString(hwnd, string) SendMessage(hwnd, LB_ADDSTRING, NULL, (LPARAM)string)
+#define ListBox_SetItemData(hwnd, index, value) SendMessage(hwnd, LB_SETITEMDATA, (WPARAM)index, (LPARAM)value)
+#define ListBox_GetItemData(hwnd, index) SendMessage(hwnd, LB_GETITEMDATA, (WPARAM)index, NULL)
+#define ListBox_SetSelectedItemIndex(hwnd, index) SendMessage(hwnd, LB_SETCURSEL, (WPARAM)index, NULL)
+#define ListBox_GetSelectedItemIndex(hwnd) SendMessage(hwnd, LB_GETCURSEL, NULL, NULL)
+#define ListBox_FindString(hwnd, string) SendMessage(hwnd, LB_FINDSTRING, (WPARAM)-1, (LPARAM)string)
+#define ListBox_SetTopListBoxItem(hwnd, index) SendMessage(hwnd, LB_STETOPINDEX, (WPARAM)index, NULL)
 
 #pragma endregion
 

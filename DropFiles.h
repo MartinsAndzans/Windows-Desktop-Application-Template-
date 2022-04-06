@@ -18,7 +18,7 @@ class DropFiles {
 
 private:
 
-#pragma region CalculatorStaticMembers
+	#pragma region CalculatorStaticMembers
 
 	static HDC DropFilesDC;
 	static PAINTSTRUCT ps;
@@ -37,30 +37,31 @@ private:
 
 	static RECT Dimensions;
 
-#pragma endregion
+	#pragma endregion
 
-#pragma region Functions
+	#pragma region Functions
 
 	static HFONT createDropFilesFont();
 
-	static VOID drawLineWithSpaces(HDC hdc, INT X = 0, INT Y = 0, INT LineLength = 100, INT LineWidth = 2, UINT Proportion = 20, COLORREF Color = RGB(0, 0, 0), BOOL VerticalLine = FALSE);
+	static VOID drawDashedRectangle(HDC hdc, RECT &Rectangle, SIZE_T Width, COLORREF Color);
+	static VOID FillRectOpacity50(HDC hdc, RECT &Rectangle,COLORREF Color);
 	static VOID drawArrow(HDC hdc, INT X = 0, INT Y = 0, INT W = 20, INT H = 20, COLORREF Color = RGB(0, 0, 0));
 
-#pragma endregion
+	#pragma endregion
 
-#pragma region Events
+	#pragma region Events
 
 	static VOID onCreate(HWND hDropFiles, LPARAM lParam);
 	static VOID onPaint(HWND hDropFiles);
 	static VOID onDropFiles(HWND hDropFiles, WPARAM wParam);
 
-#pragma endregion
+	#pragma endregion
 
-#pragma region CalculatorProcedure
+	#pragma region CalculatorProcedure
 
 	static LRESULT CALLBACK DropFilesProcedure(HWND hDropFiles, UINT Msg, WPARAM wParam, LPARAM lParam);
 
-#pragma endregion
+	#pragma endregion
 
 public:
 

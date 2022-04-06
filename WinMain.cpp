@@ -33,7 +33,7 @@ int wmain(int ArrgumentCount, wchar_t *Arrguments[]) {
 
 VOID BroadcastMessages() {
 
-	while (1) {
+	while (true) {
 
 		if (MainWindow::ExtraProcessing) {
 			PeekMessage(&MainWindow::Msg, NULL, 0, 0, PM_REMOVE);

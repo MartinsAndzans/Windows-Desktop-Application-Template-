@@ -137,9 +137,9 @@ std::wstring Calculator::_itow(int64_t Value) {
 
 BOOL Calculator::_ftow(DOUBLE Value, wchar_t (&Buffer)[256], UINT Precision) {
 
-	std::wstring WStringValue = L"";
-
 	CONST SHORT ASCII_VALUE_ZERO = 48;
+
+	std::wstring WStringValue = L"";
 
 	if ((WStringValue = _itow((int64_t)Value)) == L"OVERFLOW") { return FALSE; } // Convert Integer Portion of Value - |1234|.1234
 	Value = Value - (int64_t)Value; // Clear Integer Portion of Value - |0|.1234

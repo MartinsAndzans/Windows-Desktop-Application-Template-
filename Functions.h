@@ -68,9 +68,9 @@ public:
 		/// <param name="Precision"></param>
 		/// <returns>Converted Value</returns>
 
-		std::wstring WStringValue = L"";
-
 		CONST SHORT ASCII_VALUE_ZERO = 48;
+
+		std::wstring WStringValue = L"";
 
 		if ((WStringValue = _itow((int64_t)Value)) == L"OVERFLOW") { return L"OVERFLOW"; } // Convert Integer Portion of Value - |1234|.1234
 		Value = Value - (int64_t)Value; // Clear Integer Portion of Value - |0|.1234
@@ -92,6 +92,36 @@ public:
 		if ((WStringValue = WStringValue + _itow((int64_t)Value)) == L"OVERFLOW") { return L"OVERFLOW"; }  // Convert Decimal Portion of Value - 1234.|1234|
 
 		return WStringValue;
+
+	}
+
+	static std::wstring EncryptText(std::wstring Text) {
+
+		std::wstring EncryptedText = L"";
+
+		for (size_t i = 0; i < Text.length(); i++) {
+
+			INT CharValue = Text[i];
+			EncryptedText = EncryptedText + _itow(CharValue) + L"|";
+
+		}
+
+	}
+
+	static std::wstring DecryptText(std::wstring EncryptedText) {
+
+		std::wstring Text = L"";
+
+		while (EncryptedText.length() != 0) {
+
+			INT CharValue = _wtoi(EncryptedText.c_str());
+			Text = Text + (wchar_t)(char)CharValue;
+			INT SeperatorPosition = (INT)EncryptedText.find_first_of(L'|', 0);
+			for (INT i = SeperatorPosition; i >= 0; i--) {
+				EncryptedText[i] = L' ';
+			}
+
+		}
 
 	}
 
@@ -311,7 +341,7 @@ public:
 		type.bfType = IMAGE_BITMAP;
 		type.bfOffBits = sizeof(BITMAPFILEHEADER);
 
-		BITMAPINFOHEADER info;
+		BITMAPINFOHEADER info = { 0 };
 		info.biSize = sizeof(info);
 
 

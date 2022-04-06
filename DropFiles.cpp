@@ -56,6 +56,23 @@ BOOL DropFiles::InitDropFiles() {
 
 #pragma endregion
 
+// OVERLOADED OPERATORS
+
+#pragma region OverloadedOperators
+
+BOOL operator!=(POINT& Left, POINT& Right) {
+
+	if (Left.x == Right.x && Left.y == Right.y) {
+		return FALSE;
+	}
+	else {
+		return TRUE;
+	}
+
+}
+
+#pragma endregion
+
 // FUNCTIONS
 
 #pragma region Functions
@@ -78,71 +95,48 @@ HFONT DropFiles::createDropFilesFont() {
 
 }
 
-VOID DropFiles::drawLineWithSpaces(HDC hdc, INT X, INT Y, INT LineLength, INT LineWidth, UINT Proportion, COLORREF Color, BOOL VerticalLine) {
+VOID DropFiles::drawDashedRectangle(HDC hdc, RECT &Rectangle, SIZE_T Width, COLORREF Color) {
 
-	if (Proportion == 0) {
-		OutputDebugString(L"[DropFiles::drawLineWithSpaces] - Proportion Must Be non Zero Value");
+	HPEN Pen = CreatePen(PS_DASH, 1, Color);
+	HPEN PreviousPen = (HPEN)SelectObject(hdc, Pen);
+
+	for (int width = 0; width < Width; width++) {
+
+		// TOP
+		MoveToEx(hdc, Rectangle.left, Rectangle.top + width, NULL);
+		LineTo(hdc, Rectangle.right, Rectangle.top + width);
+		// BOTTOM
+		MoveToEx(hdc, Rectangle.left, Rectangle.bottom - width, NULL);
+		LineTo(hdc, Rectangle.right, Rectangle.bottom - width);
+		// LEFT
+		MoveToEx(hdc, Rectangle.left + width, Rectangle.top, NULL);
+		LineTo(hdc, Rectangle.left + width, Rectangle.bottom);
+		// RIGHT
+		MoveToEx(hdc, Rectangle.right - width, Rectangle.top, NULL);
+		LineTo(hdc, Rectangle.right - width, Rectangle.bottom);
+
 	}
 
-	BOOL DRAW = TRUE;
-	INT LineCell = LineLength / Proportion;
+	SelectObject(hdc, PreviousPen);
+	DeleteObject(Pen);
 
-	if (VerticalLine == FALSE) {
+}
 
-		for (int horz = 0; horz <= LineLength; horz++) {
+VOID DropFiles::FillRectOpacity50(HDC hdc, RECT &Rectangle, COLORREF Color) {
 
-			// |---| X |---|
-			if (DRAW == FALSE) {
-				LineCell--;
-				if (LineCell == 0) {
-					DRAW = TRUE;
-					LineCell = LineLength / Proportion;
-				}
+	BOOL DRAWPIXEL; // TRUE = |X| - FALSE = | |
+	for (int x = Rectangle.left; x <= Rectangle.right; x++) {
+		(x % 2 == NULL) ? DRAWPIXEL = TRUE : DRAWPIXEL = FALSE; // 0, 2, 4, 5 = TRUE - 1, 3, 5, 7 = FALSE 
+		for (int y = Rectangle.top; y <= Rectangle.bottom; y++) {
+			if (DRAWPIXEL) {
+				DRAWPIXEL = FALSE;
+				SetPixel(MemoryDC, x, y, Color);
+			}
+			else {
+				DRAWPIXEL = TRUE;
 				continue;
 			}
-
-			// |-X-|   |-X-|
-			for (int w = 0; w < LineWidth; w++) {
-				SetPixel(hdc, X + horz, Y + w, Color);
-			}
-			LineCell--;
-			if (LineCell == 0) {
-				DRAW = FALSE;
-				LineCell = LineLength / Proportion;
-			}
-
 		}
-
-		return VOID();
-	}
-
-	if (VerticalLine == TRUE) {
-
-		for (int vert = 0; vert <= LineLength; vert++) {
-
-			// |---| X |---|
-			if (DRAW == FALSE) {
-				LineCell--;
-				if (LineCell == 0) {
-					DRAW = TRUE;
-					LineCell = LineLength / Proportion;
-				}
-				continue;
-			}
-
-			// |-X-|   |-X-|
-			for (int w = 0; w < LineWidth; w++) {
-				SetPixel(hdc, X + w, Y + vert, Color);
-			}
-			LineCell--;
-			if (LineCell == 0) {
-				DRAW = FALSE;
-				LineCell = LineLength / Proportion;
-			}
-
-		}
-
-		return VOID();
 	}
 
 }
@@ -154,9 +148,6 @@ VOID DropFiles::drawArrow(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF Color) {
 
 	// XS    |    |    XE
 	// ******+----+****** YS
-	// ******|    |******
-	// ******|    |******
-	// ******|    |******
 	// ******|    |******
 	// ******+----+******--
 	// ******|    |******
@@ -261,20 +252,9 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 
 	// BORDER
 
-	CONST SHORT BorderProportion = 20, BorderPadding = 4, BorderWidth = 2;
-
-	// UP
-	drawLineWithSpaces(MemoryDC, Dimensions.left + BorderPadding, Dimensions.top + BorderPadding,
-		Dimensions.right - BorderPadding * 2, BorderWidth, BorderProportion, TextColor, FALSE);
-	// DOWN
-	drawLineWithSpaces(MemoryDC, Dimensions.left + BorderPadding, Dimensions.bottom - BorderPadding - BorderWidth,
-		Dimensions.right - BorderPadding * 2, BorderWidth, BorderProportion, TextColor, FALSE);
-	// LEFT
-	drawLineWithSpaces(MemoryDC, Dimensions.left + BorderPadding, Dimensions.top + BorderPadding,
-		Dimensions.bottom - BorderPadding * 2, BorderWidth, BorderProportion, TextColor, TRUE);
-	// RIGHT
-	drawLineWithSpaces(MemoryDC, Dimensions.right - BorderPadding - BorderWidth, Dimensions.top + BorderPadding,
-		Dimensions.bottom - BorderPadding * 2, BorderWidth, BorderProportion, TextColor, TRUE);
+	CONST SHORT BorderPadding = 4, BorderWidth = 4;
+	RECT Border = { Dimensions.left + BorderPadding, Dimensions.top + BorderPadding, Dimensions.right - BorderPadding, Dimensions.bottom - BorderPadding };
+	drawDashedRectangle(MemoryDC, Border, BorderWidth, TextColor);
 
 	////
 
@@ -286,7 +266,7 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 	GetTextExtentPoint(MemoryDC, WindowTitle, lstrlenW(WindowTitle), &size);
 
 	if (lstrcmpW(WindowTitle, L"") == 0) {
-		wcscpy_s(WindowTitle, L"Drop Files Here");
+		wcscpy_s(WindowTitle, L"Drop File/s Here");
 		GetTextExtentPoint(MemoryDC, WindowTitle, lstrlenW(WindowTitle), &size);
 		TextOut(MemoryDC, Dimensions.right / 2 - size.cx / 2, Dimensions.bottom / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));
 	}
@@ -297,24 +277,9 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 	////
 
 	if (FileDroped) {
-		// * * * *
-		//  * * * 
-		BOOL DRAWPIXEL = TRUE;
-		for (int x = 0; x <= Dimensions.right; x++) {
-			for (int y = 0; y <= Dimensions.bottom; y++) {
-				if (DRAWPIXEL) {
-					DRAWPIXEL = FALSE;
-					SetPixel(MemoryDC, x, y, TextColor + 0x009C9C9C); // Color + 0x009C9C9C = Lighter Color
-				}
-				else {
-					DRAWPIXEL = TRUE;
-					continue;
-				}
-			}
-			(x % 2 != NULL) ? (DRAWPIXEL) ? DRAWPIXEL = FALSE : DRAWPIXEL = TRUE : DRAWPIXEL = DRAWPIXEL; // If Odd Number
-		}
 		CONST SHORT ArrowPadding = 20;
 		INT ArrowWidth = Dimensions.right / 3, ArrowHeight = Dimensions.bottom - ArrowPadding * 2;
+		FillRectOpacity50(MemoryDC, Dimensions, TextColor);
 		drawArrow(MemoryDC, Dimensions.right / 2 - ArrowWidth / 2, Dimensions.bottom / 2 - ArrowHeight / 2, ArrowWidth, ArrowHeight, TextColor);
 	}
 
