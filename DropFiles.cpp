@@ -130,7 +130,7 @@ VOID DropFiles::FillRectOpacity50(HDC hdc, RECT &Rectangle, COLORREF Color) {
 		for (int y = Rectangle.top; y <= Rectangle.bottom; y++) {
 			if (DRAWPIXEL) {
 				DRAWPIXEL = FALSE;
-				SetPixel(MemoryDC, x, y, Color);
+				SetPixel(hdc, x, y, Color);
 			}
 			else {
 				DRAWPIXEL = TRUE;
@@ -148,6 +148,9 @@ VOID DropFiles::drawArrow(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF Color) {
 
 	// XS    |    |    XE
 	// ******+----+****** YS
+	// ******|    |******
+	// ******|    |******
+	// ******|    |******
 	// ******|    |******
 	// ******+----+******--
 	// ******|    |******
@@ -285,16 +288,16 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 
 	BitBlt(DropFilesDC, 0, 0, Dimensions.right, Dimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
+	DeleteDC(MemoryDC);
+	DeleteObject(Bitmap);
+
+	EndPaint(hDropFiles, &ps);
+
 	if (FileDroped) {
 		Sleep(200); // 200 MilliSeconds Delay
 		FileDroped = FALSE;
 		RedrawWindow(hDropFiles, &Dimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 	}
-
-	DeleteDC(MemoryDC);
-	DeleteObject(Bitmap);
-
-	EndPaint(hDropFiles, &ps);
 
 }
 

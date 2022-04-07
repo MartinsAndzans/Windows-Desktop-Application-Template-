@@ -22,8 +22,7 @@ public:
 
 	static VOID setConsoleTitle(std::string Title) {
 
-		std::wstring wTitle = std::wstring(Title.begin(), Title.end());
-		SetConsoleTitle(wTitle.c_str());
+		SetConsoleTitleA(Title.c_str());
 		
 	}
 

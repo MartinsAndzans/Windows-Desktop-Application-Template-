@@ -58,6 +58,33 @@ public:
 
 	}
 
+	static VOID drawDashedRectangle(HDC hdc, RECT& Rectangle, SIZE_T Width, COLORREF Color) {
+
+		HPEN Pen = CreatePen(PS_DASH, 1, Color);
+		HPEN PreviousPen = (HPEN)SelectObject(hdc, Pen);
+
+		for (int width = 0; width < Width; width++) {
+
+			// TOP
+			MoveToEx(hdc, Rectangle.left, Rectangle.top + width, NULL);
+			LineTo(hdc, Rectangle.right, Rectangle.top + width);
+			// BOTTOM
+			MoveToEx(hdc, Rectangle.left, Rectangle.bottom - width, NULL);
+			LineTo(hdc, Rectangle.right, Rectangle.bottom - width);
+			// LEFT
+			MoveToEx(hdc, Rectangle.left + width, Rectangle.top, NULL);
+			LineTo(hdc, Rectangle.left + width, Rectangle.bottom);
+			// RIGHT
+			MoveToEx(hdc, Rectangle.right - width, Rectangle.top, NULL);
+			LineTo(hdc, Rectangle.right - width, Rectangle.bottom);
+
+		}
+
+		SelectObject(hdc, PreviousPen);
+		DeleteObject(Pen);
+
+	}
+
 	static VOID drawRectangle(HDC hdc, INT X = 0, INT Y = 0, INT W = 120, INT H = 40, INT BorderWidth = 2, COLORREF RectangleColor = WHITE_COLOR, COLORREF BorderColor = BLACK_COLOR) {
 
 		/// <summary>
@@ -107,7 +134,26 @@ public:
 
 	}
 
-	static VOID drawCube(HDC hdc, INT X = 100, INT Y = 100, INT W = 40, INT H = 40, INT Z = 20) {
+	static VOID FillRectOpacity50(HDC hdc, RECT &Rectangle, COLORREF Color) {
+
+		BOOL DRAWPIXEL; // TRUE = |X| - FALSE = | |
+		for (int x = Rectangle.left; x <= Rectangle.right; x++) {
+			(x % 2 == NULL) ? DRAWPIXEL = TRUE : DRAWPIXEL = FALSE; // 0, 2, 4, 5 = TRUE - 1, 3, 5, 7 = FALSE 
+			for (int y = Rectangle.top; y <= Rectangle.bottom; y++) {
+				if (DRAWPIXEL) {
+					DRAWPIXEL = FALSE;
+					SetPixel(hdc, x, y, Color);
+				}
+				else {
+					DRAWPIXEL = TRUE;
+					continue;
+				}
+			}
+		}
+
+	}
+
+	static VOID drawCube(HDC hdc, INT X = 0, INT Y = 0, INT W = 40, INT H = 40, INT Z = 20) {
 
 		while (Z >= 0) {
 			drawRectangle(hdc, X, Y, W, H);
@@ -116,19 +162,10 @@ public:
 
 	}
 
-	static VOID drawRomb(HDC hdc, int x = 0, int y = 0, int w = 60, int h = 60, COLORREF color = BLACK_COLOR, bool alpha = true) {
+	static VOID drawRomb(HDC hdc, int x = 0, int y = 0, int w = 60, int h = 60, COLORREF color = BLACK_COLOR) {
 
 		/// <summary>
 		/// This Function Draws Romb
-		/// 
-		///    ^
-		///   / \
-		///  /	 \
-		/// *     >
-		///  \   /
-		///   \ /
-		///	   v
-		/// 
 		/// </summary>
 		/// <param name="hdc">Device Context</param>
 		/// <param name="x">X Coordinate</param>
@@ -136,21 +173,71 @@ public:
 		/// <param name="w">Width</param>
 		/// <param name="h">Height</param>
 		/// <param name="color">Romb Color</param>
-		/// <param name="alpha">Alpha</param>
 
-		int offset = 0, xb = x, yb = y, xl = x + w;
+		int offset = 0, xs = 0, xe = w, ys = 0, ye = h;
 
-		for (int r = 0; r <= h; r++) {
-			for (x = xb + offset; x <= xl; x++) {
-				SetPixel(hdc, x, y, color);
-				if (alpha == false) {
-					SetPixel(hdc, x + 1, y, color);
+		for (int ys = 0; ys <= ye; ys++) {
+			if (ys >= h / 2) {
+				for (int xs = w / 2 - offset; xs <= w / 2 + offset; xs++) {
+					SetPixel(hdc, x + xs, y + ys, color);
 				}
-				y--;
+				offset--;
+				continue;
 			}
-			xl++;
-			offset = offset + 1;
-			y = yb + offset;
+			for (int xs = w / 2 - offset; xs <= w / 2 + offset; xs++) {
+				SetPixel(hdc, x + xs, y + ys, color);
+			}
+			offset++;
+		}
+
+	}
+
+	static VOID drawArrow(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF Color) {
+
+		/// <summary>
+		/// This Function Draws Arrow
+		/// </summary>
+		/// <param name="hdc">Device Context</param>
+		/// <param name="x">X Coordinate</param>
+		/// <param name="y">Y Coordinate</param>
+		/// <param name="w">Width</param>
+		/// <param name="h">Height</param>
+
+		CONST SHORT Proportion = 3;
+		INT OFFSET = 0, XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
+
+		// XS    |    |    XE
+		// ******+----+****** YS
+		// ******|    |******
+		// ******|    |******
+		// ******|    |******
+		// ******|    |******
+		// ******+----+******--
+		// ******|    |******
+		// ******|    |******
+		// ******|    |******
+		// ******|    |******
+		// ***+----------+***--
+		// ****\        /****
+		// *****\      /*****
+		// ******\    /******
+		// *******\  /*******
+		// ********\/******** YE
+
+		for (YS = 0; YS <= YE; YS++) {
+
+			if (YS >= YCELL * 2) {
+				for (XS = XCELL / 2 + OFFSET; XS <= XCELL * 2 + XCELL / 2 - OFFSET; XS++) {
+					SetPixel(hdc, X + XS, Y + YS, Color);
+				}
+				OFFSET++;
+				continue;
+			}
+
+			for (XS = XCELL; XS <= XCELL * 2; XS++) {
+				SetPixel(hdc, X + XS, Y + YS, Color);
+			}
+
 		}
 
 	}
@@ -418,22 +505,6 @@ public:
 
 			OutputDebugString(L"ERROR [Draw::drawCross] - Width or Height Must be Odd Number Value!\r\n");
 
-		}
-
-	}
-
-	static VOID drawGrid(HDC hdc, INT X = 0, INT Y = 0, INT W = 80, INT H = 80, SIZE_T CellSize = 4, COLORREF GridFirstColor = WHITE_COLOR, COLORREF GridSecondColor = BLACK_COLOR) {
-
-		INT XS = 0, XE = W, YS = 0, YE = H;
-		COLORREF GridColor = GridFirstColor;
-
-		for (YS = 0; YS <= YE; YS++) {
-			for (XS = 0; XS <= XE; XS = XS++) {
-				//for (int cell = 0; cell <= CellSize; cell++) {
-				SetPixel(hdc, X + XS, Y + YS, GridColor);
-				//}
-				(GridColor == GridFirstColor) ? GridColor = GridSecondColor : GridColor = GridFirstColor;
-			}
 		}
 
 	}
