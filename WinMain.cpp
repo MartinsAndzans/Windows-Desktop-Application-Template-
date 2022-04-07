@@ -17,9 +17,13 @@ VOID BroadcastMessages();
 
 int wmain(int ArrgumentCount, wchar_t *Arrguments[]) {
 
+	#ifdef APP_DEBUG
 	ShowWindow(GetConsoleWindow(), SW_SHOW);
-
 	Console::setConsoleTitle("Debug Console");
+	#else defined(APP_RELEASE)
+	ShowWindow(GetConsoleWindow(), SW_HIDE);
+	Console::setConsoleTitle("Don't Close");
+	#endif
 	
 	if (MainWindow::InitMainWindowClass(MAIN_WINDOW_CLASS)) {
 		if (MainWindow::CreateMainWindow(MAIN_WINDOW_CLASS, MAIN_WINDOW_TITLE)) {

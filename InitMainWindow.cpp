@@ -283,9 +283,7 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 
 	SelectObject(MemoryDC, MainBitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
-	HBRUSH BackgroundBrush = CreateSolidBrush(MainWindowBackgroundColor);
-	FillRect(MemoryDC, &MainWindowDimensions, BackgroundBrush);
-	DeleteObject(BackgroundBrush);
+	FillRect(MemoryDC, &MainWindowDimensions, MainWindowBackgroundBrush);
 
 	SelectObject(MemoryDC, MainFont);
 
@@ -313,13 +311,25 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	case 0:
 	{
 
-		DWORD ID = (DWORD)LOWORD(wParam);
-		DWORD hwnd = (DWORD)HIWORD(wParam);
 		COLORREF Color = (COLORREF)lParam;
 
-		std::wcout << "ID: " << Functions::_itow(ID) << "\tHWND: 0x" << Functions::_itow(hwnd) << "\tR: " << Functions::_itow(GetGValue(Color)) <<
-			"\tG: " << Functions::_itow(GetGValue(Color)) << "\tB: " << Functions::_itow(GetBValue(Color)) << std::endl;
-		std::wcout.flush();
+		LOGW("R: " << Functions::_itow(GetGValue(Color)) << "\tG: " << Functions::_itow(GetGValue(Color)) << "\tB: " << Functions::_itow(GetBValue(Color)));
+
+		break;
+
+	}
+	case 3:
+	{
+
+		HDROP DropedFiles = (HDROP)lParam;
+		WCHAR Buffer[MAX_CHAR_STRING] = { 0 };
+
+		UINT FileCount = DragQueryFile(DropedFiles, 0xFFFFFFFF, Buffer, ARRAYSIZE(Buffer));
+
+		for (UINT counter = 0; counter < FileCount; counter++) {
+			DragQueryFile(DropedFiles, counter, Buffer, ARRAYSIZE(Buffer));
+			LOGW(Buffer);
+		}
 
 		break;
 

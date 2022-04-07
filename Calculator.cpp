@@ -381,9 +381,7 @@ VOID Calculator::onPaint(HWND hCalculator) {
 
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
-	HBRUSH BackgroundBrush = CreateSolidBrush(CalculatorBackgroundColor);
-	FillRect(MemoryDC, &Dimensions, BackgroundBrush);
-	DeleteObject(BackgroundBrush);
+	FillRect(MemoryDC, &Dimensions, CalculatorBackroundBrush);
 
 	SelectObject(MemoryDC, CalculatorFont);
 

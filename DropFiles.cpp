@@ -201,12 +201,12 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 		LPDFSTYLES parameters = (LPDFSTYLES)window->lpCreateParams;
 
-		DWORD *Styles = new DWORD[sizeof(DFSTYLES)];
+		DFSTYLES *Styles = new DFSTYLES;
 		ZeroMemory(Styles, sizeof(DFSTYLES));
 
 		if (window->lpCreateParams != NULL) {
-			*(Styles + 0) = parameters->BackgroundColor;
-			*(Styles + 1) = parameters->TextColor;
+			Styles->BackgroundColor = parameters->BackgroundColor;
+			Styles->TextColor = parameters->TextColor;
 		}
 
 		SetWindowLongPtr(hDropFiles, GWLP_USERDATA, (LONG_PTR)Styles);
@@ -232,17 +232,10 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
 
-	DWORD *Styles = (DWORD*)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
+	LPDFSTYLES Styles = (LPDFSTYLES)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
 
-	(*(Styles + 0) != NULL) ? DropFilesBackgroundColor = *(Styles + 0) : DropFilesBackgroundColor = RGB(255, 255, 255);
-	(*(Styles + 1) != NULL) ? TextColor = *(Styles + 1) : TextColor = RGB(0, 0, 0);
-
-	HBRUSH BackgroundBrush = CreateSolidBrush(DropFilesBackgroundColor);
-	FillRect(MemoryDC, &Dimensions, BackgroundBrush);
-	DeleteObject(BackgroundBrush);
-
-	SelectObject(MemoryDC, DropFilesFont);
-	SetTextColor(MemoryDC, TextColor);
+	(Styles->BackgroundColor != NULL) ? DropFilesBackgroundColor = Styles->BackgroundColor : DropFilesBackgroundColor = RGB(255, 255, 255);
+	(Styles->TextColor != NULL) ? TextColor = Styles->TextColor : TextColor = RGB(0, 0, 0);
 
 	/////////////////////////////////////////////////////
 	//// +-----------------------------------------+ ////
@@ -252,6 +245,13 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 	//// |                                         | ////
 	//// +-----------------------------------------+ ////
 	/////////////////////////////////////////////////////
+
+	HBRUSH BackgroundBrush = CreateSolidBrush(DropFilesBackgroundColor);
+	FillRect(MemoryDC, &Dimensions, BackgroundBrush);
+	DeleteObject(BackgroundBrush);
+
+	SelectObject(MemoryDC, DropFilesFont);
+	SetTextColor(MemoryDC, TextColor);
 
 	// BORDER
 
@@ -345,7 +345,7 @@ LRESULT CALLBACK DropFiles::DropFilesProcedure(HWND hDropFiles, UINT Msg, WPARAM
 	}
 	case WM_DESTROY:
 	{
-		DWORD *Styles = (DWORD*)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
+		LPDFSTYLES Styles = (LPDFSTYLES)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
 		delete[] Styles;
 		return 0;
 	}

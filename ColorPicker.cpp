@@ -161,7 +161,7 @@ INT ColorPicker::drawGradientSmall(HDC hdc, INT X, INT Y, INT W, INT H, INT Bord
 	//Gradient
 
 	for (int i = XE; i >= BorderWidth * 2; i--) {
-		for (YS = 0 + BorderWidth; YS <= YE - BorderWidth; YS++) {
+		for (YS = BorderWidth; YS <= YE - BorderWidth; YS++) {
 			SetPixel(hdc, X + XS, Y + YS, RGB(R, G, B));
 		}
 		XS++;
@@ -225,7 +225,7 @@ INT ColorPicker::drawGradientLarge(HDC hdc, INT X, INT Y, INT W, INT H, INT Bord
 	//Gradient
 
 	for (int i = XE; i >= BorderWidth * 2; i--) {
-		for (YS = 0 + BorderWidth; YS <= YE - BorderWidth; YS++) {
+		for (YS = BorderWidth; YS <= YE - BorderWidth; YS++) {
 			SetPixel(hdc, X + XS, Y + YS, RGB(RS, GS, BS));
 			(RS > R) ? RS = RS - COLORSTEP : RS = RS;
 			(GS > G) ? GS = GS - COLORSTEP : GS = GS;
@@ -340,9 +340,7 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
-	HBRUSH BackgroundBrush = CreateSolidBrush(ColorPickerBackgroundColor);
-	FillRect(MemoryDC, &Dimensions, BackgroundBrush);
-	DeleteObject(BackgroundBrush);
+	FillRect(MemoryDC, &Dimensions, ColorPickerBackgroundBrush);
 
 	INT BorderWidth = 0;
 

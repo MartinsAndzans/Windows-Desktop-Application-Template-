@@ -34,10 +34,20 @@
 
 #define RETURN return
 
+#ifdef APP_DEBUG
+#define LOG(text) std::cout << text << "\n";\
+std::cout.flush()
+#define LOGW(text) std::wcout << text << "\n";\
+std::wcout.flush()
+#else defined(APP_RELEASE)
+#define LOG(text)
+#define LOGW(text)
+#endif
+
 #define MAX_CHAR_STRING 256
 
 #define HInstance() GetModuleHandle(NULL)
-#define MainWindowBackgroundColor RGB(252, 200, 43)
+#define MainWindowBackgroundColor RGB(100, 100, 255)
 
 #pragma endregion
 

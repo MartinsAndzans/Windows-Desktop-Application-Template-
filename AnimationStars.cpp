@@ -177,12 +177,12 @@ VOID AnimationStars::onCreate(HWND hAnimationStars, LPARAM lParam) {
 
 		LPASSTYLES parameters = (LPASSTYLES)window->lpCreateParams;
 
-		DWORD *Styles = new DWORD[sizeof(ASSTYLES)];
+		ASSTYLES *Styles = new ASSTYLES;
 		ZeroMemory(Styles, sizeof(ASSTYLES));
 
 		if (parameters != NULL) {
-			*(Styles + 0) = parameters->StarColor;
-			*(Styles + 1) = parameters->Proportion;
+			Styles->StarColor = parameters->StarColor;
+			Styles->Proportion = parameters->Proportion;
 		}
 
 		SetWindowLongPtr(hAnimationStars, GWLP_USERDATA, (LONG_PTR)Styles);
@@ -236,16 +236,14 @@ VOID AnimationStars::onPaint(HWND hAnimationStars) {
 
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
-	HBRUSH BackgroundBrush = CreateSolidBrush(AnimationStarsBackgroundColor);
-	FillRect(MemoryDC, &Dimensions, BackgroundBrush);
-	DeleteObject(BackgroundBrush);
+	FillRect(MemoryDC, &Dimensions, AnimationStarsBackgroundBrush);
 
 	SelectObject(MemoryDC, StarFont);
 
-	DWORD *Styles = (DWORD*)GetWindowLongPtr(hAnimationStars, GWLP_USERDATA);
+	LPASSTYLES Styles = (LPASSTYLES)GetWindowLongPtr(hAnimationStars, GWLP_USERDATA);
 
-	(*(Styles + 0) != NULL) ? StarColor = *(Styles + 0) : StarColor = RGB(255, 255, 255);
-	(*(Styles + 1) != NULL) ? Proportion = *(Styles + 1) : Proportion = 6;
+	(Styles->StarColor != NULL) ? StarColor = Styles->StarColor : StarColor = RGB(255, 255, 255);
+	(Styles->Proportion != NULL) ? Proportion = Styles->Proportion : Proportion = 6;
 	
 	///////////////////////////////////////////////
 	//// +-----------------------------------+ ////
@@ -306,7 +304,7 @@ LRESULT CALLBACK AnimationStars::AnimationStarsProcedure(HWND hAnimationStars, U
 	case WM_DESTROY:
 	{
 		KillTimer(hAnimationStars, ASTIMER);
-		DWORD *Styles = (DWORD*)GetWindowLongPtr(hAnimationStars, GWLP_USERDATA);
+		LPASSTYLES Styles = (LPASSTYLES)GetWindowLongPtr(hAnimationStars, GWLP_USERDATA);
 		delete[] Styles;
 		return 0;
 	}

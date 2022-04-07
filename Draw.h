@@ -286,7 +286,7 @@ public:
 		//Gradient
 
 		for (int i = XE; i >= BorderWidth * 2; i--) {
-			for (YS = 0 + BorderWidth; YS <= YE - BorderWidth; YS++) {
+			for (YS = BorderWidth; YS <= YE - BorderWidth; YS++) {
 				SetPixel(hdc, X + XS, Y + YS, RGB(R, G, B));
 			}
 			XS++;
@@ -350,7 +350,7 @@ public:
 		//Gradient
 
 		for (int i = XE; i >= BorderWidth * 2; i--) {
-			for (YS = 0 + BorderWidth; YS <= YE - BorderWidth; YS++) {
+			for (YS = BorderWidth; YS <= YE - BorderWidth; YS++) {
 				SetPixel(hdc, X + XS, Y + YS, RGB(RS, GS, BS));
 				(RS > R) ? RS = RS - COLORSTEP : RS = RS;
 				(GS > G) ? GS = GS - COLORSTEP : GS = GS;
