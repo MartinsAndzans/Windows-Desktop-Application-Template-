@@ -85,6 +85,23 @@ public:
 
 	}
 
+	static BOOL drawBitmapFromFile(HDC DestinationDC, RECT &DestinationRectangle, std::string FilePath, UINT BitmapType = IMAGE_BITMAP, DWORD DrawMethod = SRCCOPY) {
+
+		HDC BitmapDC = CreateCompatibleDC(DestinationDC);
+		if (BitmapDC == NULL) { return FALSE; }
+		HBITMAP Bitmap = (HBITMAP)LoadImageA(NULL, FilePath.c_str(), BitmapType, 0, 0, LR_LOADFROMFILE | LR_VGACOLOR);
+		if (Bitmap == NULL) { return FALSE; }
+
+		SelectObject(BitmapDC, Bitmap);
+		BitBlt(DestinationDC, DestinationRectangle.left, DestinationRectangle.top, DestinationRectangle.right, DestinationRectangle.bottom, BitmapDC, 0, 0, DrawMethod);
+
+		DeleteDC(BitmapDC);
+		DeleteObject(Bitmap);
+
+		return TRUE;
+
+	}
+
 	static VOID drawRectangle(HDC hdc, INT X = 0, INT Y = 0, INT W = 120, INT H = 40, INT BorderWidth = 2, COLORREF RectangleColor = WHITE_COLOR, COLORREF BorderColor = BLACK_COLOR) {
 
 		/// <summary>
@@ -140,7 +157,7 @@ public:
 		for (int x = Rectangle.left; x <= Rectangle.right; x++) {
 			(x % 2 == NULL) ? DRAWPIXEL = TRUE : DRAWPIXEL = FALSE; // 0, 2, 4, 5 = TRUE - 1, 3, 5, 7 = FALSE 
 			for (int y = Rectangle.top; y <= Rectangle.bottom; y++) {
-				if (DRAWPIXEL) {
+				if (DRAWPIXEL == TRUE) {
 					DRAWPIXEL = FALSE;
 					SetPixel(hdc, x, y, Color);
 				}

@@ -44,10 +44,6 @@
       <UniqueIdentifier>{91ea52dd-62c0-4482-a945-b452cc96ecc0}</UniqueIdentifier>
       <Extensions>h;cpp</Extensions>
     </Filter>
-    <Filter Include="Resource Files\resources">
-      <UniqueIdentifier>{c3d6474a-aaee-4b2c-9570-3de4d223dbcc}</UniqueIdentifier>
-      <Extensions>rc;rc2;rct;resx</Extensions>
-    </Filter>
     <Filter Include="Resource Files\Music">
       <UniqueIdentifier>{0e4b0dab-69c9-44d0-8c44-98f7ad1f5507}</UniqueIdentifier>
       <Extensions>wav</Extensions>
@@ -59,6 +55,10 @@
     <Filter Include="Custom Controls\Drop Files">
       <UniqueIdentifier>{11b7017e-0c22-40f0-9c6f-0976435c27c2}</UniqueIdentifier>
       <Extensions>h;cpp</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\Resources">
+      <UniqueIdentifier>{c3d6474a-aaee-4b2c-9570-3de4d223dbcc}</UniqueIdentifier>
+      <Extensions>rc;rc2;rct;resx</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>

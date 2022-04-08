@@ -207,6 +207,8 @@ BOOL Calculator::RoundDouble(wchar_t(&Text)[], INT TextLength) {
 
 BOOL Calculator::createCalculatorControls(HWND hCalculator) {
 
+	SetLastError(0);
+
 	HWND hwnd = { 0 };
 
 	HWND *Outputs = new HWND[2];

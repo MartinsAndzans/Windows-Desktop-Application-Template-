@@ -324,26 +324,75 @@ public:
 		/// <param name="AdditionalErroMessage">Additional Error Message</param>
 		
 		std::wstring ErrorMessage = L"ERROR " + _itow(GetLastError()) + AdditionalErrorMessage;
-
 		MessageBox(ParentWindow, ErrorMessage.c_str(), L"ERROR", MB_OK | MB_ICONERROR);
 
 	}
 
-	static VOID SaveBitmapToFile(HBITMAP Bitmap, std::string FilePath) {
+	static BOOL SaveBitmapToFile(HBITMAP Bitmap, std::string FilePath, SIZE BitmapSize) {
+
+		#define BITMAP_FILE_HEADER_SIZE_IN_BYTES sizeof(BITMAPFILEHEADER)
+		#define BITMAP_INFO_HEADER_SIZE_IN_BYTES sizeof(BITMAPINFOHEADER)
+		#define BITMAP_SIZE_IN_PIXELS BitmapSize.cx * BitmapSize.cy
+		#define BITMAP_SIZE_IN_BYTES sizeof(COLORREF) * ((int64_t)BitmapSize.cx * (int64_t)BitmapSize.cy)
 
 		std::fstream image;
 
-		SIZE BitmapSize = { 0 };
-		GetBitmapDimensionEx(Bitmap, &BitmapSize);
+		CONST WORD BM = 0x4D42;
 
-		BITMAPFILEHEADER type = { 0 };
-		type.bfSize = sizeof(Bitmap);
-		type.bfType = IMAGE_BITMAP;
-		type.bfOffBits = sizeof(BITMAPFILEHEADER);
+		BITMAPFILEHEADER file = { 0 };
+		file.bfType = BM;
+		file.bfSize = BITMAP_FILE_HEADER_SIZE_IN_BYTES + BITMAP_INFO_HEADER_SIZE_IN_BYTES + BITMAP_SIZE_IN_BYTES; // File Size
+		file.bfOffBits = BITMAP_FILE_HEADER_SIZE_IN_BYTES + BITMAP_INFO_HEADER_SIZE_IN_BYTES; // Offset To Color Bits
+		file.bfReserved1 = NULL;
+		file.bfReserved2 = NULL;
 
 		BITMAPINFOHEADER info = { 0 };
-		info.biSize = sizeof(info);
+		info.biSize = sizeof(BITMAPINFOHEADER);
+		info.biWidth = BitmapSize.cx;
+		info.biHeight = BitmapSize.cy;
+		info.biPlanes = 0x01; // 1 - Bitmap has a one plane
+		info.biBitCount = 0x20; // 32 - Bitmap has a maximum of 2^32 colors
+		info.biCompression = BI_RGB;
+		info.biSizeImage = BitmapSize.cx * BitmapSize.cy;
+		info.biXPelsPerMeter = BitmapSize.cx;
+		info.biYPelsPerMeter = BitmapSize.cy;
+		info.biClrUsed = NULL;
+		info.biClrImportant = NULL;
 
+		COLORREF *BitmapBits = new COLORREF[BITMAP_SIZE_IN_PIXELS];
+		if (BitmapBits == NULL) { return FALSE; }
+		ZeroMemory(BitmapBits, BITMAP_SIZE_IN_BYTES);
+
+		HDC DesktopDC = GetDC(NULL);
+		HDC MemoryDC = CreateCompatibleDC(DesktopDC);
+
+		BITMAPINFO bminfo = { 0 };
+		bminfo.bmiHeader = info;
+
+		GetDIBits(MemoryDC, Bitmap, 0, BitmapSize.cy, BitmapBits, &bminfo, DIB_RGB_COLORS);
+
+		DeleteDC(MemoryDC);
+
+		image.open(FilePath + ".bmp", std::ios::out | std::ios::binary);
+
+		if (!image.is_open()) {
+			return FALSE;
+		}
+		else {
+			image.write((char*)&file, BITMAP_FILE_HEADER_SIZE_IN_BYTES); // BITMAP FILE HEADER
+			image.write((char*)&info, BITMAP_INFO_HEADER_SIZE_IN_BYTES); // BITMAP INFO HEADER
+			image.write((char*)BitmapBits, BITMAP_SIZE_IN_BYTES); // BYTE ARRAY
+			image.close();
+		}
+
+		delete[] BitmapBits;
+
+		return TRUE;
+
+		#undef BITMAP_FILE_HEADER_SIZE_IN_BYTES
+		#undef BITMAP_INFO_HEADER_SIZE_IN_BYTES
+		#undef BITMAP_SIZE_IN_PIXELS
+		#undef BITMAP_SIZE_IN_BYTES
 
 	}
 

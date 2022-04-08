@@ -294,6 +294,9 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 	GetTextExtentPoint(MainWindowDC, Text, ARRAYSIZE(Text), &size);
 	TextOut(MemoryDC, MainWindowDimensions.right / 2 - size.cx / 2, MainWindowDimensions.bottom / 2 - size.cy / 2, Text, ARRAYSIZE(Text) - 1);
 
+	SIZE BitmapSize = { MainWindowDimensions.right, MainWindowDimensions.bottom };
+	Functions::SaveBitmapToFile(MainBitmap, "Screenshot", BitmapSize);
+
 	BitBlt(MainWindowDC, 0, 0, MainWindowDimensions.right, MainWindowDimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
 	DeleteDC(MemoryDC);
@@ -322,13 +325,13 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	{
 
 		HDROP DropedFiles = (HDROP)lParam;
-		WCHAR Buffer[MAX_CHAR_STRING] = { 0 };
+		CHAR Buffer[MAX_CHAR_STRING] = { 0 };
 
-		UINT FileCount = DragQueryFile(DropedFiles, 0xFFFFFFFF, Buffer, ARRAYSIZE(Buffer));
+		UINT FileCount = DragQueryFileA(DropedFiles, 0xFFFFFFFF, Buffer, ARRAYSIZE(Buffer));
 
 		for (UINT counter = 0; counter < FileCount; counter++) {
-			DragQueryFile(DropedFiles, counter, Buffer, ARRAYSIZE(Buffer));
-			LOGW(Buffer);
+			DragQueryFileA(DropedFiles, counter, Buffer, ARRAYSIZE(Buffer));
+			LOG(Buffer);
 		}
 
 		break;

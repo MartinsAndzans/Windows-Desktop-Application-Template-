@@ -56,23 +56,6 @@ BOOL DropFiles::InitDropFiles() {
 
 #pragma endregion
 
-// OVERLOADED OPERATORS
-
-#pragma region OverloadedOperators
-
-BOOL operator!=(POINT& Left, POINT& Right) {
-
-	if (Left.x == Right.x && Left.y == Right.y) {
-		return FALSE;
-	}
-	else {
-		return TRUE;
-	}
-
-}
-
-#pragma endregion
-
 // FUNCTIONS
 
 #pragma region Functions
@@ -128,7 +111,7 @@ VOID DropFiles::FillRectOpacity50(HDC hdc, RECT &Rectangle, COLORREF Color) {
 	for (int x = Rectangle.left; x <= Rectangle.right; x++) {
 		(x % 2 == NULL) ? DRAWPIXEL = TRUE : DRAWPIXEL = FALSE; // 0, 2, 4, 5 = TRUE - 1, 3, 5, 7 = FALSE 
 		for (int y = Rectangle.top; y <= Rectangle.bottom; y++) {
-			if (DRAWPIXEL) {
+			if (DRAWPIXEL== TRUE) {
 				DRAWPIXEL = FALSE;
 				SetPixel(hdc, x, y, Color);
 			}
