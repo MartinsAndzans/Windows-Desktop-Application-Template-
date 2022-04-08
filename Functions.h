@@ -353,7 +353,7 @@ public:
 		info.biPlanes = 0x01; // 1 - Bitmap has a one plane
 		info.biBitCount = 0x20; // 32 - Bitmap has a maximum of 2^32 colors
 		info.biCompression = BI_RGB;
-		info.biSizeImage = BitmapSize.cx * BitmapSize.cy;
+		info.biSizeImage = BITMAP_SIZE_IN_PIXELS;
 		info.biXPelsPerMeter = BitmapSize.cx;
 		info.biYPelsPerMeter = BitmapSize.cy;
 		info.biClrUsed = NULL;
@@ -363,8 +363,8 @@ public:
 		if (BitmapBits == NULL) { return FALSE; }
 		ZeroMemory(BitmapBits, BITMAP_SIZE_IN_BYTES);
 
-		HDC DesktopDC = GetDC(NULL);
-		HDC MemoryDC = CreateCompatibleDC(DesktopDC);
+		HDC ScreenDC = GetDC(NULL);
+		HDC MemoryDC = CreateCompatibleDC(ScreenDC);
 
 		BITMAPINFO bminfo = { 0 };
 		bminfo.bmiHeader = info;
@@ -382,8 +382,9 @@ public:
 			image.write((char*)&file, BITMAP_FILE_HEADER_SIZE_IN_BYTES); // BITMAP FILE HEADER
 			image.write((char*)&info, BITMAP_INFO_HEADER_SIZE_IN_BYTES); // BITMAP INFO HEADER
 			image.write((char*)BitmapBits, BITMAP_SIZE_IN_BYTES); // BYTE ARRAY
-			image.close();
 		}
+
+		image.close();
 
 		delete[] BitmapBits;
 
