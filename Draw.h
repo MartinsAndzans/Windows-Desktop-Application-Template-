@@ -36,7 +36,7 @@ class Draw {
 public:
 
 
-	static VOID drawRectangle(HDC hdc, RECT rect) {
+	static VOID drawRectangle(HDC hdc, RECT &Rectangle) {
 
 		/// <summary>
 		/// This Function Draws Rectangle
@@ -44,17 +44,17 @@ public:
 		/// <param name="hdc">Device Context</param>
 		/// <param name="rect">Rectangle</param>
 
-		MoveToEx(hdc, rect.left, rect.top, NULL);
-		LineTo(hdc, rect.right, rect.top);
+		MoveToEx(hdc, Rectangle.left, Rectangle.top, NULL);
+		LineTo(hdc, Rectangle.right, Rectangle.top);
 
-		MoveToEx(hdc, rect.left, rect.top, NULL);
-		LineTo(hdc, rect.left, rect.bottom);
+		MoveToEx(hdc, Rectangle.left, Rectangle.top, NULL);
+		LineTo(hdc, Rectangle.left, Rectangle.bottom);
 
-		MoveToEx(hdc, rect.left, rect.bottom, NULL);
-		LineTo(hdc, rect.right, rect.bottom);
+		MoveToEx(hdc, Rectangle.left, Rectangle.bottom, NULL);
+		LineTo(hdc, Rectangle.right, Rectangle.bottom);
 
-		MoveToEx(hdc, rect.right, rect.top, NULL);
-		LineTo(hdc, rect.right, rect.bottom);
+		MoveToEx(hdc, Rectangle.right, Rectangle.top, NULL);
+		LineTo(hdc, Rectangle.right, Rectangle.bottom);
 
 	}
 
@@ -389,12 +389,6 @@ public:
 		}
 
 		return BorderWidth;
-
-	}
-
-	static VOID drawMatrix(HDC hdc, RECT MatrixDimensions) {
-
-
 
 	}
 

@@ -296,6 +296,11 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 	GetTextExtentPoint(MainWindowDC, Text, ARRAYSIZE(Text), &size);
 	TextOut(MemoryDC, MainWindowDimensions.right / 2 - size.cx / 2, MainWindowDimensions.bottom / 2 - size.cy / 2, Text, ARRAYSIZE(Text) - 1);
 
+	Draw::drawStars(MemoryDC, MainWindowDimensions.right / 2 - 400 / 2, MainWindowDimensions.bottom / 2 - 400 / 2, 400, 400, RGB(255, 155, 100), L"*", 10);
+
+	SIZE BitmapSize = { MainWindowDimensions.right, MainWindowDimensions.bottom };
+	Functions::SaveBitmapToFile(MainBitmap, "BITMAP", BitmapSize);
+
 	BitBlt(MainWindowDC, 0, 0, MainWindowDimensions.right, MainWindowDimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
 	DeleteDC(MemoryDC);
