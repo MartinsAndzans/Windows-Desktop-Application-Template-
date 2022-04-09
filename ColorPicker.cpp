@@ -382,9 +382,7 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 		DWORD Point = GetWindowLong(hColorPicker, GWL_USERDATA);
 
 		if (Point != NULL) {
-
 			drawCross(MemoryDC, LOWORD(Point) - 23 / 2, HIWORD(Point) - 23 / 2);
-
 		}
 
 

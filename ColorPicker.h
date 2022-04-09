@@ -8,16 +8,7 @@
 
 #define GWL_USERDATA -21
 
-/*
-
-#define MAKEDWORD(w1, w2) (((DWORD)(BYTE)(w1)) | ((DWORD)(BYTE)(w2) << 8))
-
-#define LODWORD(dw) ((DWORD)(BYTE)(dw))
-#define HIDWORD(dw) ((DWORD)(BYTE)((dw) >> 8))
-
-*/
-
-#define CP_SHOW 10001
+#define CP_SHOW 10001 // SMALL = 420 - 40 | LARGE = 420 - 100
 
 #define MAX_CPTITLE_CHAR 40
 #define HInstance() GetModuleHandle(NULL)

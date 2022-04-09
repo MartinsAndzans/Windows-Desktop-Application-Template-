@@ -7,7 +7,7 @@
 #include <string>
 #include <math.h>
 
-#define CL_SHOW 20002
+#define CL_SHOW 20002 // 250 - 460
 
 #define MAX_RESULT_LENGTH 8
 
