@@ -10,6 +10,11 @@
 #define ID_DEBUG_TOOL_1 -1
 #define ID_DEBUG_TOOL_2 -2
 
+#define ID_ANIMATION_STARS 0
+#define ID_DROP_FILES 1
+#define ID_COLOR_PICKER 2
+#define ID_CALCULATOR 3
+
 #pragma endregion
 
 class MainWindow {

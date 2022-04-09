@@ -217,8 +217,8 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 
 	LPDFSTYLES Styles = (LPDFSTYLES)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
 
-	(Styles->BackgroundColor != NULL) ? DropFilesBackgroundColor = Styles->BackgroundColor : DropFilesBackgroundColor = RGB(255, 255, 255);
-	(Styles->TextColor != NULL) ? TextColor = Styles->TextColor : TextColor = RGB(0, 0, 0);
+	(Styles->BackgroundColor != NULL) ? DropFilesBackgroundColor = Styles->BackgroundColor : DropFilesBackgroundColor = RGB(255, 255, 255); // DEFAULT
+	(Styles->TextColor != NULL) ? TextColor = Styles->TextColor : TextColor = RGB(0, 0, 0); // DEFAULT
 
 	/////////////////////////////////////////////////////
 	//// +-----------------------------------------+ ////

@@ -192,26 +192,28 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	MainWindow::hMainWindow = hMainWindow;
 
+	// INIT CUSTOM CONTROLS
 	ColorPicker::InitColorPicker();
 	AnimationStars::InitAnimationStars();
 	Calculator::InitCalculator();
 	DropFiles::InitDropFiles();
+	////
 
 	CreateFonts();
 	CreateDebugTools();
 
-	ASSTYLES asparameters = { 0 };
-	asparameters.StarColor = RGB(0, 155, 255);
-	asparameters.Proportion = 4;
+	ASSTYLES asstyles = { 0 };
+	asstyles.StarColor = RGB(0, 155, 255);
+	asstyles.Proportion = 4;
 
-	DFSTYLES dfparameters = { 0 };
-	dfparameters.BackgroundColor = RGB(250, 250, 0);
-	dfparameters.TextColor = RGB(0, 0, 255);
+	DFSTYLES dfstyles = { 0 };
+	dfstyles.BackgroundColor = RGB(250, 250, 0);
+	dfstyles.TextColor = RGB(0, 0, 255);
 
-	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 150, 5, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)0, HInstance(), NULL);
-	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)1, HInstance(), &asparameters);
-	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"SUPER CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 150, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)2, HInstance(), NULL);
-	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"", WS_CHILD | WS_BORDER | WS_VISIBLE, 260, 110, 220, 120, hMainWindow, (HMENU)3, HInstance(), &dfparameters);
+	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)ID_ANIMATION_STARS, HInstance(), &asstyles);
+	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"", WS_CHILD | WS_BORDER | WS_VISIBLE, 260, 110, 220, 120, hMainWindow, (HMENU)ID_DROP_FILES, HInstance(), &dfstyles);
+	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 150, 5, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)ID_COLOR_PICKER, HInstance(), NULL);
+	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"SUPER CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 150, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)ID_CALCULATOR, HInstance(), NULL);
 	
 }
 
@@ -294,9 +296,6 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 	GetTextExtentPoint(MainWindowDC, Text, ARRAYSIZE(Text), &size);
 	TextOut(MemoryDC, MainWindowDimensions.right / 2 - size.cx / 2, MainWindowDimensions.bottom / 2 - size.cy / 2, Text, ARRAYSIZE(Text) - 1);
 
-	SIZE BitmapSize = { MainWindowDimensions.right, MainWindowDimensions.bottom };
-	Functions::SaveBitmapToFile(MainBitmap, "Screenshot", BitmapSize);
-
 	BitBlt(MainWindowDC, 0, 0, MainWindowDimensions.right, MainWindowDimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
 	DeleteDC(MemoryDC);
@@ -311,7 +310,7 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	#define ID_DEFAULT 0xFFFF
 
 	switch (LOWORD(wParam)) {
-	case 0:
+	case ID_COLOR_PICKER:
 	{
 
 		COLORREF Color = (COLORREF)lParam;
@@ -321,7 +320,7 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 		break;
 
 	}
-	case 3:
+	case ID_DROP_FILES:
 	{
 
 		HDROP DropedFiles = (HDROP)lParam;

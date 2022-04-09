@@ -242,8 +242,8 @@ VOID AnimationStars::onPaint(HWND hAnimationStars) {
 
 	LPASSTYLES Styles = (LPASSTYLES)GetWindowLongPtr(hAnimationStars, GWLP_USERDATA);
 
-	(Styles->StarColor != NULL) ? StarColor = Styles->StarColor : StarColor = RGB(255, 255, 255);
-	(Styles->Proportion != NULL) ? Proportion = Styles->Proportion : Proportion = 6;
+	(Styles->StarColor != NULL) ? StarColor = Styles->StarColor : StarColor = RGB(255, 255, 255); // DEFAULT
+	(Styles->Proportion != NULL) ? Proportion = Styles->Proportion : Proportion = 6; // DEFAULT
 	
 	///////////////////////////////////////////////
 	//// +-----------------------------------+ ////
