@@ -58,7 +58,7 @@ public:
 
 	}
 
-	static VOID drawDashedRectangle(HDC hdc, RECT& Rectangle, SIZE_T Width, COLORREF Color) {
+	static VOID drawDashedRectangle(HDC hdc, RECT &Rectangle, SIZE_T Width, COLORREF Color) {
 
 		HPEN Pen = CreatePen(PS_DASH, 1, Color);
 		HPEN PreviousPen = (HPEN)SelectObject(hdc, Pen);

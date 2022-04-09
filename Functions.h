@@ -413,9 +413,7 @@ public:
 		file.open(FilePath, std::ios::in);
 
 		if (!file.is_open()) {
-
 			return TextArray;
-
 		}
 		else {
 
@@ -429,9 +427,7 @@ public:
 				std::getline(file, buffer);
 
 				if (buffer.find(Symbol, 0) != std::string::npos) {
-
 					TextArray.push_back(buffer);
-
 				}
 
 			}
