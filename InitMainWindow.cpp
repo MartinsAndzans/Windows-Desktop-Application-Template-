@@ -200,7 +200,12 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 	////
 
 	CreateFonts();
+
+	#ifdef APP_DEBUG
 	CreateDebugTools();
+	#endif
+
+	#pragma region Example
 
 	ASSTYLES asstyles = { 0 };
 	asstyles.StarColor = RGB(0, 155, 255);
@@ -214,7 +219,9 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"", WS_CHILD | WS_BORDER | WS_VISIBLE, 260, 110, 220, 120, hMainWindow, (HMENU)ID_DROP_FILES, HInstance(), &dfstyles);
 	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 150, 5, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)ID_COLOR_PICKER, HInstance(), NULL);
 	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"SUPER CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 150, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)ID_CALCULATOR, HInstance(), NULL);
-	
+
+	#pragma endregion
+
 }
 
 VOID MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
@@ -224,11 +231,13 @@ VOID MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 	#pragma region DebugTool2
 
+	#ifdef APP_DEBUG
 	SetWindowPos(hDebugTool1, NULL, MainWindowDimensions.right - 160, 0, 160, 25, SWP_SHOWWINDOW);
 	SetWindowPos(hDebugTool2, NULL, MainWindowDimensions.right - 240, 30, 240, 25, SWP_SHOWWINDOW);
 
 	std::wstring WMainWindowDimensions = L"Width = " + Functions::_itow(MainWindowDimensions.right) + L" Height = " + Functions::_itow(MainWindowDimensions.bottom);
 	SetWindowText(hDebugTool2, WMainWindowDimensions.c_str());
+	#endif
 
 	#pragma endregion
 
@@ -243,8 +252,10 @@ VOID MainWindow::onMouseMove(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 	#pragma region DebugTool1
 
+	#ifdef APP_DEBUG
 	std::wstring WMousePosition = L"X = " + Functions::_itow(mousePosition.x) + L" Y = " + Functions::_itow(mousePosition.y);
 	SetWindowText(hDebugTool1, WMousePosition.c_str());
+	#endif
 
 	#pragma endregion
 
@@ -256,6 +267,7 @@ VOID MainWindow::onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 	#pragma region DebugTools
 
+	#ifdef APP_DEBUG
 	if (item->CtlID == ID_DEBUG_TOOL_1 || item->CtlID == ID_DEBUG_TOOL_2) {
 
 		SIZE size = { 0 };
@@ -271,6 +283,7 @@ VOID MainWindow::onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 		TextOut(item->hDC, item->rcItem.right / 2 - size.cx / 2, item->rcItem.bottom / 2 - size.cy / 2, StaticText, TextLength);
 
 	}
+	#endif
 
 	#pragma endregion
 
@@ -299,7 +312,7 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 	Draw::drawStars(MemoryDC, MainWindowDimensions.right / 2 - 400 / 2, MainWindowDimensions.bottom / 2 - 400 / 2, 400, 400, RGB(255, 155, 100), L"*", 10);
 
 	SIZE BitmapSize = { MainWindowDimensions.right, MainWindowDimensions.bottom };
-	Functions::SaveBitmapToFile(MainBitmap, "BITMAP", BitmapSize);
+	Functions::SaveBitmapToFile(MainBitmap, "BITMAP.bmp", BitmapSize);
 
 	BitBlt(MainWindowDC, 0, 0, MainWindowDimensions.right, MainWindowDimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
@@ -318,9 +331,7 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	case ID_COLOR_PICKER:
 	{
 
-		COLORREF Color = (COLORREF)lParam;
-
-		LOGW("R: " << Functions::_itow(GetGValue(Color)) << "\tG: " << Functions::_itow(GetGValue(Color)) << "\tB: " << Functions::_itow(GetBValue(Color)));
+		LOGW("R: " << Functions::_itow(GetGValue((COLORREF)lParam)) << "\tG: " << Functions::_itow(GetGValue((COLORREF)lParam)) << "\tB: " << Functions::_itow(GetBValue((COLORREF)lParam)));
 
 		break;
 
@@ -328,13 +339,10 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	case ID_DROP_FILES:
 	{
 
-		HDROP DropedFiles = (HDROP)lParam;
 		CHAR Buffer[MAX_CHAR_STRING] = { 0 };
-
-		UINT FileCount = DragQueryFileA(DropedFiles, 0xFFFFFFFF, Buffer, ARRAYSIZE(Buffer));
-
+		UINT FileCount = DragQueryFileA((HDROP)lParam, 0xFFFFFFFF, Buffer, ARRAYSIZE(Buffer));
 		for (UINT counter = 0; counter < FileCount; counter++) {
-			DragQueryFileA(DropedFiles, counter, Buffer, ARRAYSIZE(Buffer));
+			DragQueryFileA((HDROP)lParam, counter, Buffer, ARRAYSIZE(Buffer));
 			LOG(Buffer);
 		}
 

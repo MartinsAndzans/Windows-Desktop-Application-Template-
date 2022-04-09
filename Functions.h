@@ -330,8 +330,6 @@ public:
 
 	static BOOL SaveBitmapToFile(HBITMAP Bitmap, std::string FilePath, SIZE BitmapSize) {
 
-		#define BITMAP_FILE_HEADER_SIZE_IN_BYTES sizeof(BITMAPFILEHEADER)
-		#define BITMAP_INFO_HEADER_SIZE_IN_BYTES sizeof(BITMAPINFOHEADER)
 		#define BITMAP_SIZE_IN_PIXELS BitmapSize.cx * BitmapSize.cy
 		#define BITMAP_SIZE_IN_BYTES sizeof(COLORREF) * ((int64_t)BitmapSize.cx * (int64_t)BitmapSize.cy)
 
@@ -341,8 +339,8 @@ public:
 
 		BITMAPFILEHEADER file = { 0 };
 		file.bfType = BM;
-		file.bfSize = BITMAP_FILE_HEADER_SIZE_IN_BYTES + BITMAP_INFO_HEADER_SIZE_IN_BYTES + BITMAP_SIZE_IN_BYTES; // File Size
-		file.bfOffBits = BITMAP_FILE_HEADER_SIZE_IN_BYTES + BITMAP_INFO_HEADER_SIZE_IN_BYTES; // Offset To Color Bits
+		file.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + BITMAP_SIZE_IN_BYTES; // File Size
+		file.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER); // Offset To Color Bits
 		file.bfReserved1 = NULL;
 		file.bfReserved2 = NULL;
 
@@ -373,14 +371,14 @@ public:
 
 		DeleteDC(MemoryDC);
 
-		image.open(FilePath + ".bmp", std::ios::out | std::ios::binary);
+		image.open(FilePath, std::ios::out | std::ios::binary);
 
 		if (!image.is_open()) {
 			return FALSE;
 		}
 		else {
-			image.write((char*)&file, BITMAP_FILE_HEADER_SIZE_IN_BYTES); // BITMAP FILE HEADER
-			image.write((char*)&info, BITMAP_INFO_HEADER_SIZE_IN_BYTES); // BITMAP INFO HEADER
+			image.write((char*)&file, sizeof(BITMAPFILEHEADER)); // BITMAP FILE HEADER
+			image.write((char*)&info, sizeof(BITMAPINFOHEADER)); // BITMAP INFO HEADER
 			image.write((char*)BitmapBits, BITMAP_SIZE_IN_BYTES); // BYTE ARRAY
 		}
 
@@ -390,8 +388,6 @@ public:
 
 		return TRUE;
 
-		#undef BITMAP_FILE_HEADER_SIZE_IN_BYTES
-		#undef BITMAP_INFO_HEADER_SIZE_IN_BYTES
 		#undef BITMAP_SIZE_IN_PIXELS
 		#undef BITMAP_SIZE_IN_BYTES
 

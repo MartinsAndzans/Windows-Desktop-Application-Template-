@@ -48,7 +48,7 @@ std::wcout.flush()
 #define MAX_CHAR_STRING 256
 
 #define HInstance() GetModuleHandle(NULL)
-#define MainWindowBackgroundColor RGB(100, 100, 255)
+#define MainWindowBackgroundColor RGB(160, 160, 255)
 
 #pragma endregion
 
