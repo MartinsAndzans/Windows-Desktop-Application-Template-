@@ -404,7 +404,8 @@ public:
 
 		std::fstream file;
 
-		std::vector <std::string> TextArray = { "ERROR" };
+		std::vector <std::string> TextArray;
+		TextArray.reserve(1);
 
 		file.open(FilePath, std::ios::in);
 
@@ -412,9 +413,6 @@ public:
 			return TextArray;
 		}
 		else {
-
-			TextArray.clear();
-			TextArray.shrink_to_fit();
 
 			std::string buffer = "";
 

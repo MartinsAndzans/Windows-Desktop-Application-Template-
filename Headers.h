@@ -36,13 +36,13 @@
 #define RETURN return
 
 #ifdef APP_DEBUG
-#define LOG(text) std::cout << text << "\n";\
+#define PRINT(text) std::cout << text << "\n";\
 std::cout.flush()
-#define LOGW(text) std::wcout << text << "\n";\
+#define PRINTW(text) std::wcout << text << "\n";\
 std::wcout.flush()
 #else defined(APP_RELEASE)
-#define LOG(text)
-#define LOGW(text)
+#define PRINT(text)
+#define PRINTW(text)
 #endif
 
 #define MAX_CHAR_STRING 256
