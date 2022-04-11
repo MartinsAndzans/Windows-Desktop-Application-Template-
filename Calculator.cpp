@@ -151,7 +151,7 @@ BOOL Calculator::_ftow(DOUBLE Value, wchar_t (&Buffer)[256], UINT Precision) {
 	for (UINT I = 0; I < Precision; I++) {
 		Value = Value / 0.1; // 0.1234 / 0.1 = 1.234 <-
 		if ((int64_t)Value == 0) {
-			CHAR Char = (INT)Value + ASCII_VALUE_ZERO; // Char Value  0 | 48 - 9 | 57
+			CHAR Char = (int)Value + ASCII_VALUE_ZERO; // Char Value  0 | 48 - 9 | 57
 			WStringValue = WStringValue + (wchar_t)Char; // Char Value To Symbol
 		}
 	}
@@ -169,11 +169,9 @@ BOOL Calculator::_ftow(DOUBLE Value, wchar_t (&Buffer)[256], UINT Precision) {
 INT Calculator::FindChar(wchar_t (&Text)[], const wchar_t Char, INT TextLength) {
 
 	for (int i = 0; i < TextLength; i++) {
-
 		if (Text[i] == Char) {
 			return i;
 		}
-
 	}
 
 	return -1;

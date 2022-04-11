@@ -103,10 +103,10 @@ std::wcout.flush()
 
 #define ListBox_AddString(hwnd, string) SendMessage(hwnd, LB_ADDSTRING, NULL, (LPARAM)string)
 #define ListBox_SetItemData(hwnd, index, value) SendMessage(hwnd, LB_SETITEMDATA, (WPARAM)index, (LPARAM)value)
-#define ListBox_GetItemData(hwnd, index) SendMessage(hwnd, LB_GETITEMDATA, (WPARAM)index, NULL)
+#define ListBox_GetItemData(hwnd, index) SendMessage(hwnd, LB_GETITEMDATA, (WPARAM)index, NULL) // Return Value is Value Associated With that Item
 #define ListBox_SetSelectedItemIndex(hwnd, index) SendMessage(hwnd, LB_SETCURSEL, (WPARAM)index, NULL)
-#define ListBox_GetSelectedItemIndex(hwnd) SendMessage(hwnd, LB_GETCURSEL, NULL, NULL)
-#define ListBox_FindString(hwnd, string) SendMessage(hwnd, LB_FINDSTRING, (WPARAM)-1, (LPARAM)string)
+#define ListBox_GetSelectedItemIndex(hwnd) SendMessage(hwnd, LB_GETCURSEL, NULL, NULL)  // Return Value is Selected Item Index
+#define ListBox_FindString(hwnd, string) SendMessage(hwnd, LB_FINDSTRING, (WPARAM)-1, (LPARAM)string)  // Return Value is String Index
 #define ListBox_SetTopListBoxItem(hwnd, index) SendMessage(hwnd, LB_STETOPINDEX, (WPARAM)index, NULL)
 
 #pragma endregion
