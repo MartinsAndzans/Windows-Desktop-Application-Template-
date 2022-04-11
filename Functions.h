@@ -123,7 +123,7 @@ public:
 			INT CharValue = _wtoi(EncryptedText.c_str());
 			Text = Text + (wchar_t)(char)CharValue;
 			size_t SeperatorPosition = EncryptedText.find_first_of(L'|', 0);
-			for (int i = SeperatorPosition; i >= 0; i--) {
+			for (int i = (int)SeperatorPosition; i >= 0; i--) {
 				EncryptedText.erase(i);
 			}
 		}
