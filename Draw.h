@@ -35,29 +35,35 @@ class Draw {
 
 public:
 
-
+	/// <summary>
+	/// This Function Draws Rectangle
+	/// </summary>
+	/// <param name="hdc">- Device Context</param>
+	/// <param name="Rectangle">- Rectangle</param>
 	static VOID drawRectangle(HDC hdc, RECT &Rectangle) {
 
-		/// <summary>
-		/// This Function Draws Rectangle
-		/// </summary>
-		/// <param name="hdc">Device Context</param>
-		/// <param name="rect">Rectangle</param>
-
+		// TOP
 		MoveToEx(hdc, Rectangle.left, Rectangle.top, NULL);
 		LineTo(hdc, Rectangle.right, Rectangle.top);
-
-		MoveToEx(hdc, Rectangle.left, Rectangle.top, NULL);
-		LineTo(hdc, Rectangle.left, Rectangle.bottom);
-
+		// BOTTOM
 		MoveToEx(hdc, Rectangle.left, Rectangle.bottom, NULL);
 		LineTo(hdc, Rectangle.right, Rectangle.bottom);
-
+		// LEFT
+		MoveToEx(hdc, Rectangle.left, Rectangle.top, NULL);
+		LineTo(hdc, Rectangle.left, Rectangle.bottom);
+		// RIGHT
 		MoveToEx(hdc, Rectangle.right, Rectangle.top, NULL);
 		LineTo(hdc, Rectangle.right, Rectangle.bottom);
 
 	}
 
+	/// <summary>
+	/// This Function Draws Dashed Rectangle
+	/// </summary>
+	/// <param name="hdc">- Device Context</param>
+	/// <param name="Rectangle">- Rectangle</param>
+	/// <param name="Width">- Width</param>
+	/// <param name="Color">- Color</param>
 	static VOID drawDashedRectangle(HDC hdc, RECT &Rectangle, SIZE_T Width, COLORREF Color) {
 
 		HPEN Pen = CreatePen(PS_DASH, 1, Color);
@@ -85,6 +91,15 @@ public:
 
 	}
 
+	/// <summary>
+	/// This Function Draws Bitmap From File
+	/// </summary>
+	/// <param name="DestinationDC">- Device Context</param>
+	/// <param name="DestinationRectangle">- Where Draw Bitmap</param>
+	/// <param name="FilePath">- File Path - [EXAMPLE - "Image.bmp/.ico/.cur"]</param>
+	/// <param name="BitmapType">- IMAGE_BITMAP || IMAGE_ICON || IMAGE_CURSOR</param>
+	/// <param name="DrawMethod">- Draw Method - [EXAMPLE - SRCCOPY]</param>
+	/// <returns>If Succeeded Returns TRUE, but If not Returns FALSE</returns>
 	static BOOL drawBitmapFromFile(HDC DestinationDC, RECT &DestinationRectangle, std::string FilePath, UINT BitmapType = IMAGE_BITMAP, DWORD DrawMethod = SRCCOPY) {
 
 		HDC BitmapDC = CreateCompatibleDC(DestinationDC);
@@ -102,19 +117,18 @@ public:
 
 	}
 
+	/// <summary>
+	/// This Function Draws Rectangle
+	/// </summary>
+	/// <param name="hdc">- Device Context</param>
+	/// <param name="X">- X Coordinate</param>
+	/// <param name="Y">- Y Coordinate</param>
+	/// <param name="W">- Width</param>
+	/// <param name="H">- Height</param>
+	/// <param name="BorderWidth">- Border Width</param>
+	/// <param name="Color">- Rectangle Color</param>
+	/// <param name="BorderColor">- Border Color</param>
 	static VOID drawRectangle(HDC hdc, INT X = 0, INT Y = 0, INT W = 120, INT H = 40, INT BorderWidth = 2, COLORREF RectangleColor = WHITE_COLOR, COLORREF BorderColor = BLACK_COLOR) {
-
-		/// <summary>
-		/// This Function Draws Rectangle
-		/// </summary>
-		/// <param name="hdc">Device Context</param>
-		/// <param name="X">X Coordinate</param>
-		/// <param name="Y">Y Coordinate</param>
-		/// <param name="W">Width</param>
-		/// <param name="H">Height</param>
-		/// <param name="BorderWidth">Border Width</param>
-		/// <param name="Color">Rectangle Color</param>
-		/// <param name="BorderColor">Border Color</param>
 
 		INT XS = 0, XE = W, YS = 0, YE = H;
 
@@ -151,13 +165,20 @@ public:
 
 	}
 
+	/// <summary>
+	/// This Function Fills Rectangle [50/50 Pixels] - [50% Opacity]
+	/// <para>|X| |X| |X|</para>
+	/// </summary>
+	/// <param name="hdc">- Device Context</param>
+	/// <param name="Rectangle">- Rectangle</param>
+	/// <param name="Color">- Color</param>
 	static VOID FillRectOpacity50(HDC hdc, RECT &Rectangle, COLORREF Color) {
 
 		BOOL DRAWPIXEL; // TRUE = |X| - FALSE = | |
 		for (int x = Rectangle.left; x <= Rectangle.right; x++) {
 			(x % 2 == NULL) ? DRAWPIXEL = TRUE : DRAWPIXEL = FALSE; // 0, 2, 4, 5 = TRUE - 1, 3, 5, 7 = FALSE 
 			for (int y = Rectangle.top; y <= Rectangle.bottom; y++) {
-				if (DRAWPIXEL == TRUE) {
+				if (DRAWPIXEL) {
 					DRAWPIXEL = FALSE;
 					SetPixel(hdc, x, y, Color);
 				}
@@ -170,55 +191,62 @@ public:
 
 	}
 
-	static VOID drawCube(HDC hdc, INT X = 0, INT Y = 0, INT W = 40, INT H = 40, INT Z = 20) {
+	/// <summary>
+	/// This Function Draws Cube
+	/// </summary>
+	/// <param name="hdc">- Device Context</param>
+	/// <param name="X">- X Coordinate</param>
+	/// <param name="Y">- Y Coordinate</param>
+	/// <param name="W">- Width</param>
+	/// <param name="H">- Height</param>
+	/// <param name="Z">- Z Coordinate</param>
+	static VOID drawCube(HDC hdc, INT X = 0, INT Y = 0, INT W = 40, INT H = 40, INT Z = 40) {
 
-		while (Z >= 0) {
+		for (int depth = 0; depth < Z / 2; depth++) {
 			drawRectangle(hdc, X, Y, W, H);
-			X--, Y++, Z--;
+			X--, Y++;
 		}
 
 	}
 
-	static VOID drawRomb(HDC hdc, int x = 0, int y = 0, int w = 60, int h = 60, COLORREF color = BLACK_COLOR) {
+	/// <summary>
+	/// This Function Draws Romb
+	/// </summary>
+	/// <param name="hdc">- Device Context</param>
+	/// <param name="X">- X Coordinate</param>
+	/// <param name="Y">- Y Coordinate</param>
+	/// <param name="W">- Width</param>
+	/// <param name="H">- Height</param>
+	/// <param name="Color">- Romb Color</param>
+	static VOID drawRomb(HDC hdc, INT X = 0, INT Y = 0, INT W = 60, INT H = 60, COLORREF Color = BLACK_COLOR) {
 
-		/// <summary>
-		/// This Function Draws Romb
-		/// </summary>
-		/// <param name="hdc">Device Context</param>
-		/// <param name="x">X Coordinate</param>
-		/// <param name="y">Y Coordinate</param>
-		/// <param name="w">Width</param>
-		/// <param name="h">Height</param>
-		/// <param name="color">Romb Color</param>
+		INT OFFSET = 0, XS = 0, XE = W, YS = 0, YE = H;
 
-		int offset = 0, xs = 0, xe = w, ys = 0, ye = h;
-
-		for (int ys = 0; ys <= ye; ys++) {
-			if (ys >= h / 2) {
-				for (int xs = w / 2 - offset; xs <= w / 2 + offset; xs++) {
-					SetPixel(hdc, x + xs, y + ys, color);
+		for (int YS = 0; YS <= YE; YS++) {
+			if (YS >= H / 2) {
+				for (int XS = W / 2 - OFFSET; XS <= W / 2 + OFFSET; XS++) {
+					SetPixel(hdc, X + XS, Y + YS, Color);
 				}
-				offset--;
+				OFFSET--;
 				continue;
 			}
-			for (int xs = w / 2 - offset; xs <= w / 2 + offset; xs++) {
-				SetPixel(hdc, x + xs, y + ys, color);
+			for (int XS = W / 2 - OFFSET; XS <= W / 2 + OFFSET; XS++) {
+				SetPixel(hdc, X + XS, Y + YS, Color);
 			}
-			offset++;
+			OFFSET++;
 		}
 
 	}
 
+	/// <summary>
+	/// This Function Draws Arrow
+	/// </summary>
+	/// <param name="hdc">- Device Context</param>
+	/// <param name="X">- X Coordinate</param>
+	/// <param name="Y">- Y Coordinate</param>
+	/// <param name="W">- Width</param>
+	/// <param name="H">- Height</param>
 	static VOID drawArrow(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF Color) {
-
-		/// <summary>
-		/// This Function Draws Arrow
-		/// </summary>
-		/// <param name="hdc">Device Context</param>
-		/// <param name="x">X Coordinate</param>
-		/// <param name="y">Y Coordinate</param>
-		/// <param name="w">Width</param>
-		/// <param name="h">Height</param>
 
 		CONST SHORT Proportion = 3;
 		INT OFFSET = 0, XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
@@ -259,18 +287,18 @@ public:
 
 	}
 
+	/// <summary>
+	/// This Function Draws Small Gradient
+	/// </summary>
+	/// <param name="hdc">- Device Context</param>
+	/// <param name="X">- X Coordinate</param>
+	/// <param name="Y">- Y Coordinate</param>
+	/// <param name="W">- Width</param>
+	/// <param name="H">- Height</param>
+	/// <param name="BorderWidth">- Border Width</param>
+	/// <param name="BorderColor">- Border Color</param>
+	/// <returns>Returns Border Width</returns>
 	static INT drawGradientSmall(HDC hdc, INT X = 0, INT Y = 0, INT W = 420, INT H = 40, INT BorderWidth = 2, COLORREF BorderColor = BLACK_COLOR) {
-
-		/// <summary>
-		/// This Function Draws Small Gradient
-		/// </summary>
-		/// <param name="hdc">Device Context</param>
-		/// <param name="X">X Coordinate</param>
-		/// <param name="Y">Y Coordinate</param>
-		/// <param name="W">Width</param>
-		/// <param name="H">Height</param>
-		/// <param name="BorderWidth">Border Width</param>
-		/// <param name="BorderColor">Border Color</param>
 
 		INT R = 255, G = 255, B = 255;
 		INT XS = 0, XE = W, YS = 0, YE = H;
@@ -322,18 +350,18 @@ public:
 
 	}
 
+	/// <summary>
+	/// This Function Draws Large Gradient
+	/// </summary>
+	/// <param name="hdc">- Device Context</param>
+	/// <param name="X">- X Coordinate</param>
+	/// <param name="Y">- Y Coordinate</param>
+	/// <param name="W">- Width</param>
+	/// <param name="H">- Height</param>
+	/// <param name="BorderWidth">- Border Width</param>
+	/// <param name="BorderColor">- Border Color</param>
+	/// <returns>Returns Border Width</returns>
 	static INT drawGradientLarge(HDC hdc, INT X = 0, INT Y = 0, INT W = 420, INT H = 100, INT BorderWidth = 2, COLORREF BorderColor = BLACK_COLOR) {
-
-		/// <summary>
-		/// This Function Draws Large Gradient
-		/// </summary>
-		/// <param name="hdc">Device Context</param>
-		/// <param name="X">X Coordinate</param>
-		/// <param name="Y">Y Coordinate</param>
-		/// <param name="W">Width</param>
-		/// <param name="H">Height</param>
-		/// <param name="BorderWidth">Border Width</param>
-		/// <param name="BorderColor">Border Color</param>
 
 		INT R = 255, G = 255, B = 255;
 		INT RS = 255, GS = 255, BS = 255;
@@ -392,26 +420,24 @@ public:
 
 	}
 
+	/// <summary>
+	/// This Function Draws Stars
+	/// </summary>
+	/// <param name="hdc">- Device Context</param>
+	/// <param name="X">- X Coordinate</param>
+	/// <param name="Y">- Y Coordinate</param>
+	/// <param name="W">- Width</param>
+	/// <param name="H">- Height</param>
+	/// <param name="StarColor">- Star Color</param>
+	/// <param name="StarSymbol">- Star Symbol</param>
+	/// <param name="Proportion">- Proportion</param>
 	static VOID drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF StarColor, const wchar_t StarSymbol[], INT Proportion) {
-
-		/// <summary>
-		/// This Function Draws Stars
-		/// </summary>
-		/// <param name="hdc">Device Context</param>
-		/// <param name="X">X Coordinate</param>
-		/// <param name="Y">Y Coordinate</param>
-		/// <param name="W">Width</param>
-		/// <param name="H">Height</param>
-		/// <param name="StarColor">Star Color</param>
-		/// <param name="StarSymbol">Star Symbol</param>
-		/// <param name="Proportion">Proportion</param>
 
 		if (W && H != 0) {
 
 			SIZE size = { 0 };
 			SYSTEMTIME st = { 0 };
-			INT CELL = 0;
-			INT XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
+			INT CURRENTCELL = 0, XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
 
 			COLORREF DefaultColor = GetTextColor(hdc);
 			SetTextColor(hdc, StarColor);
@@ -436,7 +462,7 @@ public:
 				///////////////////////////
 
 				XS = XS + XCELL;
-				CELL++;
+				CURRENTCELL++;
 
 				/////////////////
 				//// +---+ | ////
@@ -450,8 +476,8 @@ public:
 				//// +---+   ////
 				/////////////////
 
-				if (CELL == Proportion) {
-					CELL = 0;
+				if (CURRENTCELL == Proportion) {
+					CURRENTCELL = 0;
 					XS = 0;
 					YS = YS + YCELL;
 				}
@@ -469,17 +495,16 @@ public:
 
 	}
 
+	/// <summary>
+	/// This Function Draws Cross
+	/// </summary>
+	/// <param name="hdc">- Device Context</param>
+	/// <param name="X">- X Coordinate</param>
+	/// <param name="Y">- Y Coordinate</param>
+	/// <param name="W">- Width</param>
+	/// <param name="H">- Height</param>
+	/// <param name="CrossColor">- Cross Color</param>
 	static VOID drawCross(HDC hdc, INT X = 0, INT Y = 0, INT W = 23, INT H = 23, COLORREF CrossColor = BLACK_COLOR) {
-
-		/// <summary>
-		/// This Function Draws Cross
-		/// </summary>
-		/// <param name="hdc">Device Context</param>
-		/// <param name="X">X Coordinate</param>
-		/// <param name="Y">Y Coordinate</param>
-		/// <param name="W">Width</param>
-		/// <param name="H">Height</param>
-		/// <param name="CrossColor">Cross Color</param>
 
 		if (W % 2 != NULL && H % 2 != NULL) {
 

@@ -309,6 +309,18 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 	GetTextExtentPoint(MainWindowDC, Text, ARRAYSIZE(Text), &size);
 	TextOut(MemoryDC, MainWindowDimensions.right / 2 - size.cx / 2, MainWindowDimensions.bottom / 2 - size.cy / 2, Text, ARRAYSIZE(Text) - 1);
 
+	RECT rect = { MainWindowDimensions.right / 2 - 100, MainWindowDimensions.bottom / 2 - 100, MainWindowDimensions.right / 2 + 100, MainWindowDimensions.bottom / 2 + 100 };
+	Draw::FillRectOpacity50(MemoryDC, rect, GREEN_COLOR);
+
+	Functions::CopyTextToClipboard(hMainWindow, L"ABCDEFGHIJKLMNOPQRSTUVWXYZ - [123456789]");
+
+	//WCHAR Music[MAX_CHAR_STRING] = { 0 };
+	//wcscpy_s(Music, ApplicationDirectory), wcscat_s(Music, L"\\Music.wma");
+	//sndPlaySound(Music, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+
+	SIZE BitmapSize = { MainWindowDimensions.right, MainWindowDimensions.bottom };
+	Functions::SaveBitmapToFile(MainBitmap, "MainBitmap.bmp", BitmapSize);
+
 	BitBlt(MainWindowDC, 0, 0, MainWindowDimensions.right, MainWindowDimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
 	DeleteDC(MemoryDC);

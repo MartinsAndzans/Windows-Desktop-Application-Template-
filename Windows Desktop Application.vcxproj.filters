@@ -46,7 +46,7 @@
     </Filter>
     <Filter Include="Resource Files\Music">
       <UniqueIdentifier>{0e4b0dab-69c9-44d0-8c44-98f7ad1f5507}</UniqueIdentifier>
-      <Extensions>wav</Extensions>
+      <Extensions>wav;wma</Extensions>
     </Filter>
     <Filter Include="Custom Controls\Calculator">
       <UniqueIdentifier>{fc76915f-c888-4997-999b-b314dc68aacd}</UniqueIdentifier>

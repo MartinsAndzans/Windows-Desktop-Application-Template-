@@ -101,8 +101,7 @@ VOID AnimationStars::drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF Sta
 
 		SIZE size = { 0 };
 		SYSTEMTIME st = { 0 };
-		INT CELL = 0;
-		INT XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
+		INT CURRENTCELL = 0, XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
 
 		COLORREF DefaultColor = GetTextColor(hdc);
 		SetTextColor(hdc, StarColor);
@@ -127,7 +126,7 @@ VOID AnimationStars::drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF Sta
 			///////////////////////////
 
 			XS = XS + XCELL;
-			CELL++;
+			CURRENTCELL++;
 
 			/////////////////
 			//// +---+ | ////
@@ -141,8 +140,8 @@ VOID AnimationStars::drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF Sta
 			//// +---+   ////
 			/////////////////
 
-			if (CELL == Proportion) {
-				CELL = 0;
+			if (CURRENTCELL == Proportion) {
+				CURRENTCELL = 0;
 				XS = 0;
 				YS = YS + YCELL;
 			}

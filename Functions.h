@@ -155,15 +155,15 @@ public:
 	/// This Function Copy Unicode Text into Clipboard
 	/// </summary>
 	/// <param name="Hwnd">- New Clipboard Owner</param>
-	/// <param name="Text">- Text into ClipBoard</param>
-	/// <returns>If Function Succeeded Returns TRUE, but If not FALSE</returns>
-	static BOOL CopyTextToClipboard(HWND Hwnd, std::wstring Text) {
+	/// <param name="WText">- WText into Clipboard</param>
+	/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
+	static BOOL CopyTextToClipboard(HWND Hwnd, std::wstring WText) {
 
-		if (Text.length() != 0) {
+		if (WText.length() != 0) {
 
 			if (OpenClipboard(Hwnd)) {
 				EmptyClipboard();
-				HLOCAL CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(WCHAR) * Text.length());
+				HLOCAL CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(WCHAR) * WText.length() + 1);
 				if (CopyData == NULL) {
 					CloseClipboard();
 					return FALSE;
@@ -174,7 +174,7 @@ public:
 					CloseClipboard();
 					return FALSE;
 				}
-				memcpy(buffer, (void*)Text.c_str(), sizeof(WCHAR) * Text.length());
+				memcpy(buffer, (void*)WText.c_str(), sizeof(WCHAR) * WText.length() + 1);
 				LocalUnlock(CopyData);
 				SetClipboardData(CF_UNICODETEXT, CopyData);
 				LocalFree(CopyData);
@@ -192,15 +192,15 @@ public:
 	/// This Function Copy Text into Clipboard
 	/// </summary>
 	/// <param name="Hwnd">- New Clipboard Owner</param>
-	/// <param name="Text">- Text into ClipBoard</param>
-	/// <returns>If Function Succeeded Returns TRUE, but If not FALSE</returns>
+	/// <param name="Text">- Text into Clipboard</param>
+	/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
 	static BOOL CopyTextToClipboard(HWND Hwnd, std::string Text) {
 
 		if (Text.length() != 0) {
 
 			if (OpenClipboard(Hwnd)) {
 				EmptyClipboard();
-				HLOCAL CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(CHAR) * Text.length());
+				HLOCAL CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(CHAR) * Text.length() + 1);
 				if (CopyData == NULL) {
 					CloseClipboard();
 					return FALSE;
@@ -211,7 +211,7 @@ public:
 					CloseClipboard();
 					return FALSE;
 				}
-				memcpy(buffer, (void*)Text.c_str(), sizeof(CHAR) * Text.length());
+				memcpy(buffer, (void*)Text.c_str(), sizeof(CHAR) * Text.length() + 1);
 				LocalUnlock(CopyData);
 				SetClipboardData(CF_TEXT, CopyData);
 				LocalFree(CopyData);
@@ -297,7 +297,7 @@ public:
 
 	/// <summary>
 	/// Creates Control On Heap Memory
-	/// <para>After Destroying This Control - Invoke This function <code>"Delete Hwnd"</code></para>
+	/// <para>After Destroying This Control - Invoke This function [Delete Hwnd]</para>
 	/// </summary>
 	/// <param name="Class">- Control Class</param>
 	/// <param name="Caption">- Control Caption</param>
@@ -323,6 +323,7 @@ public:
 			return Hwnd;
 		}
 
+		delete Hwnd;
 		return NULL;
 
 	}
@@ -346,7 +347,7 @@ public:
 	/// <param name="FilePath">- File Path With ".bmp" Extension</param>
 	/// <param name="BitmapSize">- Bitmap Size In Pixels</param>
 	/// <returns>If Succeeded Returns TRUE, but If not Returns FALSE</returns>
-	static BOOL SaveBitmapToFile(HBITMAP Bitmap, std::string FilePath, SIZE BitmapSize) {
+	static BOOL SaveBitmapToFile(HBITMAP Bitmap, std::string FilePath, SIZE &BitmapSize) {
 
 		#define BITMAP_SIZE_IN_PIXELS BitmapSize.cx * BitmapSize.cy
 		#define BITMAP_SIZE_IN_BYTES sizeof(COLORREF) * ((int64_t)BitmapSize.cx * (int64_t)BitmapSize.cy)
@@ -412,7 +413,7 @@ public:
 	}
 
 	/// <summary>
-	/// Finds all Lines in File With Matching Symbol
+	/// Finds ALL Lines in File With Matching Symbol
 	/// </summary>
 	/// <param name="FilePath">- File Path</param>
 	/// <param name="Symbol">- Symbol To Be Checked</param>
