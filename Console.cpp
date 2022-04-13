@@ -6,7 +6,7 @@ SMALL_RECT Console::consoleSize = { 0 };
 CONSOLE_CURSOR_INFO Console::info = { 0 };
 CONSOLE_SCREEN_BUFFER_INFO Console::csbi = { 0 };
 
-VOID Console::setConsoleTitle(const char* Title) {
+VOID Console::setConsoleTitle(const char *Title) {
 
 	SetConsoleTitleA(Title);
 

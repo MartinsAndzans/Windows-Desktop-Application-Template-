@@ -313,14 +313,6 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 	GetTextExtentPoint(MainWindowDC, Text, ARRAYSIZE(Text), &size);
 	TextOut(MemoryDC, MainWindowDimensions.right / 2 - size.cx / 2, MainWindowDimensions.bottom / 2 - size.cy / 2, Text, ARRAYSIZE(Text) - 1);
 
-	RECT rect = { MainWindowDimensions.right / 2 - 100, MainWindowDimensions.bottom / 2 - 100, MainWindowDimensions.right / 2 + 100, MainWindowDimensions.bottom / 2 + 100 };
-	Draw::FillRectOpacity50(MemoryDC, rect, GREEN_COLOR);
-
-	//Functions::CopyTextToClipboard(hMainWindow, L"ABCDEFGHIJKLMNOPQRSTUVWXYZ - [123456789]");
-
-	SIZE BitmapSize = { MainWindowDimensions.right, MainWindowDimensions.bottom };
-	Functions::SaveBitmapToFile(MainBitmap, "MainBitmap.bmp", BitmapSize);
-
 	BitBlt(MainWindowDC, 0, 0, MainWindowDimensions.right, MainWindowDimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
 	DeleteDC(MemoryDC);
@@ -353,8 +345,8 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 			PRINTW(Buffer);
 		}
 
-		MCIERROR Error = Sound::Open(hMainWindow, Buffer, L"Sound");
-		PRINTW(Functions::_itow(Error));
+		MCIERROR Error = Sound::Open(Buffer, L"Sound");
+		PRINT(Error);
 
 		break;
 
@@ -362,8 +354,8 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	case 10: // PLAY
 	{
 
-		MCIERROR Error = Sound::Play(hMainWindow, L"Sound");
-		PRINTW(Functions::_itow(Error));
+		MCIERROR Error = Sound::Play(hMainWindow, L"Sound", TRUE);
+		PRINT(Error);
 
 		break;
 
@@ -375,12 +367,14 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 		if (StatusMode == MCI_MODE_PLAY) {
 			MCIERROR Error = Sound::Pause(L"Sound");
-			PRINTW(Functions::_itow(Error));
+			PRINT(Error);
 		}
 		else if (StatusMode == MCI_MODE_PAUSE) {
 			MCIERROR Error = Sound::Resume(L"Sound");
-			PRINTW(Functions::_itow(Error));
+			PRINT(Error);
 		}
+
+		PRINT(StatusMode);
 
 		break;
 
@@ -389,7 +383,7 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	{
 
 		MCIERROR Error = Sound::Stop(L"Sound");
-		PRINTW(Functions::_itow(Error));
+		PRINT(Error);
 
 		break;
 
@@ -459,13 +453,10 @@ LRESULT CALLBACK MainWindow::MainWindowProcedure(HWND hMainWindow, UINT Msg, WPA
 	case MM_MCINOTIFY:
 	{
 
-		MCIDEVICEID ID = LOWORD(lParam);
-
-		MCIERROR Error = 0;
-
-		Error = mciSendCommand(ID, MCI_SEEK, MCI_SEEK_TO_START, NULL);
-
-		Sound::Play(hMainWindow, L"Sound");
+		Sound::MCISTATUS StatusPosition = Sound::GetPlaybackStatus(L"Sound", MCI_STATUS_POSITION);
+		if (StatusPosition != 0) {
+			MCIERROR Error = Sound::Play(hMainWindow, L"Sound", TRUE);
+		}
 
 		RETURN 0;
 	}
@@ -476,7 +467,7 @@ LRESULT CALLBACK MainWindow::MainWindowProcedure(HWND hMainWindow, UINT Msg, WPA
 	}
 	case WM_KEYDOWN:
 	{
-
+		onKeyDown(hMainWindow, wParam, lParam);
 		RETURN 0;
 	}
 	case WM_CLOSE:
