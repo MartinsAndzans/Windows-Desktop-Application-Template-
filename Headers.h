@@ -10,6 +10,8 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <conio.h>
+#include <thread>
 
 #include "Functions.h"
 #include "Draw.h"
@@ -65,8 +67,8 @@ std::wcout.flush()
 
 #pragma region MainWindow|Class|Title
 
-#define MAIN_WINDOW_CLASS L"MAIN CLASS"
-#define MAIN_WINDOW_TITLE L"Window"
+#define MAIN_WINDOW_CLASS L"MAIN WINDOW CLASS"
+#define MAIN_WINDOW_TITLE L"Window [TEMPLATE]"
 
 #pragma endregion
 
@@ -88,6 +90,25 @@ std::wcout.flush()
 
 #define SetFont(hwnd, font) SendMessage(hwnd, WM_SETFONT, (WPARAM)font, NULL)
 #define SetIcon(hwnd, type, hicon) SendMessage(hwnd, WM_SETICON, (WPARAM)type, (LPARAM)hicon)
+
+#pragma endregion
+
+#pragma region ConsoleMacros
+
+/// <summary>
+/// > First Character Corresponds To The Background Color and Second Character Corresponds To The Foreground Color
+/// <para>> 0 = Black | 8 = Gray</para>
+/// <para>> 1 = Blue | 9 = Light Blue</para>
+/// <para>> 2 = Green | A = Light Green</para>
+/// <para>> 3 = Aqua | B = Light Aqua</para>
+/// <para>> 4 = Red | C = Light Red</para>
+/// <para>> 5 = Purple | D = Light Purple</para>
+/// <para>> 6 = Yellow | E = Light Yellow</para>
+/// <para>> 7 = White | F = Bright White</para>
+/// </summary>
+#define SetConsoleColor(color) CHAR buffer[MAX_CHAR_STRING] = "color ";\
+strcat_s(buffer, color);\
+system(buffer)
 
 #pragma endregion
 

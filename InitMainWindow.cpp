@@ -222,6 +222,10 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	#pragma endregion
 
+	CreateWindow(L"BUTTON", L"PLAY", WS_CHILD | WS_BORDER | WS_VISIBLE, MainWindowDimensions.right / 2 - 100 / 2, 10, 100, 40, hMainWindow, (HMENU)10, HInstance(), NULL);
+	CreateWindow(L"BUTTON", L"PAUSE", WS_CHILD | WS_BORDER | WS_VISIBLE, MainWindowDimensions.right / 2 - 100 / 2, 60, 100, 40, hMainWindow, (HMENU)11, HInstance(), NULL);
+	CreateWindow(L"BUTTON", L"STOP", WS_CHILD | WS_BORDER | WS_VISIBLE, MainWindowDimensions.right / 2 - 100 / 2, 110, 100, 40, hMainWindow, (HMENU)12, HInstance(), NULL);
+
 }
 
 VOID MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
@@ -312,11 +316,7 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 	RECT rect = { MainWindowDimensions.right / 2 - 100, MainWindowDimensions.bottom / 2 - 100, MainWindowDimensions.right / 2 + 100, MainWindowDimensions.bottom / 2 + 100 };
 	Draw::FillRectOpacity50(MemoryDC, rect, GREEN_COLOR);
 
-	Functions::CopyTextToClipboard(hMainWindow, L"ABCDEFGHIJKLMNOPQRSTUVWXYZ - [123456789]");
-
-	//WCHAR Music[MAX_CHAR_STRING] = { 0 };
-	//wcscpy_s(Music, ApplicationDirectory), wcscat_s(Music, L"\\Music.wma");
-	//sndPlaySound(Music, SND_ASYNC | SND_FILENAME | SND_NOWAIT);
+	//Functions::CopyTextToClipboard(hMainWindow, L"ABCDEFGHIJKLMNOPQRSTUVWXYZ - [123456789]");
 
 	SIZE BitmapSize = { MainWindowDimensions.right, MainWindowDimensions.bottom };
 	Functions::SaveBitmapToFile(MainBitmap, "MainBitmap.bmp", BitmapSize);
@@ -332,7 +332,7 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 
 VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
-	#define ID_DEFAULT 0xFFFF
+	#define DEFAULT_ID 0xFFFF
 
 	switch (LOWORD(wParam)) {
 	case ID_COLOR_PICKER:
@@ -352,6 +352,59 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 			DragQueryFile((HDROP)lParam, counter, Buffer, ARRAYSIZE(Buffer));
 			PRINTW(Buffer);
 		}
+
+		MCIERROR Error = Sound::Open(hMainWindow, Buffer, L"Sound");
+		PRINTW(Functions::_itow(Error));
+
+		break;
+
+	}
+	case 10: // PLAY
+	{
+
+		MCIERROR Error = Sound::Play(hMainWindow, L"Sound");
+		PRINTW(Functions::_itow(Error));
+
+		break;
+
+	}
+	case 11: // PAUSE
+	{
+
+		Sound::MCISTATUS StatusMode = Sound::GetPlaybackStatus(L"Sound", MCI_STATUS_MODE);
+
+		if (StatusMode == MCI_MODE_PLAY) {
+			MCIERROR Error = Sound::Pause(L"Sound");
+			PRINTW(Functions::_itow(Error));
+		}
+		else if (StatusMode == MCI_MODE_PAUSE) {
+			MCIERROR Error = Sound::Resume(L"Sound");
+			PRINTW(Functions::_itow(Error));
+		}
+
+		break;
+
+	}
+	case 12: // STOP
+	{
+
+		MCIERROR Error = Sound::Stop(L"Sound");
+		PRINTW(Functions::_itow(Error));
+
+		break;
+
+	}
+	}
+
+}
+
+VOID MainWindow::onKeyDown(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
+
+	#define DEFAULT_VK 0xFFFFFFFF
+
+	switch (wParam) {
+	case DEFAULT_VK:
+	{
 
 		break;
 
@@ -403,14 +456,33 @@ LRESULT CALLBACK MainWindow::MainWindowProcedure(HWND hMainWindow, UINT Msg, WPA
 		onPaint(hMainWindow);
 		RETURN 0;
 	}
+	case MM_MCINOTIFY:
+	{
+
+		MCIDEVICEID ID = LOWORD(lParam);
+
+		MCIERROR Error = 0;
+
+		Error = mciSendCommand(ID, MCI_SEEK, MCI_SEEK_TO_START, NULL);
+
+		Sound::Play(hMainWindow, L"Sound");
+
+		RETURN 0;
+	}
 	case WM_COMMAND:
 	{
 		onCommand(hMainWindow, wParam, lParam);
 		RETURN 0;
 	}
+	case WM_KEYDOWN:
+	{
+
+		RETURN 0;
+	}
 	case WM_CLOSE:
 	{
 		IF(MessageBox(hMainWindow, L"Are You Serious!", L"INFORMATION", MB_YESNO | MB_ICONINFORMATION | MB_DEFBUTTON2) == IDYES) {
+			mciSendCommand(MCI_ALL_DEVICE_ID, MCI_CLOSE, NULL, NULL);
 			DestroyWindow(hMainWindow);
 		}
 		RETURN 0;

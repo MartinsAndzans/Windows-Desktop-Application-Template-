@@ -238,7 +238,7 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 
 	// BORDER
 
-	CONST SHORT BorderPadding = 4, BorderWidth = 4;
+	CONST SHORT BorderPadding = 4, BorderWidth = 2;
 	RECT Border = { Dimensions.left + BorderPadding, Dimensions.top + BorderPadding, Dimensions.right - BorderPadding, Dimensions.bottom - BorderPadding };
 	drawDashedRectangle(MemoryDC, Border, BorderWidth, TextColor);
 

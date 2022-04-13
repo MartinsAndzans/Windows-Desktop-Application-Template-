@@ -80,6 +80,9 @@
     <ClCompile Include="DropFiles.cpp">
       <Filter>Custom Controls\Drop Files</Filter>
     </ClCompile>
+    <ClCompile Include="Console.cpp">
+      <Filter>Functions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers.h">
