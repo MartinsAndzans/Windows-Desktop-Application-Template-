@@ -60,7 +60,7 @@ BOOL MainWindow::InitMainWindowClass(std::wstring ClassName) {
 	mainwcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_GLOBALCLASS;
 
 	if (!RegisterClassEx(&mainwcex)) {
-		Functions::ShowError(HWND_DESKTOP, L" - Main Window Class not Created!");
+		Functions::ShowError(HWND_DESKTOP, " - Main Window Class not Created!");
 		RETURN FALSE;
 	}
 
@@ -89,7 +89,7 @@ BOOL MainWindow::CreateMainWindow(std::wstring ClassName, std::wstring WindowTit
 		NULL);
 
 	if (hMainWindow == NULL) {
-		Functions::ShowError(HWND_DESKTOP, L" - Main Window not Created!");
+		Functions::ShowError(HWND_DESKTOP, " - Main Window not Created!");
 		RETURN FALSE;
 	}
 
@@ -170,7 +170,7 @@ VOID MainWindow::CreateDebugTools() {
 			DebugToolsID[i],
 			HInstance(),
 			NULL))) {
-			Functions::ShowError(hMainWindow, L" - Child Window not Created!");
+			Functions::ShowError(hMainWindow, " - Child Window not Created!");
 			PostQuitMessage(0);
 		}
 
@@ -239,8 +239,8 @@ VOID MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	SetWindowPos(hDebugTool1, NULL, MainWindowDimensions.right - 160, 0, 160, 25, SWP_SHOWWINDOW);
 	SetWindowPos(hDebugTool2, NULL, MainWindowDimensions.right - 240, 30, 240, 25, SWP_SHOWWINDOW);
 
-	std::wstring WMainWindowDimensions = L"Width = " + Functions::_itow(MainWindowDimensions.right) + L" Height = " + Functions::_itow(MainWindowDimensions.bottom);
-	SetWindowText(hDebugTool2, WMainWindowDimensions.c_str());
+	std::string SMainWindowDimensions = "Width = " + Functions::_itos(MainWindowDimensions.right) + " Height = " + Functions::_itos(MainWindowDimensions.bottom);
+	SetWindowTextA(hDebugTool2, SMainWindowDimensions.c_str());
 	#endif
 
 	#pragma endregion
@@ -257,8 +257,8 @@ VOID MainWindow::onMouseMove(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	#pragma region DebugTool1
 
 	#ifdef APP_DEBUG
-	std::wstring WMousePosition = L"X = " + Functions::_itow(mousePosition.x) + L" Y = " + Functions::_itow(mousePosition.y);
-	SetWindowText(hDebugTool1, WMousePosition.c_str());
+	std::string SMousePosition = "X = " + Functions::_itos(mousePosition.x) + " Y = " + Functions::_itos(mousePosition.y);
+	SetWindowTextA(hDebugTool1, SMousePosition.c_str());
 	#endif
 
 	#pragma endregion
@@ -330,7 +330,9 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	case ID_COLOR_PICKER:
 	{
 
-		PRINTW("R: " << Functions::_itow(GetGValue((COLORREF)lParam)) << "\tG: " << Functions::_itow(GetGValue((COLORREF)lParam)) << "\tB: " << Functions::_itow(GetBValue((COLORREF)lParam)));
+		PRINT("R: " << Functions::_itos(GetRValue((COLORREF)lParam)) <<
+			"\tG: " << Functions::_itos(GetGValue((COLORREF)lParam)) <<
+			"\tB: " << Functions::_itos(GetBValue((COLORREF)lParam)));
 
 		break;
 
@@ -344,6 +346,8 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 			DragQueryFile((HDROP)lParam, counter, Buffer, ARRAYSIZE(Buffer));
 			PRINTW(Buffer);
 		}
+
+		DragFinish((HDROP)lParam);
 
 		MCIERROR Error = Sound::Open(Buffer, L"Sound");
 		PRINT(Error);

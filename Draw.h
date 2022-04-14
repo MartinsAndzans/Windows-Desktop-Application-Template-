@@ -92,7 +92,7 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Draws Bitmap From File
+	/// This Function Draws Bitmap Image From File
 	/// </summary>
 	/// <param name="DestinationDC">- Device Context</param>
 	/// <param name="DestinationRectangle">- Where Draw Bitmap</param>
@@ -100,12 +100,12 @@ public:
 	/// <param name="BitmapType">- IMAGE_BITMAP || IMAGE_ICON || IMAGE_CURSOR</param>
 	/// <param name="DrawMethod">- Draw Method - [EXAMPLE - SRCCOPY]</param>
 	/// <returns>If Succeeded Returns TRUE, but If not Returns FALSE</returns>
-	static BOOL drawBitmapFromFile(HDC DestinationDC, RECT &DestinationRectangle, std::string FilePath, UINT BitmapType = IMAGE_BITMAP, DWORD DrawMethod = SRCCOPY) {
+	static BOOL drawBitmapImageFromFile(HDC DestinationDC, RECT &DestinationRectangle, std::string FilePath, UINT BitmapType = IMAGE_BITMAP, DWORD DrawMethod = SRCCOPY) {
 
 		HDC BitmapDC = CreateCompatibleDC(DestinationDC);
-		if (BitmapDC == NULL) { return FALSE; }
+		if (BitmapDC == NULL) return FALSE;
 		HBITMAP Bitmap = (HBITMAP)LoadImageA(NULL, FilePath.c_str(), BitmapType, 0, 0, LR_LOADFROMFILE | LR_VGACOLOR);
-		if (Bitmap == NULL) { return FALSE; }
+		if (Bitmap == NULL) return FALSE;
 
 		SelectObject(BitmapDC, Bitmap);
 		BitBlt(DestinationDC, DestinationRectangle.left, DestinationRectangle.top, DestinationRectangle.right, DestinationRectangle.bottom, BitmapDC, 0, 0, DrawMethod);

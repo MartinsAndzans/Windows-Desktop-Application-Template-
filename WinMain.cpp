@@ -19,13 +19,14 @@ int wmain(int ArrgumentCount, wchar_t *Arrguments[]) {
 
 	#ifdef APP_DEBUG
 	ShowWindow(GetConsoleWindow(), SW_SHOW);
-	SetConsoleColor("1F");
 	Console::setConsoleTitle("Debug Console");
 	#else defined(APP_RELEASE)
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
-	SetConsoleColor("1F");
 	Console::setConsoleTitle("Don't Close");
 	#endif
+
+	SetConsoleColor("1F");
+	PRINT("Debug Console Is Initilaized Correctly ...");
 	
 	if (MainWindow::InitMainWindowClass(MAIN_WINDOW_CLASS)) {
 		if (MainWindow::CreateMainWindow(MAIN_WINDOW_CLASS, MAIN_WINDOW_TITLE)) {
@@ -34,7 +35,7 @@ int wmain(int ArrgumentCount, wchar_t *Arrguments[]) {
 	}
 
 	#ifdef APP_DEBUG
-	std::wcout << L"[App Closed Successfully] - Press Any Key To Close Debug Console ...";
+	PRINT("[App Closed Successfully] - Press Any Key To Close Debug Console ...");
 	CHAR Key = _getch();
 	#endif
 

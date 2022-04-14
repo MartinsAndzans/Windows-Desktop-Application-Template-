@@ -38,11 +38,9 @@
 #define RETURN return
 
 #ifdef APP_DEBUG
-#define PRINT(text) std::cout << text << "\n";\
-std::cout.flush()
-#define PRINTW(text) std::wcout << text << "\n";\
-std::wcout.flush()
-#else defined(APP_RELEASE)
+#define PRINT(text) std::cout << text << std::endl
+#define PRINTW(text) std::wcout << text << std::endl
+#else
 #define PRINT(text)
 #define PRINTW(text)
 #endif
@@ -97,16 +95,16 @@ std::wcout.flush()
 
 /// <summary>
 /// > First Character Corresponds To The Background Color and Second Character Corresponds To The Foreground Color
-/// <para>> 0 = Black | 8 = Gray</para>
-/// <para>> 1 = Blue | 9 = Light Blue</para>
-/// <para>> 2 = Green | A = Light Green</para>
-/// <para>> 3 = Aqua | B = Light Aqua</para>
-/// <para>> 4 = Red | C = Light Red</para>
-/// <para>> 5 = Purple | D = Light Purple</para>
-/// <para>> 6 = Yellow | E = Light Yellow</para>
-/// <para>> 7 = White | F = Bright White</para>
+/// <para>>> 0 = Black | 8 = Gray</para>
+/// <para>>> 1 = Blue | 9 = Light Blue</para>
+/// <para>>> 2 = Green | A = Light Green</para>
+/// <para>>> 3 = Aqua | B = Light Aqua</para>
+/// <para>>> 4 = Red | C = Light Red</para>
+/// <para>>> 5 = Purple | D = Light Purple</para>
+/// <para>>> 6 = Yellow | E = Light Yellow</para>
+/// <para>>> 7 = White | F = Bright White</para>
 /// </summary>
-#define SetConsoleColor(color) CHAR buffer[MAX_CHAR_STRING] = "color ";\
+#define SetConsoleColor(color) CHAR buffer[10] = "color ";\
 strcat_s(buffer, color);\
 system(buffer)
 
@@ -123,6 +121,7 @@ system(buffer)
 #pragma region ListBoxMacros
 
 #define ListBox_AddString(hwnd, string) SendMessage(hwnd, LB_ADDSTRING, NULL, (LPARAM)string)
+#define ListBox_DeleteString(hwnd, index) SendMessage(hwnd, LB_DELETESTRING, (WPARAM)index, NULL)
 #define ListBox_SetItemData(hwnd, index, value) SendMessage(hwnd, LB_SETITEMDATA, (WPARAM)index, (LPARAM)value)
 #define ListBox_GetItemData(hwnd, index) SendMessage(hwnd, LB_GETITEMDATA, (WPARAM)index, NULL) // Return Value is Value Associated With that Item
 #define ListBox_SetSelectedItemIndex(hwnd, index) SendMessage(hwnd, LB_SETCURSEL, (WPARAM)index, NULL)

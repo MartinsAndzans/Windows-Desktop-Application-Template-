@@ -20,23 +20,21 @@ class Functions {
 public:
 
 	/// <summary>
-	/// Converts Integer To WStringValue
+	/// Converts Integer To StringValue
 	/// <para>1234 % 10 = 4 | 1234 / 10 = 123 || 123 % 10 = 3 | 123 / 10 = 12 || 12 % 10 = 2 | 12 / 10 = 1 | 1 % 10 = 1 | 1 / 10 = 0</para>
 	/// </summary>
 	/// <param name="Value">- Integer Type [int64_t] Value To Be Converted</param>
 	/// <returns>Converted Value</returns>
-	static std::wstring _itow(int64_t Value) {
+	static std::string _itos(int64_t Value) {
 
 		BOOL Minus = FALSE;
-		CONST SHORT ASCI_VALUE_ZERO = 48;
+		CONST SHORT ASCI_VALUE_ZERO = 48; // * Char Value 0 | 48 *
 
-		std::wstring WStringValue = L"";
+		std::string StringValue = "";
 
-		if (Value == INT64_MIN) { //
-			return L"OVERFLOW";   // OVERFLOW
-		}                         
+		if (Value == INT64_MIN) return "OVERFLOW"; // OVERFLOW
 
-		if (Value * -1 > 0) { // -Value * -1 = Value | Value * -1 = -Value
+		if (Value * -1 > 0) { // -Value * -1 = (Value > 0) | Value * -1 = (-Value <= 0)
 			Minus = TRUE;
 			Value = Value * -1;
 		}
@@ -45,50 +43,49 @@ public:
 
 			CHAR Char = Value % 10 + ASCI_VALUE_ZERO; // Get Last Number - Char Value 0 | 48 - 9 | 57
 			Value = Value / 10;  // Remove Last Value Number
-			WStringValue.insert(WStringValue.begin(), 1, (wchar_t)Char); // WString Value
+			std::string Temp = StringValue; // Save Previous String Value
+			StringValue = Char + Temp; // Add "Char" and Saved Value
 
 		} while (Value != 0);
 
 		if (Minus == TRUE) {
-			WStringValue.insert(WStringValue.begin(), 1, L'-');
+			std::string Temp = StringValue; // Save Previous String Value
+			StringValue = StringValue + "-" + Temp; // Add "-" and Saved Value
 		}
 
-		return WStringValue;
+		return StringValue;
 
 	}
 
 	/// <summary>
-	/// Converts Double To WStringValue
+	/// Converts Double To StringValue
 	/// </summary>
 	/// <param name="Value">- Double Type Value To Be Converted</param>
 	/// <param name="Precision">- Decimal Precision</param>
 	/// <returns>Converted Value</returns>
-	static std::wstring _ftow(DOUBLE Value, UINT Precision) {
+	static std::string _ftos(DOUBLE Value, UINT Precision) {
 
-		CONST SHORT ASCII_VALUE_ZERO = 48;
+		CONST SHORT ASCII_VALUE_ZERO = 48; // * Char Value 0 | 48 *
 
-		std::wstring WStringValue = L"";
+		std::string StringValue = "";
 
-		if ((WStringValue = _itow((int64_t)Value)) == L"OVERFLOW") { return L"OVERFLOW"; } // Convert Integer Portion of Value - |1234|.1234
+		if ((StringValue = _itos((int64_t)Value)) == "OVERFLOW") { return "OVERFLOW"; } // Convert Integer Portion of Value - |1234|.1234
 		Value = Value - (int64_t)Value; // Clear Integer Portion of Value - |0|.1234
 
-		WStringValue = WStringValue + L"."; // Add Dot
+		StringValue = StringValue + "."; // Add Dot
 
 		if (Value * -1 > 0) { Value = Value * -1; } // -Value * -1 = Value || Value * -1 = -Value
 
 		for (UINT I = 0; I < Precision; I++) {
 			Value = Value / 0.1; // 0.1234 / 0.1 = 1.234 <-
-			if ((int64_t)Value == 0) {
-				CHAR Char = (int)Value + ASCII_VALUE_ZERO; // Char Value  0 | 48 - 9 | 57
-				WStringValue = WStringValue + (wchar_t)Char; // Char Value To Symbol
-			}
+			if ((int64_t)Value == 0) StringValue = StringValue + (CHAR)ASCII_VALUE_ZERO; // Char Value To Symbol
 		}
 
 		Value = round(Value);
 
-		if ((WStringValue = WStringValue + _itow((int64_t)Value)) == L"OVERFLOW") { return L"OVERFLOW"; }  // Convert Decimal Portion of Value - 1234.|1234|
+		if ((StringValue = StringValue + _itos((int64_t)Value)) == "OVERFLOW") { return "OVERFLOW"; }  // Convert Decimal Portion of Value - 1234.|1234|
 
-		return WStringValue;
+		return StringValue;
 
 	}
 
@@ -97,13 +94,13 @@ public:
 	/// </summary>
 	/// <param name="Text">- Text To Be Encrypted</param>
 	/// <returns>Encrypted Text</returns>
-	static std::wstring EncryptText(std::wstring Text) {
+	static std::string EncryptText(std::string Text) {
 
-		std::wstring EncryptedText = L"";
+		std::string EncryptedText = "";
 
 		for (size_t i = 0; i < Text.length(); i++) {
 			INT CharValue = Text[i];
-			EncryptedText = EncryptedText + _itow(CharValue) + L"|";
+			EncryptedText = EncryptedText + _itos(CharValue) + "|";
 		}
 
 		return EncryptedText;
@@ -115,13 +112,13 @@ public:
 	/// </summary>
 	/// <param name="EncryptedText">- Text To Be Decrypted</param>
 	/// <returns>Decrypted Text</returns>
-	static std::wstring DecryptText(std::wstring EncryptedText) {
+	static std::string DecryptText(std::string EncryptedText) {
 
-		std::wstring Text = L"";
+		std::string Text = "";
 
 		while (EncryptedText.length() != 0) {
-			INT CharValue = _wtoi(EncryptedText.c_str());
-			Text = Text + (wchar_t)(char)CharValue;
+			INT CharValue = atoi(EncryptedText.c_str());
+			Text = Text + (char)CharValue;
 			size_t SeperatorPosition = EncryptedText.find_first_of(L'|', 0);
 			for (int i = (int)SeperatorPosition; i >= 0; i--) {
 				EncryptedText.erase(i);
@@ -333,10 +330,10 @@ public:
 	/// </summary>
 	/// <param name="ParentWindow">- Parent Window</param>
 	/// <param name="AdditionalErroMessage">- Additional Error Message</param>
-	static VOID ShowError(HWND ParentWindow = HWND_DESKTOP, std::wstring AdditionalErrorMessage = L" - Error") {
-		
-		std::wstring ErrorMessage = L"ERROR " + _itow(GetLastError()) + AdditionalErrorMessage;
-		MessageBox(ParentWindow, ErrorMessage.c_str(), L"ERROR", MB_OK | MB_ICONERROR);
+	static VOID ShowError(HWND ParentWindow = HWND_DESKTOP, std::string AdditionalErrorMessage = " - Error") {
+
+		std::string ErrorMessage = "ERROR " + _itos(GetLastError()) + AdditionalErrorMessage;
+		MessageBoxA(ParentWindow, ErrorMessage.c_str(), "ERROR", MB_OK | MB_ICONERROR);
 
 	}
 
@@ -349,7 +346,7 @@ public:
 	/// <returns>If Succeeded Returns TRUE, but If not Returns FALSE</returns>
 	static BOOL SaveBitmapToFile(HBITMAP Bitmap, std::string FilePath, SIZE &BitmapSize) {
 
-		#define BITMAP_SIZE_IN_PIXELS BitmapSize.cx * BitmapSize.cy
+		#define BITMAP_SIZE_IN_PIXELS (int64_t)BitmapSize.cx * (int64_t)BitmapSize.cy
 		#define BITMAP_SIZE_IN_BYTES sizeof(COLORREF) * ((int64_t)BitmapSize.cx * (int64_t)BitmapSize.cy)
 
 		std::fstream image;
@@ -376,17 +373,17 @@ public:
 		bmiheader.biClrUsed = NULL;
 		bmiheader.biClrImportant = NULL;
 
-		COLORREF *BitmapBits = new COLORREF[BITMAP_SIZE_IN_PIXELS];
-		if (BitmapBits == NULL) { return FALSE; }
-		ZeroMemory(BitmapBits, BITMAP_SIZE_IN_BYTES);
+		BYTE *BitmapBytes = new BYTE[BITMAP_SIZE_IN_BYTES];
+		if (BitmapBytes == NULL) return FALSE;
+		ZeroMemory(BitmapBytes, BITMAP_SIZE_IN_BYTES);
 
-		HDC ScreenDC = GetDC(NULL);
+		HDC ScreenDC = GetDC(HWND_DESKTOP);
 		HDC MemoryDC = CreateCompatibleDC(ScreenDC);
 
 		BITMAPINFO bminfo = { 0 };
 		bminfo.bmiHeader = bmiheader;
 
-		GetDIBits(MemoryDC, Bitmap, 0, BitmapSize.cy, BitmapBits, &bminfo, DIB_RGB_COLORS);
+		GetDIBits(MemoryDC, Bitmap, 0, BitmapSize.cy, BitmapBytes, &bminfo, DIB_RGB_COLORS);
 
 		ReleaseDC(HWND_DESKTOP, ScreenDC);
 		DeleteDC(MemoryDC);
@@ -394,17 +391,17 @@ public:
 		image.open(FilePath, std::ios::out | std::ios::binary); // Open File
 
 		if (!image.is_open()) {
-			delete[] BitmapBits;
+			delete[] BitmapBytes;
 			return FALSE;
 		}
 		else {
 			image.write((char*)&bmfheader, sizeof(BITMAPFILEHEADER)); // BITMAP FILE HEADER
 			image.write((char*)&bmiheader, sizeof(BITMAPINFOHEADER)); // BITMAP INFO HEADER
-			image.write((char*)BitmapBits, BITMAP_SIZE_IN_BYTES); // BYTE ARRAY
+			image.write((char*)BitmapBytes, BITMAP_SIZE_IN_BYTES); // BYTE ARRAY
 		}
 
 		image.close(); // Close File
-		delete[] BitmapBits; // Delete Bitmap Byte Array
+		delete[] BitmapBytes; // Delete Bitmap Byte Array
 
 		return TRUE;
 
@@ -498,10 +495,8 @@ public:
 
 		MCIDEVICEID ID = mciGetDeviceID(Alias);
 
-		MCIERROR Error = mciSendCommand(ID, MCI_STATUS, MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)&status);
-
-		if (Error != 0) {
-			status.dwReturn = MAXDWORD;
+		if (mciSendCommand(ID, MCI_STATUS, MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)&status) != 0) {
+			return MAXDWORD;
 		}
 
 		return (DWORD)status.dwReturn;
@@ -509,19 +504,20 @@ public:
 	}
 
 	/// <summary>
-	/// > This Function Plays Music From Begining
+	/// > This Function Plays Music
 	/// <para>> If Notify is TRUE - MCI Sends To Callback Window [MM_MCINOTIFY] Message - [LOWORD]lParam = MCIDeviceID</para>
 	/// </summary>
 	/// <param name="CallbackWindow">- Callback Window</param>
 	/// <param name="Alias">- Alias for MCIDevice</param>
+	/// <param name="PlayFrom">Playback Starting Position</param>
 	/// <param name="Notify">- Notify Callback Window or Not</param>
 	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
-	static MCIERROR Play(HWND CallbackWindow, const wchar_t *Alias, BOOL Notify = FALSE) {
+	static MCIERROR Play(HWND CallbackWindow, const wchar_t *Alias, DWORD PlayFrom = 0, BOOL Notify = FALSE) {
 
 		MCIERROR Error = 0;
 		MCI_PLAY_PARMS play = { 0 };
 		play.dwCallback = (DWORD_PTR)CallbackWindow;
-		play.dwFrom = 0;
+		play.dwFrom = PlayFrom;
 
 		MCIDEVICEID ID = mciGetDeviceID(Alias);
 
