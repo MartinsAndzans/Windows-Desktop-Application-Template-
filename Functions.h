@@ -461,7 +461,7 @@ public:
 	/// <param name="FilePath">- Music File Path "*.wav" | "*.wma" | "*.mp3" || Video Formats not Supported Yet ||</param>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
-	static MCIERROR Open(std::wstring FilePath, const wchar_t *Alias) {
+	static MCIERROR Open(std::wstring FilePath, CONST WCHAR *Alias) {
 
 		MCI_OPEN_PARMS open = { 0 };
 		open.lpstrAlias = Alias;
@@ -469,33 +469,37 @@ public:
 		open.lpstrElementName = FilePath.c_str();
 		open.wDeviceID = NULL;
 
-		MCIERROR Error = mciSendCommand(NULL, MCI_OPEN, MCI_WAIT | MCI_OPEN_ELEMENT | MCI_OPEN_ALIAS, (DWORD_PTR)&open);
-
-		return Error;
+		return mciSendCommand(NULL, MCI_OPEN, MCI_WAIT | MCI_OPEN_ELEMENT | MCI_OPEN_ALIAS, (DWORD_PTR)&open);
 
 	}
 
 	/// <summary>
 	/// > This Function Gets Playback Status
-	/// <para>> MCI_STATUS_POSITION - Gets Current Playback Position</para>
-	/// <para>> MCI_STATUS_LENGTH - Gets Total Media Length</para>
-	/// <para>> MCI_STATUS_MODE - Gets Current Mode of The Device</para>
+	/// <para>> MCI_STATUS_START - Obtains the starting position of the media</para>
+	/// <para>> MCI_STATUS_POSITION - Obtains Current Playback Position</para>
+	/// <para>> MCI_STATUS_LENGTH - Obtains Total Media Length</para>
+	/// <para>> MCI_STATUS_MODE - Obtains Current Mode of The Device</para>
 	/// <para>>> [MODE EXAMPLE] - MCI_MODE_[]</para>
-	/// <para>> MCI_STATUS_TIME_FORMAT - Gets Current Time Format of The Device</para>
+	/// <para>> MCI_STATUS_TIME_FORMAT - Obtains Current Time Format of The Device</para>
 	/// <para>>> [TIME FORMAT EXAMPLE] = MCI_FORMAT_[]</para>
 	/// </summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <param name="StatusCode">- [EXAMPLE] - MCI_STATUS_[]</param>
 	/// <returns>If Succeeded Returns Requested Status Information, but If not Returns [MAXDWORD]</returns>
-	static MCISTATUS GetPlaybackStatus(const wchar_t *Alias, MCISTATUS StatusCode) {
+	static MCISTATUS GetPlaybackStatus(CONST WCHAR *Alias, MCISTATUS StatusCode) {
 
+		DWORD Flags = NULL;
 		MCI_STATUS_PARMS status = { 0 };
-		status.dwItem = StatusCode;
-		status.dwReturn = NULL;
+		status.dwItem = StatusCode; // Status Code
+		status.dwReturn = NULL; // Return
 
-		MCIDEVICEID ID = mciGetDeviceID(Alias);
-
-		if (mciSendCommand(ID, MCI_STATUS, MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)&status) != 0) {
+		if (StatusCode == MCI_STATUS_START) {
+			status.dwItem = MCI_STATUS_POSITION;
+			if (mciSendCommand(mciGetDeviceID(Alias), MCI_STATUS, MCI_WAIT | MCI_STATUS_ITEM | MCI_STATUS_START, (DWORD_PTR)&status) != 0) {
+				return MAXDWORD;
+			}
+		}
+		else if (mciSendCommand(mciGetDeviceID(Alias), MCI_STATUS, MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)&status) != 0) {
 			return MAXDWORD;
 		}
 
@@ -504,7 +508,7 @@ public:
 	}
 
 	/// <summary>
-	/// > This Function Plays Music
+	/// > This Function Plays Music From The Beginning
 	/// <para>> If Notify is TRUE - MCI Sends To Callback Window [MM_MCINOTIFY] Message - [LOWORD]lParam = MCIDeviceID</para>
 	/// </summary>
 	/// <param name="CallbackWindow">- Callback Window</param>
@@ -512,19 +516,17 @@ public:
 	/// <param name="PlayFrom">Playback Starting Position</param>
 	/// <param name="Notify">- Notify Callback Window or Not</param>
 	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
-	static MCIERROR Play(HWND CallbackWindow, const wchar_t *Alias, DWORD PlayFrom = 0, BOOL Notify = FALSE) {
+	static MCIERROR Play(HWND CallbackWindow, CONST WCHAR *Alias, BOOL Notify = FALSE) {
 
-		MCIERROR Error = 0;
 		MCI_PLAY_PARMS play = { 0 };
 		play.dwCallback = (DWORD_PTR)CallbackWindow;
-		play.dwFrom = PlayFrom;
+		play.dwFrom = 0;
 
 		MCIDEVICEID ID = mciGetDeviceID(Alias);
 
-		(Notify) ? Error = mciSendCommand(ID, MCI_PLAY, MCI_NOTIFY | MCI_FROM, (DWORD_PTR)&play) :
-			Error = mciSendCommand(ID, MCI_PLAY, MCI_FROM, (DWORD_PTR)&play);
+		if (Notify) return mciSendCommand(ID, MCI_PLAY, MCI_NOTIFY | MCI_FROM, (DWORD_PTR)&play);
+			return mciSendCommand(ID, MCI_PLAY, MCI_FROM, (DWORD_PTR)&play);
 
-		return Error;
 	}
 
 	/// <summary>
@@ -535,19 +537,16 @@ public:
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <param name="SeekTo">- How Much Move Playback Current Position</param>
 	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
-	static MCIERROR Seek(const wchar_t *Alias, DWORD SeekTo) {
+	static MCIERROR Seek(CONST WCHAR *Alias, DWORD SeekTo) {
 
-		MCIERROR Error = 0;
 		MCI_SEEK_PARMS seek = { 0 };
 		seek.dwTo = SeekTo;
 
 		MCIDEVICEID ID = mciGetDeviceID(Alias);
 
-		(SeekTo == MCI_SEEK_TO_START) ? Error = mciSendCommand(ID, MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_START, (DWORD_PTR)&seek) :
-			((SeekTo == MCI_SEEK_TO_END) ? Error = mciSendCommand(ID, MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_END, (DWORD_PTR)&seek) :
-				Error = mciSendCommand(ID, MCI_SEEK, MCI_WAIT | MCI_TO, (DWORD_PTR)&seek));
-
-		return Error;
+		if (SeekTo == MCI_SEEK_TO_START) return mciSendCommand(ID, MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_START, (DWORD_PTR)&seek);
+			if (SeekTo == MCI_SEEK_TO_END) return mciSendCommand(ID, MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_END, (DWORD_PTR)&seek);
+				return mciSendCommand(ID, MCI_SEEK, MCI_WAIT | MCI_TO, (DWORD_PTR)&seek);
 
 	}
 
@@ -556,12 +555,9 @@ public:
 	/// </summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
-	static MCIERROR Pause(const wchar_t *Alias) {
+	static MCIERROR Pause(CONST WCHAR *Alias) {
 
-		MCIDEVICEID ID = mciGetDeviceID(Alias);
-		MCIERROR Error = mciSendCommand(ID, MCI_PAUSE, MCI_WAIT, NULL);
-
-		return Error;
+		return mciSendCommand(mciGetDeviceID(Alias), MCI_PAUSE, MCI_WAIT, NULL);
 
 	}
 
@@ -570,12 +566,9 @@ public:
 	/// </summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
-	static MCIERROR Resume(const wchar_t *Alias) {
+	static MCIERROR Resume(CONST WCHAR *Alias) {
 
-		MCIDEVICEID ID = mciGetDeviceID(Alias);
-		MCIERROR Error = mciSendCommand(ID, MCI_RESUME, MCI_WAIT, NULL);
-
-		return Error;
+		return mciSendCommand(mciGetDeviceID(Alias), MCI_RESUME, MCI_WAIT, NULL);
 
 	}
 
@@ -584,12 +577,9 @@ public:
 	/// </summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
-	static MCIERROR Stop(const wchar_t *Alias) {
+	static MCIERROR Stop(CONST WCHAR *Alias) {
 
-		MCIDEVICEID ID = mciGetDeviceID(Alias);
-		MCIERROR Error = mciSendCommand(ID, MCI_STOP, MCI_WAIT, NULL);
-
-		return Error;
+		return mciSendCommand(mciGetDeviceID(Alias), MCI_STOP, MCI_WAIT, NULL);
 
 	}
 
@@ -598,12 +588,9 @@ public:
 	/// </summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
-	static MCIERROR Close(const wchar_t *Alias) {
+	static MCIERROR Close(CONST WCHAR *Alias) {
 
-		MCIDEVICEID ID = mciGetDeviceID(Alias);
-		MCIERROR Error = mciSendCommand(ID, MCI_CLOSE, MCI_WAIT, NULL);
-
-		return Error;
+		return mciSendCommand(mciGetDeviceID(Alias), MCI_CLOSE, MCI_WAIT, NULL);
 
 	}
 

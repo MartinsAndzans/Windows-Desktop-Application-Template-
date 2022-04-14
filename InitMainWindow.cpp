@@ -147,7 +147,7 @@ VOID MainWindow::CreateFonts() {
 		CLIP_DEFAULT_PRECIS,
 		CLEARTYPE_QUALITY,
 		VARIABLE_PITCH,
-		L"Times New Roman");
+		L"Segou UI");
 
 }
 
@@ -276,12 +276,10 @@ VOID MainWindow::onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 		SIZE size = { 0 };
 		WCHAR StaticText[MAX_CHAR_STRING] = { 0 };
-		HBRUSH ItemBrush = CreateSolidBrush(GREEN_COLOR);
-		FillRect(item->hDC, &item->rcItem, ItemBrush);
-		DeleteObject(ItemBrush);
+		SetDCBrushColor(item->hDC, GREEN_COLOR);
+		FillRect(item->hDC, &item->rcItem, (HBRUSH)GetStockObject(DC_BRUSH));
 		SetBkMode(item->hDC, TRANSPARENT);
 		SetTextColor(item->hDC, WHITE_COLOR);
-		SetFont(item->hwndItem, MainFont);
 		INT TextLength = GetWindowText(item->hwndItem, StaticText, ARRAYSIZE(StaticText));
 		GetTextExtentPoint(item->hDC, StaticText, TextLength, &size);
 		TextOut(item->hDC, item->rcItem.right / 2 - size.cx / 2, item->rcItem.bottom / 2 - size.cy / 2, StaticText, TextLength);
@@ -457,10 +455,9 @@ LRESULT CALLBACK MainWindow::MainWindowProcedure(HWND hMainWindow, UINT Msg, WPA
 	case MM_MCINOTIFY:
 	{
 
-		Sound::MCISTATUS StatusPosition = Sound::GetPlaybackStatus(L"Sound", MCI_STATUS_POSITION);
-		if (StatusPosition != 0) {
-			MCIERROR Error = Sound::Play(hMainWindow, L"Sound", TRUE);
-		}
+		Sound::MCISTATUS StatusPos = Sound::GetPlaybackStatus(L"Sound", MCI_STATUS_POSITION);
+		Sound::MCISTATUS StatusStart = Sound::GetPlaybackStatus(L"Sound", MCI_STATUS_START);
+		if (StatusPos != StatusStart) MCIERROR Error = Sound::Play(hMainWindow, L"Sound", TRUE);
 
 		RETURN 0;
 	}

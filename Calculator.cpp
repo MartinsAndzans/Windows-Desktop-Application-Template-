@@ -358,9 +358,8 @@ VOID Calculator::onDrawItem(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 		SIZE size = { 0 };
 		WCHAR StaticText[MAX_CLTITLE_CHAR] = { 0 };
-		HBRUSH ItemBrush = CreateSolidBrush(RGB(240, 240, 240));
-		FillRect(item->hDC, &item->rcItem, ItemBrush);
-		DeleteObject(ItemBrush);
+		SetDCBrushColor(item->hDC, RGB(240, 240, 240));
+		FillRect(item->hDC, &item->rcItem, (HBRUSH)GetStockObject(DC_BRUSH));
 		SetBkMode(item->hDC, TRANSPARENT);
 		INT TextLength = GetWindowText(item->hwndItem, StaticText, ARRAYSIZE(StaticText));
 		GetTextExtentPoint(item->hDC, StaticText, TextLength, &size);
