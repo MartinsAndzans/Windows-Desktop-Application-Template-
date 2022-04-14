@@ -35,7 +35,7 @@ This is Windows Desktop Application Template
 	//// |                                         | ////
 	//// | [in] struct AnimationStyle - StarColor  | ////
 	//// | [in] struct AnimationStyle - Proportion | ////
+	//// | [in] struct AnimationStyle - StarSymbol | ////
 	//// |                                         | ////
 	//// +-----------------------------------------+ ////
 	/////////////////////////////////////////////////////
-	
