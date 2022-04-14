@@ -51,7 +51,7 @@ private:
 
 	#pragma endregion
 
-	#pragma region CalculatorProcedure
+	#pragma region DropFilesProcedure
 
 	static LRESULT CALLBACK DropFilesProcedure(HWND hDropFiles, UINT Msg, WPARAM wParam, LPARAM lParam);
 

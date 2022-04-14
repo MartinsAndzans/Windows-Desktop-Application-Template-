@@ -290,7 +290,7 @@ VOID DropFiles::onDropFiles(HWND hDropFiles, WPARAM wParam) {
 
 #pragma endregion
 
-#pragma region CalculatorProcedure
+#pragma region DropFilesProcedure
 
 LRESULT CALLBACK DropFiles::DropFilesProcedure(HWND hDropFiles, UINT Msg, WPARAM wParam, LPARAM lParam) {
 
