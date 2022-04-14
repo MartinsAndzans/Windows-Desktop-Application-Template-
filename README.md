@@ -4,6 +4,8 @@ This is Windows Desktop Application Template
 
 <h2>Drop Files Control : Class Name -- "DROP FILES"</h2>
 
+	Pass This Structure To "CreateWindow()" -- [lpParam] Parameter
+	
 	//////////////////////////////////////////////////////////
 	//// +----------------------------------------------+ ////
 	//// |                                              | ////
