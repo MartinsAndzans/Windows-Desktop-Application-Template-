@@ -454,7 +454,7 @@ public:
 				INT STARX = rand() % XCELL + XS; // XS - (XS + XCELL)
 				INT STARY = rand() % YCELL + YS; // YS - (YS + YCELL)
 
-				TextOutA(hdc, X + STARX - size.cx / 2, Y + STARY - size.cy / 2, StarSymbol, strlen(StarSymbol));
+				TextOutA(hdc, X + STARX - size.cx / 2, Y + STARY - size.cy / 2, StarSymbol, (int)strlen(StarSymbol));
 
 				///////////////////////////
 				//// -->               ////

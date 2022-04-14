@@ -24,6 +24,10 @@ RECT DropFiles::Dimensions = { 0 };
 
 #pragma region InitDropFiles
 
+/// <summary>
+/// Optional Function - Creates Class "DROP FILES"
+/// </summary>
+/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
 BOOL DropFiles::InitDropFiles() {
 
 	CreateDropFilesFont();

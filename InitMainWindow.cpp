@@ -207,17 +207,17 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	#pragma region Example
 
-	AnimationStars::AnimationStyle asstyles = { 0 };
-	asstyles.StarColor = RGB(0, 155, 255);
-	asstyles.Proportion = 4;
-	strcpy_s(asstyles.StarSymbol, "+");
+	AnimationStars::AnimationStyle animationstyle = { 0 };
+	animationstyle.StarColor = RGB(0, 155, 255);
+	animationstyle.Proportion = 4;
+	strcpy_s(animationstyle.StarSymbol, "+");
 
-	DropFiles::DropFilesStyle dfstyles = { 0 };
-	dfstyles.BackgroundColor = RGB(255, 195, 30);
-	dfstyles.ForegroundColor = RGB(0, 55, 255);
+	DropFiles::DropFilesStyle dropfilesstyle = { 0 };
+	dropfilesstyle.BackgroundColor = RGB(255, 195, 30);
+	dropfilesstyle.ForegroundColor = RGB(0, 55, 255);
 
-	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)ID_ANIMATION_STARS, HInstance(), &asstyles);
-	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"Drop File/s Here", WS_CHILD | WS_BORDER | WS_VISIBLE, 260, 110, 220, 120, hMainWindow, (HMENU)ID_DROP_FILES, HInstance(), &dfstyles);
+	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)ID_ANIMATION_STARS, HInstance(), &animationstyle);
+	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"Drop File/s Here", WS_CHILD | WS_BORDER | WS_VISIBLE, 260, 110, 220, 120, hMainWindow, (HMENU)ID_DROP_FILES, HInstance(), &dropfilesstyle);
 	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 150, 5, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)ID_COLOR_PICKER, HInstance(), NULL);
 	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"SUPER CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 150, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)ID_CALCULATOR, HInstance(), NULL);
 

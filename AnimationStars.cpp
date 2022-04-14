@@ -18,7 +18,7 @@ RECT AnimationStars::Dimensions = { 0 };
 
 COLORREF AnimationStars::StarColor = { 0 };
 INT AnimationStars::Proportion = { 0 };
-CHAR AnimationStars::StarSymbol[2] = "*";
+CHAR AnimationStars::StarSymbol[2] = "+";
 
 #pragma endregion
 
@@ -102,7 +102,7 @@ VOID AnimationStars::drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF Sta
 			INT STARX = rand() % XCELL + XS; // XS - (XS + XCELL)
 			INT STARY = rand() % YCELL + YS; // YS - (YS + YCELL)
 
-			TextOutA(hdc, X + STARX - size.cx / 2, Y + STARY - size.cy / 2, StarSymbol, strlen(StarSymbol));
+			TextOutA(hdc, X + STARX - size.cx / 2, Y + STARY - size.cy / 2, StarSymbol, (int)strlen(StarSymbol));
 
 			///////////////////////////
 			//// -->               ////
@@ -228,7 +228,7 @@ VOID AnimationStars::onPaint(HWND hAnimationStars) {
 
 	(Style->StarColor != NULL) ? StarColor = Style->StarColor : StarColor = RGB(255, 255, 255); // DEFAULT
 	(Style->Proportion != NULL) ? Proportion = Style->Proportion : Proportion = 6; // DEFAULT
-	(Style->StarSymbol[0] != '\0') ? strcpy_s(StarSymbol, Style->StarSymbol) : strcpy_s(StarSymbol, "*"); // DEFAULT
+	(Style->StarSymbol[0] != '\0') ? strcpy_s(StarSymbol, Style->StarSymbol) : strcpy_s(StarSymbol, "+"); // DEFAULT
 	
 	/////////////////////////////////////////////////////
 	//// +-----------------------------------------+ ////
