@@ -5,12 +5,10 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #include "InitMainWindow.h"
 
 #pragma region InitGlobalStaticMembers
-
 MSG MainWindow::Msg = { 0 };
 BOOL MainWindow::ExtraProcessing = FALSE;
 
 WCHAR MainWindow::ApplicationDirectory[MAX_CHAR_STRING] = { 0 };
-
 #pragma endregion
 
 VOID BroadcastMessages();

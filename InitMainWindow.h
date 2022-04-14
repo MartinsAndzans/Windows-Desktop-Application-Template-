@@ -22,7 +22,6 @@ class MainWindow {
 private:
 
 	#pragma region MainWindowStaticMembers
-
 	static PAINTSTRUCT MainPS;
 	static HDC MainWindowDC;
 
@@ -36,25 +35,25 @@ private:
 	static HWND hMainWindow;
 	static RECT MainWindowDimensions;
 
+	#ifdef APP_DEBUG
 	static HWND hDebugTool1;
 	static HWND hDebugTool2;
+	#endif
 
 	static POINT mousePosition;
-
 	#pragma endregion
 
 private:
 
 	#pragma region Functions
-
 	static VOID CreateFonts();
 
+	#ifdef APP_DEBUG
 	static VOID CreateDebugTools();
-
+	#endif
 	#pragma endregion
 
 	#pragma region Events
-
 	static VOID onCreate(HWND hMainWindow, LPARAM lParam);
 	static VOID onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
 	static VOID onMouseMove(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
@@ -63,33 +62,26 @@ private:
 	static VOID onMCINotify(HWND hMainWindow, LPARAM lParam);
 	static VOID onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
 	static VOID onKeyDown(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
-
 	#pragma endregion
 
 	#pragma region MainWindowProcedure
-
 	static LRESULT CALLBACK MainWindowProcedure(HWND hMainWindow, UINT Msg, WPARAM wParam, LPARAM lParam);
-
 	#pragma endregion
 
 public:
 
 	#pragma region GlobalStaticMembers
-
 	static MSG Msg;
 	static BOOL ExtraProcessing;
 
 	static WCHAR ApplicationDirectory[MAX_CHAR_STRING];
-
 	#pragma endregion
 
 public:
 
 	#pragma region InitMainWindow
-
 	static BOOL InitMainWindowClass(std::wstring ClassName);
 	static BOOL CreateMainWindow(std::wstring ClassName, std::wstring WindowTitle);
-
 	#pragma endregion
 
 };

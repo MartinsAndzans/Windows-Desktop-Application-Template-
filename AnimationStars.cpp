@@ -1,31 +1,17 @@
 #include "AnimationStars.h"
 
-// INIT ANIMATION STARS STATIC MEMBERS
-
 #pragma region InitAnimationStarsStaticMembers
-
 HDC AnimationStars::AnimationStarsDC = { 0 };
 PAINTSTRUCT AnimationStars::ps = { 0 };
 
 HDC AnimationStars::MemoryDC = { 0 };
 HBITMAP AnimationStars::Bitmap = { 0 };
 
-HBRUSH AnimationStars::AnimationStarsBackgroundBrush = CreateSolidBrush(AnimationStarsBackgroundColor);
-
 HFONT AnimationStars::StarFont = { 0 };
-
 RECT AnimationStars::Dimensions = { 0 };
-
-COLORREF AnimationStars::StarColor = { 0 };
-INT AnimationStars::Proportion = { 0 };
-CHAR AnimationStars::StarSymbol[2] = "*";
-
 #pragma endregion
 
-// INIT ANIMATION STARS
-
 #pragma region InitAnimationStars
-
 /// <summary>
 /// Optional Function - Creates Class "ANIMATION STARS"
 /// </summary>
@@ -39,7 +25,7 @@ BOOL AnimationStars::InitAnimationStars() {
 	AnimationStarsEx.cbClsExtra = 0;
 	AnimationStarsEx.cbWndExtra = 0;
 	AnimationStarsEx.cbSize = sizeof(WNDCLASSEX);
-	AnimationStarsEx.hbrBackground = AnimationStarsBackgroundBrush;
+	AnimationStarsEx.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	AnimationStarsEx.hCursor = LoadCursor(NULL, IDC_ARROW);
 	AnimationStarsEx.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	AnimationStarsEx.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
@@ -56,13 +42,9 @@ BOOL AnimationStars::InitAnimationStars() {
     return TRUE;
 
 }
-
 #pragma endregion
 
-// FUNCTIONS
-
 #pragma region Funtions
-
 VOID AnimationStars::CreateStarFont() {
 
 	StarFont = CreateFont(20, 0, 0, 0,
@@ -79,17 +61,18 @@ VOID AnimationStars::CreateStarFont() {
 
 }
 
-VOID AnimationStars::drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF StarColor, CONST CHAR StarSymbol[], UINT Proportion) {
+VOID AnimationStars::drawStars(HDC hdc, RECT &Rectangle, COLORREF StarColor, CONST CHAR StarSymbol[], UINT Proportion) {
 
 	if (Proportion == 0) Proportion++;
 
-	if (W && H != 0) {
+	if (Rectangle.right && Rectangle.bottom != 0) {
 
 		SIZE size = { 0 };
 		SYSTEMTIME st = { 0 };
-		INT CURRENTCELL = 0, XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
+		UINT CURRENTCELL = 1;
+		INT XS = 0, YS = 0, XCELL = Rectangle.right / Proportion, YCELL = Rectangle.bottom / Proportion;
 
-		COLORREF DefaultColor = GetTextColor(hdc);
+		COLORREF PreviousColor = GetTextColor(hdc);
 		SetTextColor(hdc, StarColor);
 
 		GetTextExtentPointA(hdc, StarSymbol, (int)strlen(StarSymbol), &size);
@@ -102,7 +85,7 @@ VOID AnimationStars::drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF Sta
 			INT STARX = rand() % XCELL + XS; // XS - (XS + XCELL)
 			INT STARY = rand() % YCELL + YS; // YS - (YS + YCELL)
 
-			TextOutA(hdc, X + STARX - size.cx / 2, Y + STARY - size.cy / 2, StarSymbol, strlen(StarSymbol));
+			TextOutA(hdc, Rectangle.left + STARX - size.cx / 2, Rectangle.top + STARY - size.cy / 2, StarSymbol, (int)strlen(StarSymbol));
 
 			///////////////////////////
 			//// -->               ////
@@ -126,15 +109,14 @@ VOID AnimationStars::drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF Sta
 			//// +---+   ////
 			/////////////////
 
-			if (CURRENTCELL == Proportion) {
-				CURRENTCELL = 0;
-				XS = 0;
+			if (CURRENTCELL > Proportion) {
+				CURRENTCELL = 1, XS = 0;
 				YS = YS + YCELL;
 			}
 
 		}
 
-		SetTextColor(hdc, DefaultColor);
+		SetTextColor(hdc, PreviousColor);
 
 	}
 	else {
@@ -144,13 +126,9 @@ VOID AnimationStars::drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF Sta
 	}
 
 }
-
 #pragma endregion
 
-// EVENTS
-
 #pragma region Events
-
 VOID AnimationStars::onCreate(HWND hAnimationStars, LPARAM lParam) {
 
 	LPCREATESTRUCT window = LPCREATESTRUCT(lParam);
@@ -165,10 +143,11 @@ VOID AnimationStars::onCreate(HWND hAnimationStars, LPARAM lParam) {
 		AnimationStyle *Style = new AnimationStyle;
 		ZeroMemory(Style, sizeof(AnimationStyle));
 
+		// Move Style Data To Heap
 		if (Parameters != NULL) {
 			Style->StarColor = Parameters->StarColor;
 			Style->Proportion = Parameters->Proportion;
-			strcpy_s(Style->StarSymbol, Parameters->StarSymbol);
+			Style->StarSymbol = Parameters->StarSymbol;
 		}
 
 		SetWindowLongPtr(hAnimationStars, GWLP_USERDATA, (LONG_PTR)Style);
@@ -220,15 +199,17 @@ VOID AnimationStars::onPaint(HWND hAnimationStars) {
 
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
-	FillRect(MemoryDC, &Dimensions, AnimationStarsBackgroundBrush);
-
+	SetDCBrushColor(MemoryDC, AnimationStarsBackgroundColor);
+	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(DC_BRUSH));
 	SelectObject(MemoryDC, StarFont);
+
+	COLORREF StarColor = 0; INT Proportion = 0; CHAR StarSymbol[2] = { 0 };
 
 	LpAnimationStyle Style = (LpAnimationStyle)GetWindowLongPtr(hAnimationStars, GWLP_USERDATA);
 
-	(Style->StarColor != NULL) ? StarColor = Style->StarColor : StarColor = RGB(255, 255, 255); // DEFAULT
-	(Style->Proportion != NULL) ? Proportion = Style->Proportion : Proportion = 6; // DEFAULT
-	(Style->StarSymbol[0] != '\0') ? strcpy_s(StarSymbol, Style->StarSymbol) : strcpy_s(StarSymbol, "*"); // DEFAULT
+	(Style->StarColor != NULL) ? StarColor = Style->StarColor : StarColor = AnimationStarsStarColor; // DEFAULT
+	(Style->Proportion != NULL) ? Proportion = Style->Proportion : Proportion = 4; // DEFAULT
+	(Style->StarSymbol != '\0') ? StarSymbol[0] = Style->StarSymbol : StarSymbol[0] = '+'; // DEFAULT
 	
 	/////////////////////////////////////////////////////
 	//// +-----------------------------------------+ ////
@@ -239,14 +220,17 @@ VOID AnimationStars::onPaint(HWND hAnimationStars) {
 	//// |                                         | ////
 	//// +-----------------------------------------+ ////
 	/////////////////////////////////////////////////////
-	
-	SetTextColor(MemoryDC, StarColor);
 
 	WCHAR WindowTitle[MAX_ASTITLE_CHAR] = { 0 };
 	GetWindowText(hAnimationStars, WindowTitle, ARRAYSIZE(WindowTitle));
 
-	drawStars(MemoryDC, Dimensions.left, Dimensions.top, Dimensions.right, Dimensions.bottom, StarColor, StarSymbol, Proportion);
+	drawStars(MemoryDC, Dimensions, StarColor, StarSymbol, Proportion);
 
+	// Text Shadow
+	SetTextColor(MemoryDC, DarkerColor(StarColor, 0x50)); // 0x50 - 80
+	TextOut(MemoryDC, Dimensions.left + 4, Dimensions.top + 4, WindowTitle, lstrlenW(WindowTitle));
+	// Text
+	SetTextColor(MemoryDC, StarColor);
 	TextOut(MemoryDC, Dimensions.left + 2, Dimensions.top + 2, WindowTitle, lstrlenW(WindowTitle));
 
 	BitBlt(AnimationStarsDC, 0, 0, Dimensions.right, Dimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
@@ -257,13 +241,9 @@ VOID AnimationStars::onPaint(HWND hAnimationStars) {
 	EndPaint(hAnimationStars, &ps);
 
 }
-
 #pragma endregion
 
-// ANIMATION STARS PROCEDURE
-
 #pragma region AnimationStarsProcedure
-
 LRESULT CALLBACK AnimationStars::AnimationStarsProcedure(HWND hAnimationStars, UINT Msg, WPARAM wParam, LPARAM lParam) {
 
 	switch (Msg) {
@@ -292,6 +272,7 @@ LRESULT CALLBACK AnimationStars::AnimationStarsProcedure(HWND hAnimationStars, U
 		KillTimer(hAnimationStars, AnimationTimer);
 		LpAnimationStyle Style = (LpAnimationStyle)GetWindowLongPtr(hAnimationStars, GWLP_USERDATA);
 		delete[] Style;
+		SetWindowLongPtr(hAnimationStars, GWLP_USERDATA, NULL);
 		return 0;
 	}
 	}
@@ -299,5 +280,4 @@ LRESULT CALLBACK AnimationStars::AnimationStarsProcedure(HWND hAnimationStars, U
 	return DefWindowProc(hAnimationStars, Msg, wParam, lParam);
 
 }
-
 #pragma endregion

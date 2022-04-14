@@ -424,24 +424,22 @@ public:
 	/// This Function Draws Stars
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
-	/// <param name="X">- X Coordinate</param>
-	/// <param name="Y">- Y Coordinate</param>
-	/// <param name="W">- Width</param>
-	/// <param name="H">- Height</param>
+	/// <param name="Rectangle">- Drawing Rectangle</param>
 	/// <param name="StarColor">- Star Color</param>
 	/// <param name="StarSymbol">- Star Symbol</param>
 	/// <param name="Proportion">- Proportion</param>
-	static VOID drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF StarColor, CONST CHAR StarSymbol[], UINT Proportion) {
+	static VOID drawStars(HDC hdc, RECT &Rectangle, COLORREF StarColor, CONST CHAR StarSymbol[], UINT Proportion) {
 
 		if (Proportion == 0) Proportion++;
 
-		if (W && H != 0) {
+		if (Rectangle.right && Rectangle.bottom != 0) {
 
 			SIZE size = { 0 };
 			SYSTEMTIME st = { 0 };
-			INT CURRENTCELL = 0, XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
+			UINT CURRENTCELL = 1;
+			INT XS = 0, YS = 0, XCELL = Rectangle.right / Proportion, YCELL = Rectangle.bottom / Proportion;
 
-			COLORREF DefaultColor = GetTextColor(hdc);
+			COLORREF PreviousColor = GetTextColor(hdc);
 			SetTextColor(hdc, StarColor);
 
 			GetTextExtentPointA(hdc, StarSymbol, (int)strlen(StarSymbol), &size);
@@ -454,7 +452,7 @@ public:
 				INT STARX = rand() % XCELL + XS; // XS - (XS + XCELL)
 				INT STARY = rand() % YCELL + YS; // YS - (YS + YCELL)
 
-				TextOutA(hdc, X + STARX - size.cx / 2, Y + STARY - size.cy / 2, StarSymbol, strlen(StarSymbol));
+				TextOutA(hdc, Rectangle.left + STARX - size.cx / 2, Rectangle.top + STARY - size.cy / 2, StarSymbol, (int)strlen(StarSymbol));
 
 				///////////////////////////
 				//// -->               ////
@@ -478,20 +476,19 @@ public:
 				//// +---+   ////
 				/////////////////
 
-				if (CURRENTCELL == Proportion) {
-					CURRENTCELL = 0;
-					XS = 0;
+				if (CURRENTCELL > Proportion) {
+					CURRENTCELL = 1, XS = 0;
 					YS = YS + YCELL;
 				}
 
 			}
 
-			SetTextColor(hdc, DefaultColor);
+			SetTextColor(hdc, PreviousColor);
 
 		}
 		else {
 
-			OutputDebugString(L"ERROR [Draw::drawStars] - Width or Height Must be non Zero Value!\r\n");
+			OutputDebugString(L"ERROR [AnimationStars::drawStars] - Width or Height Must be non Zero Value!\r\n");
 
 		}
 
