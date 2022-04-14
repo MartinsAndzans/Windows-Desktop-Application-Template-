@@ -25,3 +25,17 @@ This is Windows Desktop Application Template
 	//// |                                           | ////
 	//// +-------------------------------------------+ ////
 	///////////////////////////////////////////////////////
+
+<h2>Animation Stars Control : Class Name -- "ANIMATION STARS"</h2>
+
+	Pass This Structure To "CreateWindow()" -- [lpParam] Parameter
+	
+	/////////////////////////////////////////////////////
+	//// +-----------------------------------------+ ////
+	//// |                                         | ////
+	//// | [in] struct AnimationStyle - StarColor  | ////
+	//// | [in] struct AnimationStyle - Proportion | ////
+	//// |                                         | ////
+	//// +-----------------------------------------+ ////
+	/////////////////////////////////////////////////////
+	
