@@ -431,7 +431,9 @@ public:
 	/// <param name="StarColor">- Star Color</param>
 	/// <param name="StarSymbol">- Star Symbol</param>
 	/// <param name="Proportion">- Proportion</param>
-	static VOID drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF StarColor, const wchar_t StarSymbol[], INT Proportion) {
+	static VOID drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF StarColor, CONST CHAR StarSymbol[], UINT Proportion) {
+
+		if (Proportion == 0) Proportion++;
 
 		if (W && H != 0) {
 
@@ -442,17 +444,17 @@ public:
 			COLORREF DefaultColor = GetTextColor(hdc);
 			SetTextColor(hdc, StarColor);
 
-			GetTextExtentPoint(hdc, StarSymbol, lstrlenW(StarSymbol), &size);
+			GetTextExtentPointA(hdc, StarSymbol, (int)strlen(StarSymbol), &size);
 
 			GetSystemTime(&st);
 			srand(st.wMilliseconds);
 
-			for (int i = 0; i < Proportion * Proportion; i++) {
+			for (UINT i = 0; i < Proportion * Proportion; i++) {
 
 				INT STARX = rand() % XCELL + XS; // XS - (XS + XCELL)
 				INT STARY = rand() % YCELL + YS; // YS - (YS + YCELL)
 
-				TextOut(hdc, X + STARX - size.cx / 2, Y + STARY - size.cy / 2, StarSymbol, lstrlenW(StarSymbol));
+				TextOutA(hdc, X + STARX - size.cx / 2, Y + STARY - size.cy / 2, StarSymbol, strlen(StarSymbol));
 
 				///////////////////////////
 				//// -->               ////

@@ -60,6 +60,7 @@ private:
 	static VOID onMouseMove(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
 	static VOID onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
 	static VOID onPaint(HWND hMainWindow);
+	static VOID onMCINotify(HWND hMainWindow, LPARAM lParam);
 	static VOID onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
 	static VOID onKeyDown(HWND hMainWindow, WPARAM wParam, LPARAM lParam);
 

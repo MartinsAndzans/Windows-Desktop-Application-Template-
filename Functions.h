@@ -317,11 +317,11 @@ public:
 			ID,
 			NULL,
 			NULL))) {
-			return Hwnd;
+			delete Hwnd;
+			return NULL;
 		}
 
-		delete Hwnd;
-		return NULL;
+		return Hwnd;
 
 	}
 
@@ -475,7 +475,6 @@ public:
 
 	/// <summary>
 	/// > This Function Gets Playback Status
-	/// <para>> MCI_STATUS_START - Obtains the starting position of the media</para>
 	/// <para>> MCI_STATUS_POSITION - Obtains Current Playback Position</para>
 	/// <para>> MCI_STATUS_LENGTH - Obtains Total Media Length</para>
 	/// <para>> MCI_STATUS_MODE - Obtains Current Mode of The Device</para>
@@ -485,21 +484,15 @@ public:
 	/// </summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <param name="StatusCode">- [EXAMPLE] - MCI_STATUS_[]</param>
+	/// <param name="AdditionalFlags">- Additional Flags</param>
 	/// <returns>If Succeeded Returns Requested Status Information, but If not Returns [MAXDWORD]</returns>
 	static MCISTATUS GetPlaybackStatus(CONST WCHAR *Alias, MCISTATUS StatusCode) {
 
-		DWORD Flags = NULL;
 		MCI_STATUS_PARMS status = { 0 };
 		status.dwItem = StatusCode; // Status Code
 		status.dwReturn = NULL; // Return
 
-		if (StatusCode == MCI_STATUS_START) {
-			status.dwItem = MCI_STATUS_POSITION;
-			if (mciSendCommand(mciGetDeviceID(Alias), MCI_STATUS, MCI_WAIT | MCI_STATUS_ITEM | MCI_STATUS_START, (DWORD_PTR)&status) != 0) {
-				return MAXDWORD;
-			}
-		}
-		else if (mciSendCommand(mciGetDeviceID(Alias), MCI_STATUS, MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)&status) != 0) {
+		if (mciSendCommand(mciGetDeviceID(Alias), MCI_STATUS, MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)&status) != 0) {
 			return MAXDWORD;
 		}
 
@@ -522,17 +515,30 @@ public:
 		play.dwCallback = (DWORD_PTR)CallbackWindow;
 		play.dwFrom = 0;
 
-		MCIDEVICEID ID = mciGetDeviceID(Alias);
-
-		if (Notify) return mciSendCommand(ID, MCI_PLAY, MCI_NOTIFY | MCI_FROM, (DWORD_PTR)&play);
-			return mciSendCommand(ID, MCI_PLAY, MCI_FROM, (DWORD_PTR)&play);
+		if (Notify) return mciSendCommand(mciGetDeviceID(Alias), MCI_PLAY, MCI_NOTIFY | MCI_FROM, (DWORD_PTR)&play);
+			return mciSendCommand(mciGetDeviceID(Alias), MCI_PLAY, MCI_FROM, (DWORD_PTR)&play);
 
 	}
 
 	/// <summary>
-	/// > This Function Moves Playback Current Position To Specified Point
-	/// <para>> MCI_SEEK_TO_START - Moves Playback Current Position To Start</para>
-	/// <para>> MCI_SEEK_TO_END - Moves Playback Current Position To End</para>
+	/// > This Function Replays Music From The Beginning
+	/// <para>> Invoke This Function Inside [MM_MCINOTIFY] Message</para>
+	/// </summary>
+	/// <param name="Alias">- Alias for MCIDevice</param>
+	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
+	static MCIERROR Replay(HWND CallbackWindow, CONST WCHAR *Alias) {
+
+		MCISTATUS PlaybackPosition = GetPlaybackStatus(Alias, MCI_STATUS_POSITION); // Playback Position
+		if (PlaybackPosition != 0) return Play(CallbackWindow, Alias, TRUE);
+
+		return MAXDWORD;
+
+	}
+
+	/// <summary>
+	/// > This Function Seek To Specified Point of Playback
+	/// <para>> MCI_SEEK_TO_START - Seek To Beginning of Playback</para>
+	/// <para>> MCI_SEEK_TO_END - Seek To End of Playback</para>
 	/// </summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <param name="SeekTo">- How Much Move Playback Current Position</param>
@@ -544,9 +550,9 @@ public:
 
 		MCIDEVICEID ID = mciGetDeviceID(Alias);
 
-		if (SeekTo == MCI_SEEK_TO_START) return mciSendCommand(ID, MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_START, (DWORD_PTR)&seek);
-			if (SeekTo == MCI_SEEK_TO_END) return mciSendCommand(ID, MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_END, (DWORD_PTR)&seek);
-				return mciSendCommand(ID, MCI_SEEK, MCI_WAIT | MCI_TO, (DWORD_PTR)&seek);
+		if (SeekTo == MCI_SEEK_TO_START) return mciSendCommand(ID, MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_START, NULL); // Seek To Beginning of Playback
+			if (SeekTo == MCI_SEEK_TO_END) return mciSendCommand(ID, MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_END, NULL); // Seek To End of Playback
+				return mciSendCommand(ID, MCI_SEEK, MCI_WAIT | MCI_TO, (DWORD_PTR)&seek); // Seek To Specified Point of Playback
 
 	}
 

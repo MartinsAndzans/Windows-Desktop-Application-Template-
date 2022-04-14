@@ -10,10 +10,7 @@ PAINTSTRUCT DropFiles::ps = { 0 };
 HDC DropFiles::MemoryDC = { 0 };
 HBITMAP DropFiles::Bitmap = { 0 };
 
-COLORREF DropFiles::TextColor = RGB(0, 0, 0);
-
-COLORREF DropFiles::DropFilesBackgroundColor = RGB(255, 255, 255);
-HBRUSH DropFiles::DropFilesBackroundBrush = { 0 };
+HBRUSH DropFiles::DropFilesBackroundBrush = CreateSolidBrush(DropFilesBackroundColor);
 
 HFONT DropFiles::DropFilesFont = { 0 };
 
@@ -29,7 +26,7 @@ RECT DropFiles::Dimensions = { 0 };
 
 BOOL DropFiles::InitDropFiles() {
 
-	DropFilesFont = createDropFilesFont();
+	CreateDropFilesFont();
 
 	WNDCLASSEX DropFilesEx = { 0 };
 
@@ -60,9 +57,9 @@ BOOL DropFiles::InitDropFiles() {
 
 #pragma region Functions
 
-HFONT DropFiles::createDropFilesFont() {
+VOID DropFiles::CreateDropFilesFont() {
 
-	HFONT Font = CreateFont(20, 0, 0, 0,
+	DropFilesFont = CreateFont(20, 0, 0, 0,
 		FW_BOLD,
 		false,
 		false,
@@ -72,9 +69,7 @@ HFONT DropFiles::createDropFilesFont() {
 		CLIP_DEFAULT_PRECIS,
 		CLEARTYPE_QUALITY,
 		VARIABLE_PITCH,
-		L"Times New Roman");
-
-	return Font;
+		L"Segoe UI");
 
 }
 
@@ -182,17 +177,17 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 		DragAcceptFiles(hDropFiles, TRUE);
 
-		LPDFSTYLES parameters = (LPDFSTYLES)window->lpCreateParams;
+		LpDropFilesStyle Parameters = (LpDropFilesStyle)window->lpCreateParams;
 
-		DFSTYLES *Styles = new DFSTYLES;
-		ZeroMemory(Styles, sizeof(DFSTYLES));
-
+		DropFilesStyle *Style = new DropFilesStyle;
+		ZeroMemory(Style, sizeof(DropFilesStyle));
+		 
 		if (window->lpCreateParams != NULL) {
-			Styles->BackgroundColor = parameters->BackgroundColor;
-			Styles->TextColor = parameters->TextColor;
+			Style->BackgroundColor = Parameters->BackgroundColor;
+			Style->ForegroundColor = Parameters->ForegroundColor;
 		}
 
-		SetWindowLongPtr(hDropFiles, GWLP_USERDATA, (LONG_PTR)Styles);
+		SetWindowLongPtr(hDropFiles, GWLP_USERDATA, (LONG_PTR)Style);
 
 	}
 	else {
@@ -215,58 +210,47 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
 
-	LPDFSTYLES Styles = (LPDFSTYLES)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
+	LpDropFilesStyle Style = (LpDropFilesStyle)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
 
-	(Styles->BackgroundColor != NULL) ? DropFilesBackgroundColor = Styles->BackgroundColor : DropFilesBackgroundColor = RGB(255, 255, 255); // DEFAULT
-	(Styles->TextColor != NULL) ? TextColor = Styles->TextColor : TextColor = RGB(0, 0, 0); // DEFAULT
+	(Style->BackgroundColor != NULL) ? SetDCBrushColor(MemoryDC, Style->BackgroundColor) : SetDCBrushColor(MemoryDC, RGB(255, 255, 255)); // DEFAULT
+	(Style->ForegroundColor != NULL) ? SetTextColor(MemoryDC, Style->ForegroundColor) : SetTextColor(MemoryDC, RGB(0, 0, 0)); // DEFAULT
 
-	/////////////////////////////////////////////////////
-	//// +-----------------------------------------+ ////
-	//// |                                         | ////
-	//// | [in] struct DFSTYLES - BackgroundColor  | ////
-	//// | [in] struct DFSTYLES - TextColor        | ////
-	//// |                                         | ////
-	//// +-----------------------------------------+ ////
-	/////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////
+	//// +------------------------------------------------+ ////
+	//// |                                                | ////
+	//// | [in] struct DropFilesStyle - BackgroundColor   | ////
+	//// | [in] struct DropFilesStyle - ForegroundColor   | ////
+	//// |                                                | ////
+	//// +------------------------------------------------+ ////
+	////////////////////////////////////////////////////////////
 
-	HBRUSH BackgroundBrush = CreateSolidBrush(DropFilesBackgroundColor);
-	FillRect(MemoryDC, &Dimensions, BackgroundBrush);
-	DeleteObject(BackgroundBrush);
+	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(DC_BRUSH));
 
 	SelectObject(MemoryDC, DropFilesFont);
-	SetTextColor(MemoryDC, TextColor);
 
-	// BORDER
+	// Margin
 
 	CONST SHORT BorderPadding = 4, BorderWidth = 2;
 	RECT Border = { Dimensions.left + BorderPadding, Dimensions.top + BorderPadding, Dimensions.right - BorderPadding, Dimensions.bottom - BorderPadding };
-	drawDashedRectangle(MemoryDC, Border, BorderWidth, TextColor);
+	drawDashedRectangle(MemoryDC, Border, BorderWidth, GetTextColor(MemoryDC));
 
 	////
 
-	// TEXT
+	// Text To User
 
 	SIZE size = { 0 };
 	WCHAR WindowTitle[MAX_DFTITLE_CHAR] = { 0 };
 	GetWindowText(hDropFiles, WindowTitle, ARRAYSIZE(WindowTitle));
 	GetTextExtentPoint(MemoryDC, WindowTitle, lstrlenW(WindowTitle), &size);
-
-	if (lstrcmpW(WindowTitle, L"") == 0) {
-		wcscpy_s(WindowTitle, L"Drop File/s Here");
-		GetTextExtentPoint(MemoryDC, WindowTitle, lstrlenW(WindowTitle), &size);
-		TextOut(MemoryDC, Dimensions.right / 2 - size.cx / 2, Dimensions.bottom / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));
-	}
-	else {
-		TextOut(MemoryDC, Dimensions.right / 2 - size.cx / 2, Dimensions.bottom / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));
-	}
+	TextOut(MemoryDC, Dimensions.right / 2 - size.cx / 2, Dimensions.bottom / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));
 
 	////
 
 	if (FileDroped) {
 		CONST SHORT ArrowPadding = 20;
 		INT ArrowWidth = Dimensions.right / 3, ArrowHeight = Dimensions.bottom - ArrowPadding * 2;
-		FillRectOpacity50(MemoryDC, Dimensions, TextColor);
-		drawArrow(MemoryDC, Dimensions.right / 2 - ArrowWidth / 2, Dimensions.bottom / 2 - ArrowHeight / 2, ArrowWidth, ArrowHeight, TextColor);
+		FillRectOpacity50(MemoryDC, Dimensions, GetTextColor(MemoryDC));
+		drawArrow(MemoryDC, Dimensions.right / 2 - ArrowWidth / 2, Dimensions.bottom / 2 - ArrowHeight / 2, ArrowWidth, ArrowHeight, GetTextColor(MemoryDC));
 	}
 
 	BitBlt(DropFilesDC, 0, 0, Dimensions.right, Dimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
@@ -328,8 +312,8 @@ LRESULT CALLBACK DropFiles::DropFilesProcedure(HWND hDropFiles, UINT Msg, WPARAM
 	}
 	case WM_DESTROY:
 	{
-		LPDFSTYLES Styles = (LPDFSTYLES)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
-		delete[] Styles;
+		LpDropFilesStyle Style = (LpDropFilesStyle)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
+		delete[] Style;
 		return 0;
 	}
 	}

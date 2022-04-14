@@ -8,15 +8,10 @@
 
 #define SEC 1000
 
-#define ASTIMER 1001
+#define AnimationTimer 1001
 
 #define MIN_RGB 0x00000000
 #define MAX_RGB 0x00FFFFFF
-
-typedef struct ASSTYLES {
-	COLORREF StarColor;
-	INT Proportion;
-}*LPASSTYLES;
 
 #define MAX_ASTITLE_CHAR 200
 #define HInstance() GetModuleHandle(NULL)
@@ -41,17 +36,17 @@ private:
 
 	static RECT Dimensions;
 
-	static INT Proportion;
-
 	static COLORREF StarColor;
+	static INT Proportion;
+	static CHAR StarSymbol[2];
 
 	#pragma endregion
 
 	#pragma region Functions
 
-	static HFONT createStarFont();
+	static VOID CreateStarFont();
 
-	static VOID drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF StarColor, const wchar_t StarSymbol[] = L"*", INT proportion = 6);
+	static VOID drawStars(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF StarColor, CONST CHAR StarSymbol[] = "*", UINT proportion = 6);
 
 	#pragma endregion
 
@@ -71,6 +66,12 @@ private:
 	#pragma endregion
 
 public:
+
+	typedef struct AnimationStyle {
+		COLORREF StarColor;
+		SHORT Proportion;
+		CHAR StarSymbol[2];
+	}AStyle, *LpAStyle, *LpAnimationStyle;
 
 	#pragma region InitAnimationStars
 

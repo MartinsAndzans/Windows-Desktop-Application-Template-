@@ -6,13 +6,10 @@
 #include <Windows.h>
 #include <string>
 
-typedef struct DFSTYLES {
-	COLORREF BackgroundColor;
-	COLORREF TextColor;
-}*LPDFSTYLES;
-
 #define MAX_DFTITLE_CHAR 256
 #define HInstance() GetModuleHandle(NULL)
+
+#define DropFilesBackroundColor RGB(255, 255, 255)
 
 class DropFiles {
 
@@ -26,9 +23,6 @@ private:
 	static HDC MemoryDC;
 	static HBITMAP Bitmap;
 
-	static COLORREF TextColor;
-
-	static COLORREF DropFilesBackgroundColor;
 	static HBRUSH DropFilesBackroundBrush;
 
 	static HFONT DropFilesFont;
@@ -41,7 +35,7 @@ private:
 
 	#pragma region Functions
 
-	static HFONT createDropFilesFont();
+	static VOID CreateDropFilesFont();
 
 	static VOID drawDashedRectangle(HDC hdc, RECT &Rectangle, SIZE_T Width, COLORREF Color);
 	static VOID FillRectOpacity50(HDC hdc, RECT &Rectangle,COLORREF Color);
@@ -64,6 +58,11 @@ private:
 	#pragma endregion
 
 public:
+
+	typedef struct DropFilesStyle {
+		COLORREF BackgroundColor;
+		COLORREF ForegroundColor;
+	}DFStyle, *LpDFStyle, *LpDropFilesStyle;
 
 	#pragma region InitDropFiles
 
