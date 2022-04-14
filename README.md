@@ -3,7 +3,7 @@
 
 Thi is Windows Desktop Application Template
 
-# Drop Files Control : Class Name -- -"DROP FILES"-
+# Drop Files Control : Class Name -- "DROP FILES"
 
 	////////////////////////////////////////////////////////////
 	//// +------------------------------------------------+ ////
