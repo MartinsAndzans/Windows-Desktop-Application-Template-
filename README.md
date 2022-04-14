@@ -1,7 +1,7 @@
 # Windows Desktop Application -Template-
 -Template-
 
-Thi is Windows Desktop Application Template
+This is Windows Desktop Application Template
 
 # Drop Files Control : Class Name -- "DROP FILES"
 
