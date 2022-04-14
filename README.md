@@ -1,9 +1,8 @@
-# Windows Desktop Application -Template-
--Template-
+<h1>Windows Desktop Application -Template-</h1>
 
 This is Windows Desktop Application Template
 
-# Drop Files Control : Class Name -- "DROP FILES"
+<h2>Drop Files Control : Class Name -- "DROP FILES"</h2>
 
 	//////////////////////////////////////////////////////////
 	//// +----------------------------------------------+ ////
