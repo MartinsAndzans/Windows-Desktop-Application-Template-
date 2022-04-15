@@ -9,11 +9,6 @@ HBITMAP AnimationStars::Bitmap = { 0 };
 
 HFONT AnimationStars::StarFont = { 0 };
 RECT AnimationStars::Dimensions = { 0 };
-
-COLORREF AnimationStars::StarColor = { 0 };
-INT AnimationStars::Proportion = { 0 };
-CHAR AnimationStars::StarSymbol[2] = "*";
-
 #pragma endregion
 
 #pragma region InitAnimationStars
@@ -90,7 +85,7 @@ VOID AnimationStars::drawStars(HDC hdc, RECT &Rectangle, COLORREF StarColor, CON
 			INT STARX = rand() % XCELL + XS; // XS - (XS + XCELL)
 			INT STARY = rand() % YCELL + YS; // YS - (YS + YCELL)
 
-			TextOutA(hdc, X + STARX - size.cx / 2, Y + STARY - size.cy / 2, StarSymbol, strlen(StarSymbol));
+			TextOutA(hdc, Rectangle.left + STARX - size.cx / 2, Rectangle.top + STARY - size.cy / 2, StarSymbol, strlen(StarSymbol));
 
 			///////////////////////////
 			//// -->               ////
@@ -214,7 +209,7 @@ VOID AnimationStars::onPaint(HWND hAnimationStars) {
 
 	(Style->StarColor != NULL) ? StarColor = Style->StarColor : StarColor = RGB(255, 255, 255); // DEFAULT
 	(Style->Proportion != NULL) ? Proportion = Style->Proportion : Proportion = 6; // DEFAULT
-	(Style->StarSymbol != '\0') ? StarSymbol[0] = Style->StarSymbol : StarSymbol[0] = '+'); // DEFAULT
+	(Style->StarSymbol != '\0') ? StarSymbol[0] = Style->StarSymbol : StarSymbol[0] = '+'; // DEFAULT
 	
 	/////////////////////////////////////////////////////
 	//// +-----------------------------------------+ ////

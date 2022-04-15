@@ -190,20 +190,6 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 	CreateDebugTools();
 	#endif
 
-	#pragma region Example
-
-	AnimationStars::AnimationStyle as = { 0 };
-	as.StarColor = RGB(0, 155, 255);
-	as.Proportion = 4;
-	as.StarSymbol = '+';
-
-	DropFiles::DropFilesStyle dfs = { 0 };
-	dfs.BackgroundColor = RGB(255, 195, 30);
-	dfs.ForegroundColor = RGB(0, 55, 255);
-
-	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)ID_ANIMATION_STARS, HInstance(), &as);
-	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"Drop File/s Here", WS_CHILD | WS_BORDER | WS_VISIBLE, 260, 110, 220, 120, hMainWindow, (HMENU)ID_DROP_FILES, HInstance(), &dfs);
-=========
 	#pragma region Examples
 	AnimationStars::AnimationStyle as = { 0 };
 	as.StarColor = RGB(0, 255, 155);
@@ -216,21 +202,6 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)ID_ANIMATION_STARS, HInstance(), &as);
 	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"Drop File/s Here", WS_CHILD | WS_BORDER | WS_VISIBLE, 260, 110, 220, 120, hMainWindow, (HMENU)ID_DROP_FILES, HInstance(), &dfs);
->>>>>>>>> Temporary merge branch 2
-=========
-	#pragma region Examples
-	AnimationStars::AnimationStyle as = { 0 };
-	as.StarColor = RGB(0, 255, 155);
-	as.Proportion = 4;
-	as.StarSymbol = '+';
-
-	DropFiles::DropFilesStyle dfs = { 0 };
-	dfs.BackgroundColor = RGB(255, 195, 30);
-	dfs.ForegroundColor = RGB(0, 55, 255);
-
-	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)ID_ANIMATION_STARS, HInstance(), &as);
-	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"Drop File/s Here", WS_CHILD | WS_BORDER | WS_VISIBLE, 260, 110, 220, 120, hMainWindow, (HMENU)ID_DROP_FILES, HInstance(), &dfs);
->>>>>>>>> Temporary merge branch 2
 	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 150, 5, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)ID_COLOR_PICKER, HInstance(), NULL);
 	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"SUPER CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 150, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)ID_CALCULATOR, HInstance(), NULL);
 	#pragma endregion
