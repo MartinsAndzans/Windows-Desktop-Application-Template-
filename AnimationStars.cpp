@@ -85,7 +85,7 @@ VOID AnimationStars::drawStars(HDC hdc, RECT &Rectangle, COLORREF StarColor, CON
 			INT STARX = rand() % XCELL + XS; // XS - (XS + XCELL)
 			INT STARY = rand() % YCELL + YS; // YS - (YS + YCELL)
 
-			TextOutA(hdc, Rectangle.left + STARX - size.cx / 2, Rectangle.top + STARY - size.cy / 2, StarSymbol, strlen(StarSymbol));
+			TextOutA(hdc, Rectangle.left + STARX - size.cx / 2, Rectangle.top + STARY - size.cy / 2, StarSymbol, (int)strlen(StarSymbol));
 
 			///////////////////////////
 			//// -->               ////
@@ -203,7 +203,7 @@ VOID AnimationStars::onPaint(HWND hAnimationStars) {
 	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(DC_BRUSH));
 	SelectObject(MemoryDC, StarFont);
 
-	COLORREF StarColor = 0; INT Proportion = 0; CHAR StarSymbol[2] = { 0 };
+	COLORREF StarColor = 0; SHORT Proportion = 0; CHAR StarSymbol[2] = { 0 };
 
 	LpAnimationStyle Style = (LpAnimationStyle)GetWindowLongPtr(hAnimationStars, GWLP_USERDATA);
 
