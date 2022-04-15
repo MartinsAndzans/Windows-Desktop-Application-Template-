@@ -15,7 +15,7 @@ This is Windows Desktop Application Template
 	//// +----------------------------------------------+ ////
 	//////////////////////////////////////////////////////////
 	
-	When File/s Droped : Drop Files Control Post WM_COMMAND Message
+	When File/s Droped : Drop Files Control Post WM_COMMAND Message To Parent Window
 	
 	///////////////////////////////////////////////////////
 	//// +-------------------------------------------+ ////
