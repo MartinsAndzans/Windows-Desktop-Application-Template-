@@ -190,9 +190,10 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 	CreateDebugTools();
 	#endif
 
-	#pragma region Examples
+	#pragma region Example
+
 	AnimationStars::AnimationStyle as = { 0 };
-	as.StarColor = RGB(0, 255, 155);
+	as.StarColor = RGB(0, 155, 255);
 	as.Proportion = 4;
 	as.StarSymbol = '+';
 
