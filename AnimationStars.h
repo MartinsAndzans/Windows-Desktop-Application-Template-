@@ -36,7 +36,7 @@ private:
 
 	#pragma region Functions
 	static VOID CreateStarFont();
-	static VOID drawStars(HDC hdc, RECT& Rectangle, COLORREF StarColor, CONST CHAR StarSymbol[], UINT Proportion);
+	static VOID drawStars(HDC hdc, RECT &Rectangle, COLORREF StarColor, CONST CHAR StarSymbol[], UINT Proportion);
 	#pragma endregion
 
 	#pragma region Events
