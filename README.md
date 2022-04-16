@@ -39,3 +39,16 @@ This is Windows Desktop Application Template
 	//// |                                         | ////
 	//// +-----------------------------------------+ ////
 	/////////////////////////////////////////////////////
+
+<h2>Calculator Control : Class Name -- "CALCULATOR"</h2>
+
+		When Calculator Destroys : Calculator Control Post WM_COMMAND Message To Parent Window
+		
+		//////////////////////////////////////////////////////
+		//// +------------------------------------------+ ////
+		//// |                                          | ////
+		//// | [out] WPARAM - LOWORD(ID) | HIWORD(HWND) | ////
+		//// | [out] LPARAM - DestroyWindow             | ////
+		//// |                                          | ////
+		//// +------------------------------------------+ ////
+		//////////////////////////////////////////////////////
