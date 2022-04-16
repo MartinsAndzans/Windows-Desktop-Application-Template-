@@ -69,21 +69,21 @@ public:
 
 		std::string StringValue = "";
 
-		if ((StringValue = _itos((int64_t)Value)) == "OVERFLOW") { return "OVERFLOW"; } // Convert Integer Portion of Value - |1234|.1234
+		if ((StringValue = _itos((int64_t)Value)) == "OVERFLOW") return "OVERFLOW"; // Convert Integer Portion of Value - |1234|.1234
 		Value = Value - (int64_t)Value; // Clear Integer Portion of Value - |0|.1234
 
 		StringValue = StringValue + "."; // Add Dot
 
-		if (Value * -1 > 0) { Value = Value * -1; } // -Value * -1 = Value || Value * -1 = -Value
+		if (Value * -1 > 0) Value = Value * -1; // -Value * -1 = Value || Value * -1 = -Value
 
 		for (UINT I = 0; I < Precision; I++) {
 			Value = Value / 0.1; // 0.1234 / 0.1 = 1.234 <-
-			if ((int64_t)Value == 0) StringValue = StringValue + (CHAR)ASCII_VALUE_ZERO; // Char Value To Symbol
+			if ((int64_t)Value == 0) StringValue = StringValue + (char)ASCII_VALUE_ZERO; // Char Value To Symbol
 		}
 
 		Value = round(Value);
 
-		if ((StringValue = StringValue + _itos((int64_t)Value)) == "OVERFLOW") { return "OVERFLOW"; }  // Convert Decimal Portion of Value - 1234.|1234|
+		if ((StringValue = StringValue + _itos((int64_t)Value)) == "OVERFLOW") return "OVERFLOW";  // Convert Decimal Portion of Value - 1234.|1234|
 
 		return StringValue;
 
@@ -132,11 +132,11 @@ public:
 	/// <summary>
 	/// Finds Character Position Into String
 	/// </summary>
-	/// <param name="Text">- [WCHAR] Text</param>
+	/// <param name="Text">- [CHAR] Text</param>
 	/// <param name="Char">- Character To Find</param>
 	/// <param name="TextLength">- Text Length Without [null character] - [\0]</param>
 	/// <returns>If Character Has Been Found Returns Character Position, but If not -1</returns>
-	static INT FindChar(LPWSTR Text, const wchar_t Char, INT TextLength) {
+	static SIZE_T FindChar(LPSTR Text, const char Char, SIZE_T TextLength) {
 
 		for (int i = 0; i < TextLength; i++) {
 			if (Text[i] == Char) {

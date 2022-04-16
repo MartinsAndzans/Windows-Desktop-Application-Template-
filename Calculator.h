@@ -5,17 +5,18 @@
 
 #include <Windows.h>
 #include <string>
+#include <vector>
 #include <math.h>
 
 #define CL_SHOW 20002 // 250 - 460
 
 #define MAX_RESULT_LENGTH 8
 
-#define DEVISION_ZERO_BY_ZERO L"Undefined"
-#define DEVISION_BY_ZERO L"Infinity"
-#define RESULT_IS_TOO_LARGE L"Result Is Too Large"
+#define DEVISION_ZERO_BY_ZERO "Undefined"
+#define DEVISION_BY_ZERO "Infinity"
 
-#define MAX_CLTITLE_CHAR 256
+#define MIN_CALCULATOR_STRING_CHAR 2
+#define MAX_CALCULATOR_STRING_CHAR 256
 #define HInstance() GetModuleHandle(NULL)
 
 #define CalculatorBackgroundColor RGB(255, 255, 255)
@@ -54,70 +55,56 @@ class Calculator {
 
 private:
 
-	#pragma region CalculatorStaticMembers
+	typedef struct MathOutputs {
+		HWND Opearation;
+		HWND Result;
+	}*LpMathOutputs;
 
+	#pragma region CalculatorStaticMembers
 	static HDC CalculatorDC;
 	static PAINTSTRUCT ps;
 
 	static HDC MemoryDC;
 	static HBITMAP Bitmap;
 
-	static HBRUSH CalculatorBackroundBrush;
-
 	static HFONT CalculatorFont;
 
-	static HMENU CalculatorControlsID[];
+	static CONST SHORT Padding;
 
-	static CONST SHORT PADDING;
+	static CONST SHORT ButtonWidth;
+	static CONST SHORT ButtonHeight;
 
-	static CONST INT BUTTONWIDTH;
-	static CONST INT BUTTONHEIGHT;
+	static CONST SHORT StaticWidth;
+	static CONST SHORT StaticHeight;
 
-	static CONST INT STATICWIDTH;
-	static CONST INT STATICHEIGHT;
-
-	static CONST POINT CalculatorDimensions;
+	static CONST SIZE CalculatorDimensions;
 
 	static RECT Dimensions;
-
 	#pragma endregion
 
 	#pragma region Functions
-
-	static HFONT createCalculatorFont();
-
-	static INT FindChar(wchar_t(&Text)[], const wchar_t Char, INT TextLength);
-	static BOOL RoundDouble(wchar_t(&Text)[], INT TextLength);
-
-	static std::wstring _itow(int64_t Value);
-	static BOOL _ftow(DOUBLE Value, wchar_t(&Buffer)[256], UINT Precision);
-
-	static BOOL createCalculatorControls(HWND hCalculator);
-
+	static VOID CreateCalculatorFont();
+	static SIZE_T FindChar(LPSTR Text, const char Char, SIZE_T TextLength);
+	static BOOL RoundDouble(std::string &Text);
+	static BOOL CreateCalculatorControls(HWND hCalculator);
 	#pragma endregion
 
 	#pragma region Events
-
 	static VOID onCreate(HWND hCalculator, LPARAM lParam);
 	static VOID onWindowPosChanging(HWND hCalculator, LPARAM lParam);
 	static VOID onDrawItem(HWND hCalculator, WPARAM wParam, LPARAM lParam);
 	static VOID onPaint(HWND hCalculator);
 	static VOID onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam);
-
 	#pragma endregion
 
 	#pragma region CalculatorProcedure
-
 	static LRESULT CALLBACK CalculatorProcedure(HWND hCalculator, UINT Msg, WPARAM wParam, LPARAM lParam);
-
 	#pragma endregion
 
 public:
 
 	#pragma region InitCalculator
-
 	static BOOL InitCalculator();
-
 	#pragma endregion
 
 };

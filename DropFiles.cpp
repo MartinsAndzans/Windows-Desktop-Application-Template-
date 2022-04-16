@@ -162,18 +162,20 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 		DragAcceptFiles(hDropFiles, TRUE);
 
-		LpDropFilesStyle Parameters = (LpDropFilesStyle)window->lpCreateParams;
-
-		DropFilesStyle *Style = new DropFilesStyle;
-		ZeroMemory(Style, sizeof(DropFilesStyle));
-
-		// Move Style Data To Heap
 		if (window->lpCreateParams != NULL) {
+
+			LpDropFilesStyle Parameters = (LpDropFilesStyle)window->lpCreateParams;
+
+			DropFilesStyle *Style = new DropFilesStyle;
+			ZeroMemory(Style, sizeof(DropFilesStyle));
+
+			// Move Style Data To Heap
 			Style->BackgroundColor = Parameters->BackgroundColor;
 			Style->ForegroundColor = Parameters->ForegroundColor;
-		}
 
-		SetWindowLongPtr(hDropFiles, GWLP_USERDATA, (LONG_PTR)Style);
+			SetWindowLongPtr(hDropFiles, GWLP_USERDATA, (LONG_PTR)Style);
+
+		}
 
 	}
 	else {
@@ -195,11 +197,15 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
+	SetDCBrushColor(MemoryDC, DropFilesBackroundColor);
+	SetTextColor(MemoryDC, DropFilesForegroundColor);
 
 	LpDropFilesStyle Style = (LpDropFilesStyle)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
 
-	(Style->BackgroundColor != NULL) ? SetDCBrushColor(MemoryDC, Style->BackgroundColor) : SetDCBrushColor(MemoryDC, DropFilesBackroundColor); // DEFAULT
-	(Style->ForegroundColor != NULL) ? SetTextColor(MemoryDC, Style->ForegroundColor) : SetTextColor(MemoryDC, DropFilesForegroundColor); // DEFAULT
+	if (Style != NULL) {
+		SetDCBrushColor(MemoryDC, Style->BackgroundColor);
+		SetTextColor(MemoryDC, Style->ForegroundColor);
+	}
 
 	////////////////////////////////////////////////////////////
 	//// +------------------------------------------------+ ////
@@ -221,7 +227,7 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 
 	// Text To User
 	SIZE size = { 0 };
-	WCHAR WindowTitle[MAX_DFTITLE_CHAR] = { 0 };
+	WCHAR WindowTitle[MAX_DROP_FILES_STRING_CHAR] = { 0 };
 	GetWindowText(hDropFiles, WindowTitle, ARRAYSIZE(WindowTitle));
 	GetTextExtentPoint(MemoryDC, WindowTitle, lstrlenW(WindowTitle), &size);
 	TextOut(MemoryDC, Dimensions.right / 2 - size.cx / 2, Dimensions.bottom / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));
@@ -291,8 +297,7 @@ LRESULT CALLBACK DropFiles::DropFilesProcedure(HWND hDropFiles, UINT Msg, WPARAM
 	case WM_DESTROY:
 	{
 		LpDropFilesStyle Style = (LpDropFilesStyle)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
-		delete[] Style;
-		SetWindowLongPtr(hDropFiles, GWLP_USERDATA, NULL);
+		if (Style != NULL) delete[] Style, SetWindowLongPtr(hDropFiles, GWLP_USERDATA, NULL);
 		return 0;
 	}
 	}

@@ -63,8 +63,6 @@ VOID AnimationStars::CreateStarFont() {
 
 VOID AnimationStars::drawStars(HDC hdc, RECT &Rectangle, COLORREF StarColor, CONST CHAR StarSymbol[], UINT Proportion) {
 
-	if (Proportion == 0) Proportion++;
-
 	if (Rectangle.right && Rectangle.bottom != 0) {
 
 		SIZE size = { 0 };
@@ -138,19 +136,21 @@ VOID AnimationStars::onCreate(HWND hAnimationStars, LPARAM lParam) {
 		(window->style & WS_OVERLAPPED) == NULL && (window->style & WS_SYSMENU) == NULL &&
 		(window->style & WS_THICKFRAME) == NULL) {
 
-		LpAnimationStyle Parameters = (LpAnimationStyle)window->lpCreateParams;
+		if (window->lpCreateParams != NULL) {
 
-		AnimationStyle *Style = new AnimationStyle;
-		ZeroMemory(Style, sizeof(AnimationStyle));
+			LpAnimationStarsStyle Parameters = (LpAnimationStarsStyle)window->lpCreateParams;
 
-		// Move Style Data To Heap
-		if (Parameters != NULL) {
+			AnimationStarsStyle *Style = new AnimationStarsStyle;
+			ZeroMemory(Style, sizeof(AnimationStarsStyle));
+
+			// Move Style Data To Heap
 			Style->StarColor = Parameters->StarColor;
 			Style->Proportion = Parameters->Proportion;
 			Style->StarSymbol = Parameters->StarSymbol;
-		}
 
-		SetWindowLongPtr(hAnimationStars, GWLP_USERDATA, (LONG_PTR)Style);
+			SetWindowLongPtr(hAnimationStars, GWLP_USERDATA, (LONG_PTR)Style);
+
+		}
 
 		if (window->cx != 0 && window->cy != 0) {
 			SetTimer(hAnimationStars, AnimationTimer, SEC / 10, (TIMERPROC)NULL);
@@ -203,13 +203,17 @@ VOID AnimationStars::onPaint(HWND hAnimationStars) {
 	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(DC_BRUSH));
 	SelectObject(MemoryDC, StarFont);
 
-	COLORREF StarColor = 0; SHORT Proportion = 0; CHAR StarSymbol[2] = { 0 };
+	COLORREF StarColor = AnimationStarsStarColor;
+	SHORT Proportion = 4;
+	CHAR StarSymbol[2] = "+";
 
-	LpAnimationStyle Style = (LpAnimationStyle)GetWindowLongPtr(hAnimationStars, GWLP_USERDATA);
+	LpAnimationStarsStyle Style = (LpAnimationStarsStyle)GetWindowLongPtr(hAnimationStars, GWLP_USERDATA);
 
-	(Style->StarColor != NULL) ? StarColor = Style->StarColor : StarColor = RGB(255, 255, 255); // DEFAULT
-	(Style->Proportion != NULL) ? Proportion = Style->Proportion : Proportion = 6; // DEFAULT
-	(Style->StarSymbol != '\0') ? StarSymbol[0] = Style->StarSymbol : StarSymbol[0] = '+'; // DEFAULT
+	if (Style != NULL) {
+		StarColor = Style->StarColor;
+		if (Style->Proportion != 0) Proportion = Style->Proportion;
+		if (Style->StarSymbol != '\0') StarSymbol[0] = Style->StarSymbol;
+	}
 	
 	/////////////////////////////////////////////////////
 	//// +-----------------------------------------+ ////
@@ -221,7 +225,7 @@ VOID AnimationStars::onPaint(HWND hAnimationStars) {
 	//// +-----------------------------------------+ ////
 	/////////////////////////////////////////////////////
 
-	WCHAR WindowTitle[MAX_ASTITLE_CHAR] = { 0 };
+	WCHAR WindowTitle[MAX_ANIMATION_STARS_STRING_CHAR] = { 0 };
 	GetWindowText(hAnimationStars, WindowTitle, ARRAYSIZE(WindowTitle));
 
 	drawStars(MemoryDC, Dimensions, StarColor, StarSymbol, Proportion);
@@ -270,9 +274,8 @@ LRESULT CALLBACK AnimationStars::AnimationStarsProcedure(HWND hAnimationStars, U
 	case WM_DESTROY:
 	{
 		KillTimer(hAnimationStars, AnimationTimer);
-		LpAnimationStyle Style = (LpAnimationStyle)GetWindowLongPtr(hAnimationStars, GWLP_USERDATA);
-		delete[] Style;
-		SetWindowLongPtr(hAnimationStars, GWLP_USERDATA, NULL);
+		LpAnimationStarsStyle Style = (LpAnimationStarsStyle)GetWindowLongPtr(hAnimationStars, GWLP_USERDATA);
+		if (Style != NULL) delete[] Style, SetWindowLongPtr(hAnimationStars, GWLP_USERDATA, NULL);
 		return 0;
 	}
 	}

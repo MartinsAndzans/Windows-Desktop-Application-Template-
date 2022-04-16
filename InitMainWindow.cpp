@@ -145,7 +145,7 @@ VOID MainWindow::CreateDebugTools() {
 
 	std::vector <HWND> DebugTools = { hDebugTool1, hDebugTool2 };
 	std::vector <std::wstring> Captions = { L"X = 0 Y = 0", L"Width = 0 Height = 0" };
-	std::vector <HMENU> DebugToolsID = { (HMENU)ID_DEBUG_TOOL_1, (HMENU)ID_DEBUG_TOOL_2 };
+	std::vector <SHORT> DebugToolsID = { ID_DEBUG_TOOL_1, ID_DEBUG_TOOL_2 };
 
 	for (int i = 0; i < DebugTools.size(); i++) {
 
@@ -155,7 +155,7 @@ VOID MainWindow::CreateDebugTools() {
 			WS_CHILD | WS_BORDER | WS_VISIBLE | SS_OWNERDRAW,
 			0, 0, 0, 0,
 			hMainWindow,
-			DebugToolsID[i],
+			(HMENU)DebugToolsID[i],
 			HInstance(),
 			NULL))) {
 			Functions::ShowError(hMainWindow, " - Child Window not Created!");
@@ -191,16 +191,16 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 	#endif
 
 	#pragma region Examples
-	AnimationStars::AnimationStyle as = { 0 };
-	as.StarColor = RGB(0, 255, 155);
-	as.Proportion = 4;
-	as.StarSymbol = '+';
+	AnimationStars::AnimationStarsStyle ass = { 0 };
+	ass.StarColor = RGB(0, 255, 155);
+	ass.Proportion = 4;
+	ass.StarSymbol = '+';
 
 	DropFiles::DropFilesStyle dfs = { 0 };
 	dfs.BackgroundColor = RGB(255, 195, 30);
 	dfs.ForegroundColor = RGB(0, 55, 255);
 
-	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)ID_ANIMATION_STARS, HInstance(), &as);
+	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)ID_ANIMATION_STARS, HInstance(), &ass);
 	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"Drop File/s Here", WS_CHILD | WS_BORDER | WS_VISIBLE, 260, 110, 220, 120, hMainWindow, (HMENU)ID_DROP_FILES, HInstance(), &dfs);
 	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 150, 5, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)ID_COLOR_PICKER, HInstance(), NULL);
 	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"SUPER CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 150, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)ID_CALCULATOR, HInstance(), NULL);
