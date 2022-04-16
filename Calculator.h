@@ -21,7 +21,7 @@
 
 #define CalculatorBackgroundColor RGB(255, 255, 255)
 
-#pragma region CalculatorControls
+#pragma region CalculatorControlsID
 
 #define ID_CL_CLOSE 10011
 #define ID_CL_OPERATION 10012
@@ -85,7 +85,7 @@ private:
 	#pragma region Functions
 	static VOID CreateCalculatorFont();
 	static SIZE_T FindChar(LPSTR Text, const char Char, SIZE_T TextLength);
-	static BOOL RoundDouble(std::string &Text);
+	static std::string RoundDoubleString(std::string Text);
 	static BOOL CreateCalculatorControls(HWND hCalculator);
 	#pragma endregion
 

@@ -432,11 +432,10 @@ public:
 
 		if (Proportion == 0) Proportion++;
 
-		if (Rectangle.right && Rectangle.bottom != 0) {
+		if (Rectangle.right != 0 && Rectangle.bottom != 0) {
 
 			SIZE size = { 0 };
 			SYSTEMTIME st = { 0 };
-			UINT CURRENTCELL = 1;
 			INT XS = 0, YS = 0, XCELL = Rectangle.right / Proportion, YCELL = Rectangle.bottom / Proportion;
 
 			COLORREF PreviousColor = GetTextColor(hdc);
@@ -462,7 +461,6 @@ public:
 				///////////////////////////
 
 				XS = XS + XCELL;
-				CURRENTCELL++;
 
 				/////////////////
 				//// +---+ | ////
@@ -476,8 +474,8 @@ public:
 				//// +---+   ////
 				/////////////////
 
-				if (CURRENTCELL > Proportion) {
-					CURRENTCELL = 1, XS = 0;
+				if (XS == XCELL * Proportion) {
+					XS = 0;
 					YS = YS + YCELL;
 				}
 

@@ -63,11 +63,10 @@ VOID AnimationStars::CreateStarFont() {
 
 VOID AnimationStars::drawStars(HDC hdc, RECT &Rectangle, COLORREF StarColor, CONST CHAR StarSymbol[], UINT Proportion) {
 
-	if (Rectangle.right && Rectangle.bottom != 0) {
+	if (Rectangle.right != 0 && Rectangle.bottom != 0) {
 
 		SIZE size = { 0 };
 		SYSTEMTIME st = { 0 };
-		UINT CURRENTCELL = 1;
 		INT XS = 0, YS = 0, XCELL = Rectangle.right / Proportion, YCELL = Rectangle.bottom / Proportion;
 
 		COLORREF PreviousColor = GetTextColor(hdc);
@@ -93,7 +92,6 @@ VOID AnimationStars::drawStars(HDC hdc, RECT &Rectangle, COLORREF StarColor, CON
 			///////////////////////////
 
 			XS = XS + XCELL;
-			CURRENTCELL++;
 
 			/////////////////
 			//// +---+ | ////
@@ -107,8 +105,8 @@ VOID AnimationStars::drawStars(HDC hdc, RECT &Rectangle, COLORREF StarColor, CON
 			//// +---+   ////
 			/////////////////
 
-			if (CURRENTCELL > Proportion) {
-				CURRENTCELL = 1, XS = 0;
+			if (XS == XCELL * Proportion) {
+				XS = 0;
 				YS = YS + YCELL;
 			}
 

@@ -86,28 +86,30 @@ SIZE_T Calculator::FindChar(LPSTR Text, const char Char, SIZE_T TextLength) {
 
 }
 
-BOOL Calculator::RoundDouble(std::string &Text) {
+std::string Calculator::RoundDoubleString(std::string Text) {
 
-	if (FindChar((LPSTR)Text.c_str(), '.', Text.length()) != -1) {
+	#define LastSymbol Text.length() - 1
 
-		for (INT I = (INT)Text.length() - 1; I >= 0; I--) {
+	if (Text.find('.') != std::string::npos) {
 
-			if (Text[I] == '0' || Text[I] == '.') {
-				if (Text[I] == '.') {
-					Text[I] = '\0';
-					return TRUE;
-				}
-				Text[I] = '\0';
+		while (Text[LastSymbol] == '0' || Text[LastSymbol] == '.') {
+
+			if (Text[LastSymbol] == '.') {
+				Text.erase(LastSymbol, 1);
+				return Text;
 			}
-			else {
-				return TRUE;
-			}
+
+			Text.erase(LastSymbol, 1);
 
 		}
 
+		return Text;
+
 	}
 
-	return FALSE;
+	return Text;
+
+	#undef LastSymbol
 
 }
 
@@ -139,7 +141,7 @@ BOOL Calculator::CreateCalculatorControls(HWND hCalculator) {
 	// ID_CL_OPERATION | ID_CL_OUTPUT_RESULT
 	INT StaticY[] = { ButtonHeight + Padding * 2, ButtonHeight + StaticHeight + Padding * 3 };
 
-	// OTHER CONTROLS
+	// NUMPAD CONTROLS
 	POINTS NumPad = { Padding, ButtonHeight + StaticHeight * 2 + Padding * 4 };
 
 	for (int i = 0; i < CalculatorControlsID.size(); i++) {
@@ -288,9 +290,8 @@ VOID Calculator::onPaint(HWND hCalculator) {
 	GetTextExtentPoint(MemoryDC, WindowTitle, lstrlenW(WindowTitle), &size);
 
 	if (lstrcmpW(WindowTitle, L"") == 0) {
-		wcscpy_s(WindowTitle, L"CALCULATOR");
-		GetTextExtentPoint(MemoryDC, WindowTitle, lstrlenW(WindowTitle), &size);
-		TextOut(MemoryDC, Padding, Padding + ButtonWidth / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));
+		GetTextExtentPoint(MemoryDC, L"CALCULATOR", lstrlenW(L"CALCULATOR"), &size);
+		TextOut(MemoryDC, Padding, Padding + ButtonWidth / 2 - size.cy / 2, L"CALCULATOR", lstrlenW(L"CALCULATOR"));
 	}
 	else {
 		TextOut(MemoryDC, Padding, Padding + ButtonWidth / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));
@@ -501,16 +502,11 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				//
 				
 				// Operation Output
-				std::string SNum1 = std::to_string(Num1);
-				RoundDouble(SNum1);
-				std::string SNum2 = std::to_string(Num2);
-				RoundDouble(SNum2);
-				SOperation = SNum1 + " x " + SNum2 + " =";
+				SOperation = RoundDoubleString(std::to_string(Num1)) + " x " + RoundDoubleString(std::to_string(Num2)) + " =";
 				//
 
 				// Result Output
-				SResult = std::to_string(Multiply);
-				RoundDouble(SResult);
+				SResult = RoundDoubleString(std::to_string(Multiply));
 				//
 
 				SetWindowTextA(Outputs->Opearation, SOperation.c_str());
@@ -531,11 +527,11 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				//
 
 				// Operation Output
-				SOperation = std::to_string(Num1) + " / " + std::to_string(Num2) + " =";
+				SOperation = RoundDoubleString(std::to_string(Num1)) + " / " + RoundDoubleString(std::to_string(Num2)) + " =";
 				//
 
 				// Check For Invalid Operations
-				if (Num1 && Num2 == 0) {
+				if (Num1 == 0 && Num2 == 0) {
 					SResult = DEVISION_ZERO_BY_ZERO;
 					goto SetWindowTextADevide;
 				}
@@ -547,7 +543,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 				// Result Output
 				Devide = Num1 / Num2;
-				SResult = std::to_string(Devide);
+				SResult = RoundDoubleString(std::to_string(Devide));
 				//
 
 				SetWindowTextADevide:
@@ -569,11 +565,11 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				//
 
 				// Operation Output
-				SOperation = std::to_string(Num1) + " + " + std::to_string(Num2) + " =";
+				SOperation = RoundDoubleString(std::to_string(Num1)) + " + " + RoundDoubleString(std::to_string(Num2)) + " =";
 				//
 
 				// Result Output
-				SResult = std::to_string(Sum);
+				SResult = RoundDoubleString(std::to_string(Sum));
 				//
 
 				SetWindowTextA(Outputs->Opearation, SOperation.c_str());
@@ -594,11 +590,11 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				//
 
 				// Operation Output
-				SOperation = std::to_string(Num1) + " - " + std::to_string(Num2) + " =";
+				SOperation = RoundDoubleString(std::to_string(Num1)) + " - " + RoundDoubleString(std::to_string(Num2)) + " =";
 				//
 
 				// Result Output
-				SResult = std::to_string(Minus);
+				SResult = RoundDoubleString(std::to_string(Minus));
 				//
 
 				SetWindowTextA(Outputs->Opearation, SOperation.c_str());
@@ -619,11 +615,11 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				//
 
 				// Operation Output
-				SOperation = std::to_string(Num1) + " % " + std::to_string(Num2) + " =";
+				SOperation = RoundDoubleString(std::to_string(Num1)) + " % " + RoundDoubleString(std::to_string(Num2)) + " =";
 				//
 
 				// Check For Invalid Operations
-				if (Num1 && Num2 == 0) {
+				if (Num1 == 0 && Num2 == 0) {
 					SResult = DEVISION_ZERO_BY_ZERO;
 					goto SetWindowTextAModule;
 				}
@@ -635,7 +631,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 				// Result Output
 				Module = (int)round(Num1) % (int)round(Num2);
-				SResult = std::to_string(Module);
+				SResult = RoundDoubleString(std::to_string(Module));
 				//
 
 				SetWindowTextAModule:
