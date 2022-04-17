@@ -178,6 +178,7 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 	}
 	else {
 
+		OutputDebugString(L"ERROR [Color Picker] - \"hwndParent\" Must Be Non Zero Value\r\n");
 		DestroyWindow(hDropFiles);
 
 	}

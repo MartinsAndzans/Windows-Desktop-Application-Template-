@@ -100,7 +100,7 @@ public:
 	/// <param name="BitmapType">- IMAGE_BITMAP || IMAGE_ICON || IMAGE_CURSOR</param>
 	/// <param name="DrawMethod">- Draw Method - [EXAMPLE - SRCCOPY]</param>
 	/// <returns>If Succeeded Returns TRUE, but If not Returns FALSE</returns>
-	static BOOL drawBitmapImageFromFile(HDC DestinationDC, RECT &DestinationRectangle, std::string FilePath, UINT BitmapType = IMAGE_BITMAP, DWORD DrawMethod = SRCCOPY) {
+	static BOOL drawBitmapFromFile(HDC DestinationDC, RECT &DestinationRectangle, std::string FilePath, UINT BitmapType = IMAGE_BITMAP, DWORD DrawMethod = SRCCOPY) {
 
 		HDC BitmapDC = CreateCompatibleDC(DestinationDC);
 		if (BitmapDC == NULL) return FALSE;
@@ -121,45 +121,36 @@ public:
 	/// This Function Draws Rectangle
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
-	/// <param name="X">- X Coordinate</param>
-	/// <param name="Y">- Y Coordinate</param>
+	/// <param name="COORD_X">- X Coordinate</param>
+	/// <param name="COORD_Y">- Y Coordinate</param>
 	/// <param name="W">- Width</param>
 	/// <param name="H">- Height</param>
 	/// <param name="BorderWidth">- Border Width</param>
 	/// <param name="Color">- Rectangle Color</param>
 	/// <param name="BorderColor">- Border Color</param>
-	static VOID drawRectangle(HDC hdc, INT X = 0, INT Y = 0, INT W = 120, INT H = 40, INT BorderWidth = 2, COLORREF RectangleColor = WHITE_COLOR, COLORREF BorderColor = BLACK_COLOR) {
+	static VOID drawRectangle(HDC hdc, INT COORD_X = 0, INT COORD_Y = 0, INT W = 120, INT H = 40, INT BorderWidth = 2,
+		COLORREF RectangleColor = WHITE_COLOR, COLORREF BorderColor = BLACK_COLOR) {
 
 		INT XS = 0, XE = W, YS = 0, YE = H;
 
 		// Border
-
-		for (int i = 0; i < BorderWidth; i++) {
-			// Left
-			for (YS = 0; YS <= YE; YS++) {
-				SetPixel(hdc, X + XS + i, Y + YS, BorderColor);
+		for (SHORT Counter = 0; Counter < BorderWidth; Counter++) {
+			// Left and Right
+			for (INT Y = COORD_Y; Y <= COORD_Y + W; Y++) {
+				SetPixel(hdc, COORD_X + Counter, Y, BorderColor);
+				SetPixel(hdc, COORD_X + H - Counter, Y, BorderColor);
 			}
 			// Up and Down
-			for (XS = 0; XS <= XE; XS++) {
-				YS = 0;
-				SetPixel(hdc, X + XS, Y + YS + i, BorderColor);
-				YS = H;
-				SetPixel(hdc, X + XS, Y + YS - i, BorderColor);
+			for (INT X = COORD_X; X <= COORD_X + W; X++) {
+				SetPixel(hdc, X, COORD_Y + Counter, BorderColor);
+				SetPixel(hdc, X, COORD_Y + H - Counter, BorderColor);
 			}
-			// Right
-			for (YS = 0; YS <= YE; YS++) {
-				SetPixel(hdc, X + XE - i, Y + YS, BorderColor);
-			}
-			XS = 0;
 		}
 
-		XS = BorderWidth;
-
 		// Rectangle
-
-		for (XS = BorderWidth; XS <= XE - BorderWidth; XS++) {
-			for (YS = BorderWidth; YS <= YE - BorderWidth; YS++) {
-				SetPixel(hdc, X + XS, Y + YS, RectangleColor);
+		for (INT X = BorderWidth; X <= COORD_X + W - BorderWidth; X++) {
+			for (INT Y = BorderWidth; Y <= COORD_Y + H - BorderWidth; Y++) {
+				SetPixel(hdc, X, Y, RectangleColor);
 			}
 		}
 
@@ -192,48 +183,24 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Draws Cube
-	/// </summary>
-	/// <param name="hdc">- Device Context</param>
-	/// <param name="X">- X Coordinate</param>
-	/// <param name="Y">- Y Coordinate</param>
-	/// <param name="W">- Width</param>
-	/// <param name="H">- Height</param>
-	/// <param name="Z">- Z Coordinate</param>
-	static VOID drawCube(HDC hdc, INT X = 0, INT Y = 0, INT W = 40, INT H = 40, INT Z = 40) {
-
-		for (int depth = 0; depth < Z / 2; depth++) {
-			drawRectangle(hdc, X, Y, W, H);
-			X--, Y++;
-		}
-
-	}
-
-	/// <summary>
 	/// This Function Draws Romb
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
-	/// <param name="X">- X Coordinate</param>
-	/// <param name="Y">- Y Coordinate</param>
+	/// <param name="COORD_X">- X Coordinate</param>
+	/// <param name="COORD_Y">- Y Coordinate</param>
 	/// <param name="W">- Width</param>
 	/// <param name="H">- Height</param>
 	/// <param name="Color">- Romb Color</param>
-	static VOID drawRomb(HDC hdc, INT X = 0, INT Y = 0, INT W = 60, INT H = 60, COLORREF Color = BLACK_COLOR) {
+	static VOID drawRomb(HDC hdc, INT COORD_X = 0, INT COORD_Y = 0, INT W = 60, INT H = 60, COLORREF Color = BLACK_COLOR) {
 
-		INT OFFSET = 0, XS = 0, XE = W, YS = 0, YE = H;
+		INT OFFSET = 0;
 
-		for (int YS = 0; YS <= YE; YS++) {
-			if (YS >= H / 2) {
-				for (int XS = W / 2 - OFFSET; XS <= W / 2 + OFFSET; XS++) {
-					SetPixel(hdc, X + XS, Y + YS, Color);
-				}
-				OFFSET--;
-				continue;
+		for (INT Y = COORD_Y; Y <= COORD_Y + H; Y++) {
+			if (Y < H / 2) OFFSET++;
+			else OFFSET--;
+			for (INT X = COORD_X + W / 2 - OFFSET; X <= COORD_X + W / 2 + OFFSET; X++) {
+				SetPixel(hdc, X, Y, Color);
 			}
-			for (int XS = W / 2 - OFFSET; XS <= W / 2 + OFFSET; XS++) {
-				SetPixel(hdc, X + XS, Y + YS, Color);
-			}
-			OFFSET++;
 		}
 
 	}
@@ -324,7 +291,7 @@ public:
 			for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + Height - BorderWidth; Y++) {
 				SetPixel(hdc, X, Y, RGB(R, G, B));
 			}
-			if (DONE == 0) (G == 0 && B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP);// White [255 255 255] -> Red [255 0 0]
+			if (DONE == 0) (G == 0 && B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP); // White [255 255 255] -> Red [255 0 0]
 			else if (DONE == 1) (G == 255) ? DONE = 2 : G += COLORSTEP; // Red [255 0 0] -> Yellow [255 255 0]
 			else if (DONE == 2) (R == 0) ? DONE = 3 : R -= COLORSTEP; // Yellow [255 255 0] -> Grean [0 255 0]
 			else if (DONE == 3) (B == 255) ? DONE = 4 : B += COLORSTEP; // Grean [0 255 0] -> Light Blue [0 255 255]
@@ -387,7 +354,7 @@ public:
 				}
 			}
 			RY = 255, GY = 255, BY = 255;
-			if (DONE == 0) (G == 0 && B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP);// White [255 255 255] -> Red [255 0 0]
+			if (DONE == 0) (G == 0 && B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP); // White [255 255 255] -> Red [255 0 0]
 			else if (DONE == 1) (G == 255) ? DONE = 2 : G += COLORSTEP; // Red [255 0 0] -> Yellow [255 255 0]
 			else if (DONE == 2) (R == 0) ? DONE = 3 : R -= COLORSTEP; // Yellow [255 255 0] -> Grean [0 255 0]
 			else if (DONE == 3) (B == 255) ? DONE = 4 : B += COLORSTEP; // Grean [0 255 0] -> Light Blue [0 255 255]

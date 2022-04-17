@@ -155,6 +155,7 @@ VOID AnimationStars::onCreate(HWND hAnimationStars, LPARAM lParam) {
 	}
 	else {
 
+		OutputDebugString(L"ERROR [Color Picker] - \"hwndParent\" Must Be Non Zero Value\r\n");
 		DestroyWindow(hAnimationStars);
 
 	}

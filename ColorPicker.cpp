@@ -120,7 +120,7 @@ SHORT ColorPicker::drawGradientSmall(HDC hdc, INT COORD_X, INT COORD_Y, SHORT Bo
 		for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + Height - BorderWidth; Y++) {
 			SetPixel(hdc, X, Y, RGB(R, G, B));
 		}
-		if (DONE == 0) (G == 0 && B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP);// White [255 255 255] -> Red [255 0 0]
+		if (DONE == 0) (G == 0 && B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP); // White [255 255 255] -> Red [255 0 0]
 		else if (DONE == 1) (G == 255) ? DONE = 2 : G += COLORSTEP; // Red [255 0 0] -> Yellow [255 255 0]
 		else if (DONE == 2) (R == 0) ? DONE = 3 : R -= COLORSTEP; // Yellow [255 255 0] -> Grean [0 255 0]
 		else if (DONE == 3) (B == 255) ? DONE = 4 : B += COLORSTEP; // Grean [0 255 0] -> Light Blue [0 255 255]
@@ -173,7 +173,7 @@ INT ColorPicker::drawGradientLarge(HDC hdc, INT COORD_X, INT COORD_Y, SHORT Bord
 			}
 		}
 		RY = 255, GY = 255, BY = 255;
-		if (DONE == 0) (G == 0 && B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP);// White [255 255 255] -> Red [255 0 0]
+		if (DONE == 0) (G == 0 && B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP); // White [255 255 255] -> Red [255 0 0]
 		else if (DONE == 1) (G == 255) ? DONE = 2 : G += COLORSTEP; // Red [255 0 0] -> Yellow [255 255 0]
 		else if (DONE == 2) (R == 0) ? DONE = 3 : R -= COLORSTEP; // Yellow [255 255 0] -> Grean [0 255 0]
 		else if (DONE == 3) (B == 255) ? DONE = 4 : B += COLORSTEP; // Grean [0 255 0] -> Light Blue [0 255 255]
@@ -221,7 +221,7 @@ VOID ColorPicker::onCreate(HWND hColorPicker, LPARAM lParam) {
 
 	}
 	else {
-
+		OutputDebugString(L"ERROR [Color Picker] - \"hwndParent\" Must Be Non Zero Value\r\n");
 		DestroyWindow(hColorPicker);
 
 	}
@@ -281,7 +281,7 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 	else
 		BorderWidth = drawGradientSmall(MemoryDC, Dimensions.left, Dimensions.top);
 	////
-
+	
 	RECT GradientRectangle = { Dimensions.left + BorderWidth, Dimensions.top + BorderWidth,
 		Dimensions.right - BorderWidth, Dimensions.bottom - BorderWidth };
 

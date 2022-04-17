@@ -44,7 +44,7 @@
 #define MAX_CHAR_STRING 256
 
 #define HInstance() GetModuleHandle(NULL)
-#define MainWindowBackgroundColor RGB(10, 80, 255)
+#define MainWindowBackgroundColor RGB(15, 160, 255)
 #pragma endregion
 
 #pragma region Colors
