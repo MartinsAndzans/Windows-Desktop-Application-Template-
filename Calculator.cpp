@@ -24,11 +24,10 @@ RECT Calculator::Dimensions = { 0 };
 
 #pragma region InitCalculator
 /// <summary>
-/// OPTIONAL FUNCTION
-/// CREATES CLASS "CALCULATOR"
-/// CALCULATOR { Width, Height } = { 250, 460 }
+/// Optional Function - Creates Class "CALCULATOR"
+/// <para>Width | Height = 250 | 460</para>
 /// </summary>
-/// <returns>If Function Succeeded Returns True, but If not False</returns>
+/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
 BOOL Calculator::InitCalculator() {
 	
 	CreateCalculatorFont();
@@ -535,7 +534,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 					SResult = DEVISION_ZERO_BY_ZERO;
 					goto SetWindowTextADevide;
 				}
-				if (Num2 == 0) {
+				else if (Num2 == 0) {
 					SResult = DEVISION_BY_ZERO;
 					goto SetWindowTextADevide;
 				}
@@ -623,7 +622,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 					SResult = DEVISION_ZERO_BY_ZERO;
 					goto SetWindowTextAModule;
 				}
-				if (Num2 == 0) {
+				else if (Num2 == 0) {
 					SResult = DEVISION_BY_ZERO;
 					goto SetWindowTextAModule;
 				}

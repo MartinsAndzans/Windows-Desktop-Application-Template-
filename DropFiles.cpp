@@ -162,20 +162,18 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 		DragAcceptFiles(hDropFiles, TRUE);
 
-		if (window->lpCreateParams != NULL) {
+		LpDropFilesStyle Parameters = (LpDropFilesStyle)window->lpCreateParams;
 
-			LpDropFilesStyle Parameters = (LpDropFilesStyle)window->lpCreateParams;
+		DropFilesStyle *Style = new DropFilesStyle;
+		ZeroMemory(Style, sizeof(DropFilesStyle));
 
-			DropFilesStyle *Style = new DropFilesStyle;
-			ZeroMemory(Style, sizeof(DropFilesStyle));
-
+		if (Parameters != NULL) {
 			// Move Style Data To Heap
 			Style->BackgroundColor = Parameters->BackgroundColor;
 			Style->ForegroundColor = Parameters->ForegroundColor;
-
-			SetWindowLongPtr(hDropFiles, GWLP_USERDATA, (LONG_PTR)Style);
-
 		}
+
+		SetWindowLongPtr(hDropFiles, GWLP_USERDATA, (LONG_PTR)Style);
 
 	}
 	else {
@@ -197,15 +195,11 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
-	SetDCBrushColor(MemoryDC, DropFilesBackroundColor);
-	SetTextColor(MemoryDC, DropFilesForegroundColor);
 
 	LpDropFilesStyle Style = (LpDropFilesStyle)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
 
-	if (Style != NULL) {
-		SetDCBrushColor(MemoryDC, Style->BackgroundColor);
-		SetTextColor(MemoryDC, Style->ForegroundColor);
-	}
+	(Style->BackgroundColor != NULL) ? SetDCBrushColor(MemoryDC, Style->BackgroundColor) : SetDCBrushColor(MemoryDC, DropFilesBackroundColor); // DEFAULT
+	(Style->ForegroundColor != NULL) ? SetTextColor(MemoryDC, Style->ForegroundColor) : SetTextColor(MemoryDC, DropFilesForegroundColor); // DEFAULT
 
 	////////////////////////////////////////////////////////////
 	//// +------------------------------------------------+ ////
@@ -297,7 +291,8 @@ LRESULT CALLBACK DropFiles::DropFilesProcedure(HWND hDropFiles, UINT Msg, WPARAM
 	case WM_DESTROY:
 	{
 		LpDropFilesStyle Style = (LpDropFilesStyle)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
-		if (Style != NULL) delete[] Style, SetWindowLongPtr(hDropFiles, GWLP_USERDATA, NULL);
+		delete[] Style;
+		SetWindowLongPtr(hDropFiles, GWLP_USERDATA, NULL);
 		return 0;
 	}
 	}

@@ -289,61 +289,49 @@ public:
 
 	/// <summary>
 	/// This Function Draws Small Gradient
+	/// <para>Size - Width = 420 Height = 40</para>
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
-	/// <param name="X">- X Coordinate</param>
-	/// <param name="Y">- Y Coordinate</param>
-	/// <param name="W">- Width</param>
-	/// <param name="H">- Height</param>
+	/// <param name="COORD_X">- X Coordinate</param>
+	/// <param name="COORD_Y">- Y Coordinate</param>
 	/// <param name="BorderWidth">- Border Width</param>
 	/// <param name="BorderColor">- Border Color</param>
 	/// <returns>Returns Border Width</returns>
-	static INT drawGradientSmall(HDC hdc, INT X = 0, INT Y = 0, INT W = 420, INT H = 40, INT BorderWidth = 2, COLORREF BorderColor = BLACK_COLOR) {
+	static SHORT drawGradientSmall(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = BLACK_COLOR) {
 
-		INT R = 255, G = 255, B = 255;
-		INT XS = 0, XE = W, YS = 0, YE = H;
-		CONST INT COLORSTEP = 5;
-		INT DONE = 0;
+		CONST SHORT Width = 420, Height = 40;
 
 		// Border
-
-		for (int i = 0; i < BorderWidth; i++) {
-			// Left
-			for (YS = 0; YS <= YE; YS++) {
-				SetPixel(hdc, X + XS + i, Y + YS, BorderColor);
+		for (SHORT Counter = 0; Counter < BorderWidth; Counter++) {
+			// Left and Right
+			for (INT Y = COORD_Y; Y <= COORD_Y + Height; Y++) {
+				SetPixel(hdc, COORD_X + Counter, Y, BorderColor);
+				SetPixel(hdc, COORD_X + Width - Counter, Y, BorderColor);
 			}
 			// Up and Down
-			for (XS = 0; XS <= XE; XS++) {
-				YS = 0;
-				SetPixel(hdc, X + XS, Y + YS + i, BorderColor);
-				YS = H;
-				SetPixel(hdc, X + XS, Y + YS - i, BorderColor);
+			for (INT X = COORD_X; X <= COORD_X + Width; X++) {
+				SetPixel(hdc, X, COORD_Y + Counter, BorderColor);
+				SetPixel(hdc, X, COORD_Y + Height - Counter, BorderColor);
 			}
-			// Right
-			for (YS = 0; YS <= YE; YS++) {
-				SetPixel(hdc, X + XE - i, Y + YS, BorderColor);
-			}
-			XS = 0;
 		}
 
-		XS = BorderWidth;
+		BYTE R = 255, G = 255, B = 255;
+		CONST BYTE COLORSTEP = 5;
+		BYTE DONE = 0;
 
 		//Gradient
-
-		for (int i = XE; i >= BorderWidth * 2; i--) {
-			for (YS = BorderWidth; YS <= YE - BorderWidth; YS++) {
-				SetPixel(hdc, X + XS, Y + YS, RGB(R, G, B));
+		for (INT X = COORD_X + BorderWidth; X <= COORD_X + Width - BorderWidth; X++) {
+			for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + Height - BorderWidth; Y++) {
+				SetPixel(hdc, X, Y, RGB(R, G, B));
 			}
-			XS++;
-			(DONE == 0) ? (G <= 0 && B <= 0) ? (G = 0, B = 0, DONE = 1) : (G = G - COLORSTEP, B = B - COLORSTEP) :
-				(DONE == 1) ? (G >= 255) ? (G = 255, DONE = 2) : (G = G + COLORSTEP) :
-				(DONE == 2) ? (R <= 0) ? (R = 0, DONE = 3) : (R = R - COLORSTEP) :
-				(DONE == 3) ? (B >= 255) ? (B = 255, DONE = 4) : (B = B + COLORSTEP) :
-				(DONE == 4) ? (G <= 0) ? (G = 0, DONE = 5) : (G = G - COLORSTEP) :
-				(DONE == 5) ? (R >= 255) ? (R = 255, DONE = 6) : (R = R + COLORSTEP) :
-				(DONE == 6) ? (B <= 0) ? (B = 0, DONE = 7) : (B = B - COLORSTEP) :
-				(DONE == 7) ? (R <= 0) ? (R = 0, DONE = 8) : (R = R - COLORSTEP) :
-				(DONE == 8);
+			if (DONE == 0) (G == 0 && B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP);// White [255 255 255] -> Red [255 0 0]
+			else if (DONE == 1) (G == 255) ? DONE = 2 : G += COLORSTEP; // Red [255 0 0] -> Yellow [255 255 0]
+			else if (DONE == 2) (R == 0) ? DONE = 3 : R -= COLORSTEP; // Yellow [255 255 0] -> Grean [0 255 0]
+			else if (DONE == 3) (B == 255) ? DONE = 4 : B += COLORSTEP; // Grean [0 255 0] -> Light Blue [0 255 255]
+			else if (DONE == 4) (G == 0) ? DONE = 5 : G -= COLORSTEP; // Light Blue [0 255 255] -> Blue [0 0 255]
+			else if (DONE == 5) (R == 255) ? DONE = 6 : R += COLORSTEP; // Blue [0 0 255] -> Pink [255 0 255]
+			else if (DONE == 6) (B == 0) ? DONE = 7 : B -= COLORSTEP; // Pink [255 0 255] -> Red [255 0 0]
+			else if (DONE == 7) (R == 0) ? DONE = 8 : R = R - COLORSTEP; // Red [255 0 0] -> Black [0 0 0]
 		}
 
 		return BorderWidth;
@@ -352,68 +340,61 @@ public:
 
 	/// <summary>
 	/// This Function Draws Large Gradient
+	/// <para>Size - Width = 420 Height = 100</para>
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
-	/// <param name="X">- X Coordinate</param>
-	/// <param name="Y">- Y Coordinate</param>
-	/// <param name="W">- Width</param>
-	/// <param name="H">- Height</param>
+	/// <param name="COORD_X">- X Coordinate</param>
+	/// <param name="COORD_Y">- Y Coordinate</param>
 	/// <param name="BorderWidth">- Border Width</param>
 	/// <param name="BorderColor">- Border Color</param>
 	/// <returns>Returns Border Width</returns>
-	static INT drawGradientLarge(HDC hdc, INT X = 0, INT Y = 0, INT W = 420, INT H = 100, INT BorderWidth = 2, COLORREF BorderColor = BLACK_COLOR) {
+	static SHORT drawGradientLarge(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth, COLORREF BorderColor) {
 
-		INT R = 255, G = 255, B = 255;
-		INT RS = 255, GS = 255, BS = 255;
-		INT XS = 0, XE = W, YS = 0, YE = H;
-		CONST INT COLORSTEP = 5;
-		INT DONE = 0;
+		CONST SHORT Width = 420, Height = 100;
 
 		// Border
-
-		for (int i = 0; i < BorderWidth; i++) {
-			// Left
-			for (YS = 0; YS <= YE; YS++) {
-				SetPixel(hdc, X + XS + i, Y + YS, BorderColor);
+		for (SHORT Counter = 0; Counter < BorderWidth; Counter++) {
+			// Left and Right
+			for (INT Y = COORD_Y; Y <= COORD_Y + Height; Y++) {
+				SetPixel(hdc, COORD_X + Counter, Y, BorderColor);
+				SetPixel(hdc, COORD_X + Width - Counter, Y, BorderColor);
 			}
 			// Up and Down
-			for (XS = 0; XS <= XE; XS++) {
-				YS = 0;
-				SetPixel(hdc, X + XS, Y + YS + i, BorderColor);
-				YS = H;
-				SetPixel(hdc, X + XS, Y + YS - i, BorderColor);
+			for (INT X = COORD_X; X <= COORD_X + Width; X++) {
+				SetPixel(hdc, X, COORD_Y + Counter, BorderColor);
+				SetPixel(hdc, X, COORD_Y + Height - Counter, BorderColor);
 			}
-			// Right
-			for (YS = 0; YS <= YE; YS++) {
-				SetPixel(hdc, X + XE - i, Y + YS, BorderColor);
-			}
-			XS = 0;
 		}
 
-		XS = BorderWidth;
+		BYTE R = 255, G = 255, B = 255;
+		BYTE RY = 255, GY = 255, BY = 255;
+		CONST BYTE COLORSTEP = 5;
+		BYTE DONE = 0;
 
 		//Gradient
-
-		for (int i = XE; i >= BorderWidth * 2; i--) {
-			for (YS = BorderWidth; YS <= YE - BorderWidth; YS++) {
-				SetPixel(hdc, X + XS, Y + YS, RGB(RS, GS, BS));
-				(RS > R) ? RS = RS - COLORSTEP : RS = RS;
-				(GS > G) ? GS = GS - COLORSTEP : GS = GS;
-				(BS > B) ? BS = BS - COLORSTEP : BS = BS;
-				(RS <= R && GS <= G && BS <= B) ? (RS != 0) ? RS = RS - COLORSTEP : RS = RS : RS = RS;
-				(RS <= R && GS <= G && BS <= B) ? (GS != 0) ? GS = GS - COLORSTEP : GS = GS : GS = GS;
-				(RS <= R && GS <= G && BS <= B) ? (BS != 0) ? BS = BS - COLORSTEP : BS = BS : BS = BS;
+		for (INT X = COORD_X + BorderWidth; X <= COORD_X + Width - BorderWidth; X++) {
+			for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + Height - BorderWidth; Y++) {
+				SetPixel(hdc, X, Y, RGB(RY, GY, BY));
+				if (Y < Height / 2) {
+					if (RY != R) RY -= COLORSTEP; //
+					if (GY != G) GY -= COLORSTEP; // Up - Middle
+					if (BY != B) BY -= COLORSTEP; //
+				}
+				else {
+					if (RY != 0) RY -= COLORSTEP; //
+					if (GY != 0) GY -= COLORSTEP; // Middle - Down
+					if (BY != 0) BY -= COLORSTEP; //
+				}
 			}
-			RS = 255, GS = 255, BS = 255, XS++;
-			(DONE == 0) ? (G <= 0 && B <= 0) ? (G = 0, B = 0, DONE = 1) : (G = G - COLORSTEP, B = B - COLORSTEP) :
-				(DONE == 1) ? (G >= 255) ? (G = 255, DONE = 2) : (G = G + COLORSTEP) :
-				(DONE == 2) ? (R <= 0) ? (R = 0, DONE = 3) : (R = R - COLORSTEP) :
-				(DONE == 3) ? (B >= 255) ? (B = 255, DONE = 4) : (B = B + COLORSTEP) :
-				(DONE == 4) ? (G <= 0) ? (G = 0, DONE = 5) : (G = G - COLORSTEP) :
-				(DONE == 5) ? (R >= 255) ? (R = 255, DONE = 6) : (R = R + COLORSTEP) :
-				(DONE == 6) ? (B <= 0) ? (B = 0, DONE = 7) : (B = B - COLORSTEP) :
-				(DONE == 7) ? (R <= 0) ? (R = 0, DONE = 8) : (R = R - COLORSTEP) :
-				(DONE == 8);
+			RY = 255, GY = 255, BY = 255;
+			if (DONE == 0) (G == 0 && B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP);// White [255 255 255] -> Red [255 0 0]
+			else if (DONE == 1) (G == 255) ? DONE = 2 : G += COLORSTEP; // Red [255 0 0] -> Yellow [255 255 0]
+			else if (DONE == 2) (R == 0) ? DONE = 3 : R -= COLORSTEP; // Yellow [255 255 0] -> Grean [0 255 0]
+			else if (DONE == 3) (B == 255) ? DONE = 4 : B += COLORSTEP; // Grean [0 255 0] -> Light Blue [0 255 255]
+			else if (DONE == 4) (G == 0) ? DONE = 5 : G -= COLORSTEP; // Light Blue [0 255 255] -> Blue [0 0 255]
+			else if (DONE == 5) (R == 255) ? DONE = 6 : R += COLORSTEP; // Blue [0 0 255] -> Pink [255 0 255]
+			else if (DONE == 6) (B == 0) ? DONE = 7 : B -= COLORSTEP; // Pink [255 0 255] -> Red [255 0 0]
+			else if (DONE == 7) (R == 0) ? DONE = 8 : R = R - COLORSTEP; // Red [255 0 0] -> Black [0 0 0]
 		}
 
 		return BorderWidth;
@@ -436,7 +417,7 @@ public:
 
 			SIZE size = { 0 };
 			SYSTEMTIME st = { 0 };
-			INT XS = 0, YS = 0, XCELL = Rectangle.right / Proportion, YCELL = Rectangle.bottom / Proportion;
+			INT XS = 0, YS = 0, XCELL = (Rectangle.right - Rectangle.left) / Proportion, YCELL = (Rectangle.bottom - Rectangle.top) / Proportion;
 
 			COLORREF PreviousColor = GetTextColor(hdc);
 			SetTextColor(hdc, StarColor);

@@ -97,7 +97,7 @@ BOOL MainWindow::CreateMainWindow(std::wstring ClassName, std::wstring WindowTit
 #pragma endregion
 
 #pragma region OverloadedOperators
-BOOL operator==(POINT &Left, POINT &Right) {
+static BOOL operator==(POINT &Left, POINT &Right) {
 
 	if (Left.x == Right.x && Left.y == Right.y) {
 		return TRUE;
@@ -108,10 +108,10 @@ BOOL operator==(POINT &Left, POINT &Right) {
 
 }
 
-BOOL operator==(POINT &mousePosition, RECT &Rectangle) {
+static BOOL operator==(POINT &mousePosition, RECT &Rectangle) {
 
 	if (mousePosition.x >= Rectangle.left && mousePosition.x <= Rectangle.right &&
-		mousePosition.y >= Rectangle.top && mousePosition.y >= Rectangle.bottom) {
+		mousePosition.y >= Rectangle.top && mousePosition.y <= Rectangle.bottom) {
 		return TRUE;
 	}
 	else {
