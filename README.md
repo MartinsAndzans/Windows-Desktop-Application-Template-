@@ -52,3 +52,16 @@ This is Windows Desktop Application Template
 	//// |                                          | ////
 	//// +------------------------------------------+ ////
 	//////////////////////////////////////////////////////
+
+<h2>Color Picker Control : Class Name -- "COLOR PICKER"</h2>
+
+	When User Select Color : Color Picker Control Post WM_COMMAND Message To Parent Window
+	
+		//////////////////////////////////////////////////////
+		//// +------------------------------------------+ ////
+		//// |                                          | ////
+		//// | [out] WPARAM - LOWORD(ID) | HIWORD(HWND) | ////
+		//// | [out] LPARAM - Color                     | ////
+		//// |                                          | ////
+		//// +------------------------------------------+ ////
+		//////////////////////////////////////////////////////
