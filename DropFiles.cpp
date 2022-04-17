@@ -164,7 +164,7 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 		LpDropFilesStyle Parameters = (LpDropFilesStyle)window->lpCreateParams;
 
-		DropFilesStyle* Style = new DropFilesStyle;
+		DropFilesStyle *Style = new DropFilesStyle;
 		ZeroMemory(Style, sizeof(DropFilesStyle));
 
 		if (Parameters != NULL) {
