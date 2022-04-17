@@ -136,8 +136,7 @@ VOID AnimationStars::onCreate(HWND hAnimationStars, LPARAM lParam) {
 
 		LpAnimationStarsStyle Parameters = (LpAnimationStarsStyle)window->lpCreateParams;
 
-		AnimationStarsStyle *Style = new AnimationStarsStyle;
-		ZeroMemory(Style, sizeof(AnimationStarsStyle));
+		AnimationStarsStyle *Style = new AnimationStarsStyle{};
 
 		if (Parameters != NULL) {
 			// Move Style Data To Heap
@@ -218,7 +217,7 @@ VOID AnimationStars::onPaint(HWND hAnimationStars) {
 	//// +-----------------------------------------+ ////
 	/////////////////////////////////////////////////////
 
-	WCHAR WindowTitle[MAX_ANIMATION_STARS_STRING_CHAR] = { 0 };
+	WCHAR WindowTitle[MAX_ANIMATION_STARS_CHAR_STRING] = { 0 };
 	GetWindowText(hAnimationStars, WindowTitle, ARRAYSIZE(WindowTitle));
 
 	drawStars(MemoryDC, Dimensions, StarColor, StarSymbol, Proportion);

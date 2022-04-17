@@ -373,9 +373,8 @@ public:
 		bmiheader.biClrUsed = NULL;
 		bmiheader.biClrImportant = NULL;
 
-		BYTE *BitmapBytes = new BYTE[BITMAP_SIZE_IN_BYTES];
+		BYTE *BitmapBytes = new BYTE[BITMAP_SIZE_IN_BYTES]{};
 		if (BitmapBytes == NULL) return FALSE;
-		ZeroMemory(BitmapBytes, BITMAP_SIZE_IN_BYTES);
 
 		HDC ScreenDC = GetDC(HWND_DESKTOP);
 		HDC MemoryDC = CreateCompatibleDC(ScreenDC);
@@ -492,9 +491,8 @@ public:
 		status.dwItem = StatusCode; // Status Code
 		status.dwReturn = NULL; // Return
 
-		if (mciSendCommand(mciGetDeviceID(Alias), MCI_STATUS, MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)&status) != 0) {
+		if (mciSendCommand(mciGetDeviceID(Alias), MCI_STATUS, MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)&status) != 0)
 			return MAXDWORD;
-		}
 
 		return (DWORD)status.dwReturn;
 
@@ -521,21 +519,6 @@ public:
 	}
 
 	/// <summary>
-	/// > This Function Replays Music From The Beginning
-	/// <para>> Invoke This Function Inside [MM_MCINOTIFY] Message</para>
-	/// </summary>
-	/// <param name="Alias">- Alias for MCIDevice</param>
-	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
-	static MCIERROR Replay(HWND CallbackWindow, CONST WCHAR *Alias) {
-
-		MCISTATUS PlaybackPosition = GetPlaybackStatus(Alias, MCI_STATUS_POSITION); // Playback Position
-		if (PlaybackPosition != 0) return Play(CallbackWindow, Alias, TRUE);
-
-		return MAXDWORD;
-
-	}
-
-	/// <summary>
 	/// > This Function Seek To Specified Point of Playback
 	/// <para>> MCI_SEEK_TO_START - Seek To Beginning of Playback</para>
 	/// <para>> MCI_SEEK_TO_END - Seek To End of Playback</para>
@@ -548,11 +531,9 @@ public:
 		MCI_SEEK_PARMS seek = { 0 };
 		seek.dwTo = SeekTo;
 
-		MCIDEVICEID ID = mciGetDeviceID(Alias);
-
-		if (SeekTo == MCI_SEEK_TO_START) return mciSendCommand(ID, MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_START, NULL); // Seek To Beginning of Playback
-			if (SeekTo == MCI_SEEK_TO_END) return mciSendCommand(ID, MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_END, NULL); // Seek To End of Playback
-				return mciSendCommand(ID, MCI_SEEK, MCI_WAIT | MCI_TO, (DWORD_PTR)&seek); // Seek To Specified Point of Playback
+		if (SeekTo == MCI_SEEK_TO_START) return mciSendCommand(mciGetDeviceID(Alias), MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_START, NULL); // Seek To Beginning of Playback
+			if (SeekTo == MCI_SEEK_TO_END) return mciSendCommand(mciGetDeviceID(Alias), MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_END, NULL); // Seek To End of Playback
+				return mciSendCommand(mciGetDeviceID(Alias), MCI_SEEK, MCI_WAIT | MCI_TO, (DWORD_PTR)&seek); // Seek To Specified Point of Playback
 
 	}
 
@@ -562,9 +543,7 @@ public:
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
 	static MCIERROR Pause(CONST WCHAR *Alias) {
-
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_PAUSE, MCI_WAIT, NULL);
-
 	}
 
 	/// <summary>
@@ -573,9 +552,7 @@ public:
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
 	static MCIERROR Resume(CONST WCHAR *Alias) {
-
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_RESUME, MCI_WAIT, NULL);
-
 	}
 
 	/// <summary>
@@ -584,9 +561,7 @@ public:
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
 	static MCIERROR Stop(CONST WCHAR *Alias) {
-
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_STOP, MCI_WAIT, NULL);
-
 	}
 
 	/// <summary>
@@ -595,9 +570,7 @@ public:
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
 	static MCIERROR Close(CONST WCHAR *Alias) {
-
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_CLOSE, MCI_WAIT, NULL);
-
 	}
 
 };

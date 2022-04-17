@@ -6,7 +6,7 @@
 #include <Windows.h>
 #include <string>
 
-#define MAX_DROP_FILES_STRING_CHAR 256
+#define MAX_DROP_FILES_CHAR_STRING 256
 #define HInstance() GetModuleHandle(NULL)
 
 #define DropFilesBackroundColor RGB(255, 255, 255)

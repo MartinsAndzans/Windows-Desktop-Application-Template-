@@ -232,7 +232,7 @@ VOID ColorPicker::onWindowPosChanging(HWND hColorPicker, LPARAM lParam) {
 
 	LPWINDOWPOS window = (LPWINDOWPOS)lParam;
 
-	WCHAR WindowTitle[MAX_COLOR_PICKER_STRING_CHAR] = { 0 };
+	WCHAR WindowTitle[MAX_COLOR_PICKER_CHAR_STRING] = { 0 };
 	GetWindowText(hColorPicker, WindowTitle, ARRAYSIZE(WindowTitle));
 
 	if (lstrcmpW(WindowTitle, L"SMALL") == 0 && window->cx != 0 && window->cy != 0)
@@ -269,7 +269,7 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 	SetDCBrushColor(MemoryDC, ColorPickerBackgroundColor);
 	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(DC_BRUSH));
 
-	WCHAR WindowTitle[MAX_COLOR_PICKER_STRING_CHAR] = { 0 };
+	WCHAR WindowTitle[MAX_COLOR_PICKER_CHAR_STRING] = { 0 };
 	GetWindowText(hColorPicker, WindowTitle, ARRAYSIZE(WindowTitle));
 
 	// Draw Gradient

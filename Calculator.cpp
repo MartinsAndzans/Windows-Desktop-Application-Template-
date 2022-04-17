@@ -118,8 +118,7 @@ BOOL Calculator::CreateCalculatorControls(HWND hCalculator) {
 
 	HWND hwnd = { 0 };
 
-	MathOutputs *Outputs = new MathOutputs;
-	ZeroMemory(Outputs, sizeof(MathOutputs));
+	MathOutputs *Outputs = new MathOutputs{};
 
 	SetWindowLongPtr(hCalculator, GWLP_USERDATA, (LONG_PTR)Outputs);
 
@@ -138,7 +137,7 @@ BOOL Calculator::CreateCalculatorControls(HWND hCalculator) {
 		"%", "0", ".", "=" };
 
 	// ID_CL_OPERATION | ID_CL_OUTPUT_RESULT
-	INT StaticY[] = { ButtonHeight + Padding * 2, ButtonHeight + StaticHeight + Padding * 3 };
+	CONST INT StaticY[] = { ButtonHeight + Padding * 2, ButtonHeight + StaticHeight + Padding * 3 };
 
 	// NUMPAD CONTROLS
 	POINTS NumPad = { Padding, ButtonHeight + StaticHeight * 2 + Padding * 4 };
@@ -257,7 +256,7 @@ VOID Calculator::onDrawItem(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 	if (item->CtlID == ID_CL_OPERATION || item->CtlID == ID_CL_OUTPUT_RESULT) {
 
 		SIZE size = { 0 };
-		WCHAR StaticText[MAX_CALCULATOR_STRING_CHAR] = { 0 };
+		WCHAR StaticText[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 		SetDCBrushColor(item->hDC, RGB(240, 240, 240));
 		FillRect(item->hDC, &item->rcItem, (HBRUSH)GetStockObject(DC_BRUSH));
 		SetBkMode(item->hDC, TRANSPARENT);
@@ -285,7 +284,7 @@ VOID Calculator::onPaint(HWND hCalculator) {
 	SelectObject(MemoryDC, CalculatorFont);
 
 	SIZE size = { 0 };
-	WCHAR WindowTitle[MAX_CALCULATOR_STRING_CHAR] = { 0 };
+	WCHAR WindowTitle[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 	GetWindowText(hCalculator, WindowTitle, ARRAYSIZE(WindowTitle));
 	GetTextExtentPoint(MemoryDC, WindowTitle, lstrlenW(WindowTitle), &size);
 
@@ -330,7 +329,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 		LpMathOutputs Outputs = (LpMathOutputs)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
 
-		CHAR Result[MAX_CALCULATOR_STRING_CHAR] = { 0 };
+		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 		INT ResultLength = GetWindowTextA(Outputs->Result, Result, ARRAYSIZE(Result));
 
 		if (strcmp(Result, "0") == 0) {
@@ -348,7 +347,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 		LpMathOutputs Outputs = (LpMathOutputs)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
 
-		CHAR Result[MAX_CALCULATOR_STRING_CHAR] = { 0 };
+		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 		INT ResultLength = GetWindowTextA(Outputs->Result, Result, ARRAYSIZE(Result));
 
 		if (ResultLength == 1 || (ResultLength == 2 && Result[0] == L'-') ||
@@ -370,9 +369,9 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 		LpMathOutputs Outputs = (LpMathOutputs)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
 
-		CHAR Num[MIN_CALCULATOR_STRING_CHAR] = { 0 };
+		CHAR Num[MIN_CALCULATOR_CHAR_STRING] = { 0 };
 		GetWindowTextA((HWND)lParam, Num, ARRAYSIZE(Num));
-		CHAR Result[MAX_CALCULATOR_STRING_CHAR] = { 0 };
+		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 		INT ResultLength = GetWindowTextA(Outputs->Result, Result, ARRAYSIZE(Result));
 
 		if (strcmp(Result, DEVISION_ZERO_BY_ZERO) == 0 || strcmp(Result, DEVISION_BY_ZERO) == 0) {
@@ -405,7 +404,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 		LpMathOutputs Outputs = (LpMathOutputs)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
 
-		CHAR Result[MAX_CALCULATOR_STRING_CHAR] = { 0 };
+		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 		INT ResultLength = GetWindowTextA(Outputs->Result, Result, ARRAYSIZE(Result));
 
 		if (strcmp(Result, DEVISION_ZERO_BY_ZERO) == 0 || strcmp(Result, DEVISION_BY_ZERO) == 0) {
@@ -429,7 +428,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 		LpMathOutputs Outputs = (LpMathOutputs)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
 
-		CHAR Result[MAX_CALCULATOR_STRING_CHAR] = { 0 };
+		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 		INT ResultLength = GetWindowTextA(Outputs->Result, Result, ARRAYSIZE(Result));
 
 		if (strcmp(Result, DEVISION_ZERO_BY_ZERO) == 0 || strcmp(Result, DEVISION_BY_ZERO) == 0) {
@@ -456,9 +455,9 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 		LpMathOutputs Outputs = (LpMathOutputs)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
 
-		CHAR Operator[MIN_CALCULATOR_STRING_CHAR] = { 0 };
+		CHAR Operator[MIN_CALCULATOR_CHAR_STRING] = { 0 };
 		GetWindowTextA((HWND)lParam, Operator, ARRAYSIZE(Operator));
-		CHAR Result[MAX_CALCULATOR_STRING_CHAR] = { 0 };
+		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 		INT ResultLength = GetWindowTextA(Outputs->Result, Result, ARRAYSIZE(Result));
 
 		if (Result[ResultLength - 1] != '.' && strcmp(Result, DEVISION_ZERO_BY_ZERO) != 0 &&
@@ -482,9 +481,9 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 		LpMathOutputs Outputs = (LpMathOutputs)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
 
-		CHAR Operation[MAX_CALCULATOR_STRING_CHAR] = { 0 };
+		CHAR Operation[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 		INT OperationLength = GetWindowTextA(Outputs->Opearation, Operation, ARRAYSIZE(Operation));
-		CHAR Result[MAX_CALCULATOR_STRING_CHAR] = { 0 };
+		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 		INT ResultLength = GetWindowTextA(Outputs->Result, Result, ARRAYSIZE(Result));
 
 		if (Result[ResultLength - 1] != '.' && strcmp(Operation, "") != 0 &&

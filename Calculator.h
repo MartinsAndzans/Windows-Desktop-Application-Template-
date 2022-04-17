@@ -15,8 +15,8 @@
 #define DEVISION_ZERO_BY_ZERO "Undefined"
 #define DEVISION_BY_ZERO "Infinity"
 
-#define MIN_CALCULATOR_STRING_CHAR 2
-#define MAX_CALCULATOR_STRING_CHAR 256
+#define MIN_CALCULATOR_CHAR_STRING 2
+#define MAX_CALCULATOR_CHAR_STRING 256
 #define HInstance() GetModuleHandle(NULL)
 
 #define CalculatorBackgroundColor RGB(255, 255, 255)

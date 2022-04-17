@@ -13,7 +13,7 @@
 #define LighterColor(SourceColor, LighterTo) RGB(GetRValue(SourceColor) + LighterTo, GetGValue(SourceColor) + LighterTo, GetBValue(SourceColor) + LighterTo) // Returns LighterColor
 #define DarkerColor(SourceColor, DarkerTo) RGB(GetRValue(SourceColor) - DarkerTo, GetGValue(SourceColor) - DarkerTo, GetBValue(SourceColor) - DarkerTo) // Returns DarkerColor
 
-#define MAX_ANIMATION_STARS_STRING_CHAR 256
+#define MAX_ANIMATION_STARS_CHAR_STRING 256
 #define HInstance() GetModuleHandle(NULL)
 
 #define AnimationStarsBackgroundColor RGB(0, 0, 0)

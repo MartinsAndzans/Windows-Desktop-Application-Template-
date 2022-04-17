@@ -164,8 +164,7 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 		LpDropFilesStyle Parameters = (LpDropFilesStyle)window->lpCreateParams;
 
-		DropFilesStyle *Style = new DropFilesStyle;
-		ZeroMemory(Style, sizeof(DropFilesStyle));
+		DropFilesStyle *Style = new DropFilesStyle{};
 
 		if (Parameters != NULL) {
 			// Move Style Data To Heap
@@ -222,7 +221,7 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 
 	// Text To User
 	SIZE size = { 0 };
-	WCHAR WindowTitle[MAX_DROP_FILES_STRING_CHAR] = { 0 };
+	WCHAR WindowTitle[MAX_DROP_FILES_CHAR_STRING] = { 0 };
 	GetWindowText(hDropFiles, WindowTitle, ARRAYSIZE(WindowTitle));
 	GetTextExtentPoint(MemoryDC, WindowTitle, lstrlenW(WindowTitle), &size);
 	TextOut(MemoryDC, Dimensions.right / 2 - size.cx / 2, Dimensions.bottom / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));

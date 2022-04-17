@@ -10,7 +10,7 @@
 
 #define CP_SHOW 10001 // SMALL = 420 - 40 | LARGE = 420 - 100
 
-#define MAX_COLOR_PICKER_STRING_CHAR 40
+#define MAX_COLOR_PICKER_CHAR_STRING 40
 #define HInstance() GetModuleHandle(NULL)
 
 #define ColorPickerBackgroundColor RGB(0, 0, 0)

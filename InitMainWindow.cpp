@@ -300,8 +300,16 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 
 VOID MainWindow::onMCINotify(HWND hMainWindow, LPARAM lParam) {
 
-	MCIERROR Error = Sound::Replay(hMainWindow, L"Sound");
-	PRINT(Error);
+	#define DEFAULT_MCI_ID 0xFFFF
+
+	switch (LOWORD(lParam)) {
+	case DEFAULT_MCI_ID:
+	{
+
+		break;
+
+	}
+	}
 
 }
 
@@ -333,7 +341,6 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 		DragFinish((HDROP)lParam);
 
 		MCIERROR Error = Sound::Open(Buffer, L"Sound");
-		PRINT(Error);
 
 		break;
 
@@ -341,27 +348,18 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	case 10: // PLAY
 	{
 
-		MCIERROR Error = Sound::Play(hMainWindow, L"Sound", TRUE);
-		PRINT(Error);
+		MCIERROR Error = Sound::Play(hMainWindow, L"Sound");
 
 		break;
 
 	}
 	case 11: // PAUSE
-	{
+	{;
 
-		Sound::MCISTATUS StatusMode = Sound::GetPlaybackStatus(L"Sound", MCI_STATUS_MODE);
-
-		if (StatusMode == MCI_MODE_PLAY) {
+		if (Sound::GetPlaybackStatus(L"Sound", MCI_STATUS_MODE) == MCI_MODE_PLAY)
 			MCIERROR Error = Sound::Pause(L"Sound");
-			PRINT(Error);
-		}
-		else if (StatusMode == MCI_MODE_PAUSE) {
+		else if (Sound::GetPlaybackStatus(L"Sound", MCI_STATUS_MODE) == MCI_MODE_PAUSE)
 			MCIERROR Error = Sound::Resume(L"Sound");
-			PRINT(Error);
-		}
-
-		PRINT(StatusMode);
 
 		break;
 
@@ -369,8 +367,10 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	case 12: // STOP
 	{
 
-		MCIERROR Error = Sound::Stop(L"Sound");
-		PRINT(Error);
+		if (Sound::GetPlaybackStatus(L"Sound", MCI_STATUS_MODE) == MCI_MODE_PLAY)
+			MCIERROR Error = Sound::Stop(L"Sound");
+		else if (Sound::GetPlaybackStatus(L"Sound", MCI_STATUS_MODE) == MCI_MODE_STOP)
+			MCIERROR Error = Sound::Close(L"Sound");
 
 		break;
 
