@@ -77,11 +77,11 @@
     <ClCompile Include="Calculator.cpp">
       <Filter>Custom Controls\Calculator</Filter>
     </ClCompile>
-    <ClCompile Include="DropFiles.cpp">
-      <Filter>Custom Controls\Drop Files</Filter>
-    </ClCompile>
     <ClCompile Include="Console.cpp">
       <Filter>Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="DropFiles.cpp">
+      <Filter>Custom Controls\Drop Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

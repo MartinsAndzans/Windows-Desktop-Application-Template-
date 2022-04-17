@@ -62,7 +62,7 @@ VOID DropFiles::CreateDropFilesFont() {
 
 }
 
-VOID DropFiles::drawDashedRectangle(HDC hdc, RECT &Rectangle, SIZE_T Width, COLORREF Color) {
+VOID DropFiles::drawDashedRectangle(HDC hdc, RECT& Rectangle, SIZE_T Width, COLORREF Color) {
 
 	HPEN Pen = CreatePen(PS_DASH, 1, Color);
 	HPEN PreviousPen = (HPEN)SelectObject(hdc, Pen);
@@ -89,7 +89,7 @@ VOID DropFiles::drawDashedRectangle(HDC hdc, RECT &Rectangle, SIZE_T Width, COLO
 
 }
 
-VOID DropFiles::FillRectOpacity50(HDC hdc, RECT &Rectangle, COLORREF Color) {
+VOID DropFiles::FillRectOpacity50(HDC hdc, RECT& Rectangle, COLORREF Color) {
 
 	BOOL DRAWPIXEL; // TRUE = |X| - FALSE = | |
 	for (int x = Rectangle.left; x <= Rectangle.right; x++) {
@@ -141,7 +141,7 @@ VOID DropFiles::drawArrow(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF Color) {
 			continue;
 		}
 
-		for (XS = XCELL; XS <= XCELL * 2; XS++){
+		for (XS = XCELL; XS <= XCELL * 2; XS++) {
 			SetPixel(hdc, X + XS, Y + YS, Color);
 		}
 
@@ -164,7 +164,7 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 		LpDropFilesStyle Parameters = (LpDropFilesStyle)window->lpCreateParams;
 
-		DropFilesStyle *Style = new DropFilesStyle;
+		DropFilesStyle* Style = new DropFilesStyle;
 		ZeroMemory(Style, sizeof(DropFilesStyle));
 
 		if (Parameters != NULL) {
