@@ -22,7 +22,6 @@
 #define CalculatorBackgroundColor RGB(255, 255, 255)
 
 #pragma region CalculatorControlsID
-
 #define ID_CL_CLOSE 10011
 #define ID_CL_OPERATION 10012
 #define ID_CL_OUTPUT_RESULT 10013
@@ -46,7 +45,6 @@
 #define ID_CL_MODULE 10031
 #define ID_CL_DOT 10032
 #define ID_CL_RESULT 10033
-
 #pragma endregion
 
 #define SetFont(hwnd, font) SendMessage(hwnd, WM_SETFONT, (WPARAM)font, NULL)

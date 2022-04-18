@@ -149,6 +149,38 @@ public:
 	}
 
 	/// <summary>
+	/// Rounds Double String
+	/// </summary>
+	/// <param name="Text">- Double String</param>
+	/// <returns>Rounded Double String</returns>
+	static std::string RoundDoubleString(std::string Text) {
+
+	#define LastSymbol Text.length() - 1
+
+		if (Text.find('.') != std::string::npos) {
+
+			while (Text[LastSymbol] == '0' || Text[LastSymbol] == '.') {
+
+				if (Text[LastSymbol] == '.') {
+					Text.erase(LastSymbol, 1);
+					return Text;
+				}
+
+				Text.erase(LastSymbol, 1);
+
+			}
+
+			return Text;
+
+		}
+
+		return Text;
+
+	#undef LastSymbol
+
+	}
+
+	/// <summary>
 	/// This Function Copy Unicode Text into Clipboard
 	/// </summary>
 	/// <param name="Hwnd">- New Clipboard Owner</param>
@@ -373,8 +405,13 @@ public:
 		bmiheader.biClrUsed = NULL;
 		bmiheader.biClrImportant = NULL;
 
-		BYTE *BitmapBytes = new BYTE[BITMAP_SIZE_IN_BYTES]{};
-		if (BitmapBytes == NULL) return FALSE;
+		image.open(FilePath, std::ios::out | std::ios::binary); // Open File
+
+		if (!image.is_open()) {
+			return FALSE;
+		}
+
+		std::unique_ptr<BYTE> BitmapBytes(new BYTE[BITMAP_SIZE_IN_BYTES]{});
 
 		HDC ScreenDC = GetDC(HWND_DESKTOP);
 		HDC MemoryDC = CreateCompatibleDC(ScreenDC);
@@ -382,67 +419,21 @@ public:
 		BITMAPINFO bminfo = { 0 };
 		bminfo.bmiHeader = bmiheader;
 
-		GetDIBits(MemoryDC, Bitmap, 0, BitmapSize.cy, BitmapBytes, &bminfo, DIB_RGB_COLORS);
+		GetDIBits(MemoryDC, Bitmap, 0, BitmapSize.cy, BitmapBytes.get(), &bminfo, DIB_RGB_COLORS);
 
 		ReleaseDC(HWND_DESKTOP, ScreenDC);
 		DeleteDC(MemoryDC);
 
-		image.open(FilePath, std::ios::out | std::ios::binary); // Open File
-
-		if (!image.is_open()) {
-			delete[] BitmapBytes;
-			return FALSE;
-		}
-		else {
-			image.write((char*)&bmfheader, sizeof(BITMAPFILEHEADER)); // BITMAP FILE HEADER
-			image.write((char*)&bmiheader, sizeof(BITMAPINFOHEADER)); // BITMAP INFO HEADER
-			image.write((char*)BitmapBytes, BITMAP_SIZE_IN_BYTES); // BYTE ARRAY
-		}
+		image.write((char*)&bmfheader, sizeof(BITMAPFILEHEADER)); // BITMAP FILE HEADER
+		image.write((char*)&bmiheader, sizeof(BITMAPINFOHEADER)); // BITMAP INFO HEADER
+		image.write((char*)BitmapBytes.get(), BITMAP_SIZE_IN_BYTES); // BYTE ARRAY
 
 		image.close(); // Close File
-		delete[] BitmapBytes; // Delete Bitmap Byte Array
 
 		return TRUE;
 
 		#undef BITMAP_SIZE_IN_PIXELS
 		#undef BITMAP_SIZE_IN_BYTES
-
-	}
-
-	/// <summary>
-	/// Finds ALL Lines in File With Matching Symbol
-	/// </summary>
-	/// <param name="FilePath">- File Path</param>
-	/// <param name="Symbol">- Symbol To Be Checked</param>
-	/// <returns>If Succeeded Returns Vector with Strings, but If not NULL</returns>
-	static std::vector <std::string> FindTextFromFileBySymbol(std::string FilePath, const char Symbol[]) {
-
-		std::fstream file;
-
-		std::vector <std::string> TextArray;
-		TextArray.reserve(1);
-
-		file.open(FilePath, std::ios::in);
-
-		if (!file.is_open()) {
-			return TextArray;
-		}
-		else {
-
-			std::string buffer = "";
-
-			while (!file.eof()) {
-				std::getline(file, buffer);
-				if (buffer.find(Symbol, 0) != std::string::npos) {
-					TextArray.push_back(buffer);
-				}
-			}
-
-			file.close();
-
-			return TextArray;
-
-		}
 
 	}
 
