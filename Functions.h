@@ -1,13 +1,13 @@
 #pragma once
 
+#ifndef _FUNCTIONS_
+#define _FUNCTIONS_
+
 /************************************************
 *                                               *
 *         Copyright(c) Martins Andzans          *
 *                                               *
 ************************************************/
-
-#ifndef _FUNCTIONS_
-#define _FUNCTIONS_
 
 #include <Windows.h>
 #include <string>

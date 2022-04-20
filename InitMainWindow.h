@@ -7,8 +7,8 @@
 
 #pragma region LocalMacros
 
-#define ID_DEBUG_TOOL_1 -1
-#define ID_DEBUG_TOOL_2 -2
+#define ID_DEBUG_TOOL_1 -10
+#define ID_DEBUG_TOOL_2 -20
 
 #define ID_ANIMATION_STARS 01
 #define ID_DROP_FILES 02

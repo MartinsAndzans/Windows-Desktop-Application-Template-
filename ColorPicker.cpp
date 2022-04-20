@@ -11,9 +11,7 @@ CONST SIZE ColorPicker::DimensionsSmall = { 420, 40 };
 CONST SIZE ColorPicker::DimensionsLarge = { 420, 100 };
 
 RECT ColorPicker::Dimensions = { 0 };
-
 POINT ColorPicker::mousePosition = { 0 };
-BOOL ColorPicker::LMButtonPressed = FALSE;
 #pragma endregion
 
 // INIT COLOR PICKER
@@ -52,42 +50,42 @@ BOOL ColorPicker::InitColorPicker() {
 #pragma endregion
 
 #pragma region Functions
-VOID ColorPicker::drawCross(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF CrossColor) {
+VOID ColorPicker::drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF CrossColor) {
 
-	if (W % 2 != NULL && H % 2 != NULL) {
+	if (WIDTH % 2 != NULL && HEIGHT % 2 != NULL) {
 
 		CONST SHORT Proportion = 3;
-		INT XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
+		INT XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
 
-		YS = H / 2;
-		for (XS = 0; XS <= XE; XS++) {
+		// Horizontal Line
+		for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
 
-			if (XS > W / 2 - XCELL / 2 && XS < W / 2 + XCELL / 2) {
+			if (X > COORD_X + XCELL && X < COORD_X + XCELL * 2) {
 				continue;
 			}
 
-			SetPixel(hdc, X + XS, Y + YS - 1, CrossColor);
-			SetPixel(hdc, X + XS, Y + YS, CrossColor);
-			SetPixel(hdc, X + XS, Y + YS + 1, CrossColor);
+			SetPixel(hdc, X, COORD_Y + HEIGHT / 2 - 1, CrossColor); // ==
+			SetPixel(hdc, X, COORD_Y + HEIGHT / 2, CrossColor); // --
+			SetPixel(hdc, X, COORD_Y + HEIGHT / 2 + 1, CrossColor); // ==
 
 		}
-		XS = W / 2;
-		for (YS = 0; YS <= YE; YS++) {
+		// Vertical Line
+		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGHT; Y++) {
 
-			if (YS > H / 2 - XCELL / 2 && YS < H / 2 + YCELL / 2) {
+			if (Y > COORD_Y + YCELL && Y < COORD_Y + YCELL * 2) {
 				continue;
 			}
 
-			SetPixel(hdc, X + XS - 1, Y + YS, CrossColor);
-			SetPixel(hdc, X + XS, Y + YS, CrossColor);
-			SetPixel(hdc, X + XS + 1, Y + YS, CrossColor);
+			SetPixel(hdc, COORD_X + WIDTH / 2 - 1, Y, CrossColor); // ==
+			SetPixel(hdc, COORD_X + WIDTH / 2, Y, CrossColor); // --
+			SetPixel(hdc, COORD_X + WIDTH / 2 + 1, Y, CrossColor); // ==
 
 		}
 
 	}
 	else {
 
-		OutputDebugString(L"ERROR [ColorPicker::drawCross] - Width or Height Must be Odd Number Value!\r\n");
+		OutputDebugString(L"ERROR [Draw::drawCross] - Width or Height Must be Odd Number!\r\n");
 
 	}
 
@@ -246,7 +244,7 @@ VOID ColorPicker::onWindowPosChanging(HWND hColorPicker, LPARAM lParam) {
 
 VOID ColorPicker::onMouseMove(HWND hColorPicker, WPARAM wParam, LPARAM lParam) {
 
-	if (LMButtonPressed) {
+	if (GetAsyncKeyState(VK_LBUTTON)) {
 		RedrawWindow(hColorPicker, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 	}
 
@@ -284,7 +282,7 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 	RECT GradientRectangle = { Dimensions.left + BorderWidth, Dimensions.top + BorderWidth,
 		Dimensions.right - BorderWidth, Dimensions.bottom - BorderWidth };
 
-	if (LMButtonPressed && mousePosition == GradientRectangle) {
+	if (GetAsyncKeyState(VK_LBUTTON) && mousePosition == GradientRectangle) {
 		COLORREF Color = GetPixel(MemoryDC, mousePosition.x, mousePosition.y);
 		drawCross(MemoryDC, mousePosition.x - 23 / 2, mousePosition.y - 23 / 2);
 		SetWindowLong(hColorPicker, GWL_USERDATA, MAKELONG(mousePosition.x, mousePosition.y));
@@ -299,11 +297,10 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 		//////////////////////////////////////////////////////
 
 		PostMessage(GetParent(hColorPicker), WM_COMMAND, MAKEWPARAM(GetWindowLong(hColorPicker, GWL_ID), hColorPicker), Color);
-	}
-	else {
-		DWORD Point = GetWindowLong(hColorPicker, GWL_USERDATA);
-		if (Point != NULL) {
-			drawCross(MemoryDC, LOWORD(Point) - 23 / 2, HIWORD(Point) - 23 / 2);
+	} else {
+		LONG PreviousPoint = GetWindowLong(hColorPicker, GWL_USERDATA);
+		if (PreviousPoint != NULL) {
+			drawCross(MemoryDC, LOWORD(PreviousPoint) - 23 / 2, HIWORD(PreviousPoint) - 23 / 2);
 		}
 	}
 
@@ -342,21 +339,8 @@ LRESULT CALLBACK ColorPicker::ColorPickerProcedure(HWND hColorPicker, UINT Msg, 
 		onPaint(hColorPicker);
 		return 0;
 	}
-	case WM_NCMOUSEMOVE:
-	{
-		LMButtonPressed = FALSE;
-		RedrawWindow(hColorPicker, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
-		return 0;
-	}
 	case WM_LBUTTONDOWN:
 	{
-		LMButtonPressed = TRUE;
-		RedrawWindow(hColorPicker, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
-		return 0;
-	}
-	case WM_LBUTTONUP:
-	{
-		LMButtonPressed = FALSE;
 		RedrawWindow(hColorPicker, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 		return 0;
 	}

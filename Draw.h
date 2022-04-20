@@ -1,35 +1,23 @@
 #pragma once
 
+#ifndef _DRAW_
+#define _DRAW_
+
 /************************************************
 *                                               *
 *         Copyright(c) Martins Andzans          *
 *                                               *
 ************************************************/
 
-#ifndef _DRAW_
-#define _DRAW_
-
 #include <Windows.h>
-#include <string>
 
-#ifndef WHITE_COLOR
 #define WHITE_COLOR RGB(255, 255, 255)
-#endif
-#ifndef BLACK_COLOR
 #define BLACK_COLOR RGB(0, 0, 0)
-#endif
-#ifndef ORANGE_COLOR
-#define ORANGE_COLOR RGB(214, 152, 45)
-#endif
-#ifndef RED_COLOR
-#define RED_COLOR RGB(238, 20, 20)
-#endif
-#ifndef BLUE_COLOR
-#define BLUE_COLOR RGB(40, 34, 214)
-#endif
-#ifndef GREEN_COLOR
-#define GREEN_COLOR RGB(45, 125, 15)
-#endif
+#define ORANGE_COLOR RGB(240, 190, 0)
+#define RED_COLOR RGB(255, 0, 0)
+#define BLUE_COLOR RGB(0, 0, 255)
+#define GREEN_COLOR RGB(0, 255, 0)
+#define DARK_GREEN_COLOR RGB(0, 145, 0)
 
 class Draw {
 
@@ -40,7 +28,7 @@ public:
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
 	/// <param name="Rectangle">- Rectangle</param>
-	static VOID drawRectangle(HDC hdc, RECT & Rectangle) {
+	static VOID drawRectangle(HDC hdc, RECT &Rectangle) {
 
 		// TOP
 		MoveToEx(hdc, Rectangle.left, Rectangle.top, NULL);
@@ -92,15 +80,15 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Draws Bitmap Image From File
+	/// This Function Draws Bitmap From File
 	/// </summary>
 	/// <param name="DestinationDC">- Device Context</param>
 	/// <param name="DestinationRectangle">- Where Draw Bitmap</param>
-	/// <param name="FilePath">- File Path - [EXAMPLE - "Image.bmp/.ico/.cur"]</param>
+	/// <param name="FilePath">- File Path - Supported Image Formats : "*.bmp *.ico  *.cur"</param>
 	/// <param name="BitmapType">- IMAGE_BITMAP || IMAGE_ICON || IMAGE_CURSOR</param>
 	/// <param name="DrawMethod">- Draw Method - [EXAMPLE - SRCCOPY]</param>
 	/// <returns>If Succeeded Returns TRUE, but If not Returns FALSE</returns>
-	static BOOL drawBitmapFromFile(HDC DestinationDC, RECT& DestinationRectangle, std::string FilePath, UINT BitmapType = IMAGE_BITMAP, DWORD DrawMethod = SRCCOPY) {
+	static BOOL drawBitmapFromFile(HDC DestinationDC, RECT &DestinationRectangle, std::string FilePath, UINT BitmapType = IMAGE_BITMAP, DWORD DrawMethod = SRCCOPY) {
 
 		HDC BitmapDC = CreateCompatibleDC(DestinationDC);
 		if (BitmapDC == NULL) return FALSE;
@@ -123,33 +111,31 @@ public:
 	/// <param name="hdc">- Device Context</param>
 	/// <param name="COORD_X">- X Coordinate</param>
 	/// <param name="COORD_Y">- Y Coordinate</param>
-	/// <param name="W">- Width</param>
-	/// <param name="H">- Height</param>
+	/// <param name="WIDTH">- Width</param>
+	/// <param name="HEIGTH">- Height</param>
 	/// <param name="BorderWidth">- Border Width</param>
 	/// <param name="Color">- Rectangle Color</param>
 	/// <param name="BorderColor">- Border Color</param>
-	static VOID drawRectangle(HDC hdc, INT COORD_X = 0, INT COORD_Y = 0, INT W = 120, INT H = 40, INT BorderWidth = 2,
+	static VOID drawRectangle(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 120, INT HEIGTH = 40, INT BorderWidth = 2,
 		COLORREF RectangleColor = WHITE_COLOR, COLORREF BorderColor = BLACK_COLOR) {
-
-		INT XS = 0, XE = W, YS = 0, YE = H;
 
 		// Border
 		for (SHORT Counter = 0; Counter < BorderWidth; Counter++) {
 			// Left and Right
-			for (INT Y = COORD_Y; Y <= COORD_Y + W; Y++) {
+			for (INT Y = COORD_Y; Y <= COORD_Y + HEIGTH; Y++) {
 				SetPixel(hdc, COORD_X + Counter, Y, BorderColor);
-				SetPixel(hdc, COORD_X + H - Counter, Y, BorderColor);
+				SetPixel(hdc, COORD_X + WIDTH - Counter, Y, BorderColor);
 			}
 			// Up and Down
-			for (INT X = COORD_X; X <= COORD_X + W; X++) {
+			for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
 				SetPixel(hdc, X, COORD_Y + Counter, BorderColor);
-				SetPixel(hdc, X, COORD_Y + H - Counter, BorderColor);
+				SetPixel(hdc, X, COORD_Y + HEIGTH - Counter, BorderColor);
 			}
 		}
 
 		// Rectangle
-		for (INT X = BorderWidth; X <= COORD_X + W - BorderWidth; X++) {
-			for (INT Y = BorderWidth; Y <= COORD_Y + H - BorderWidth; Y++) {
+		for (INT X = BorderWidth; X <= COORD_X + WIDTH - BorderWidth; X++) {
+			for (INT Y = BorderWidth; Y <= COORD_Y + HEIGTH - BorderWidth; Y++) {
 				SetPixel(hdc, X, Y, RectangleColor);
 			}
 		}
@@ -186,18 +172,21 @@ public:
 	/// <param name="hdc">- Device Context</param>
 	/// <param name="COORD_X">- X Coordinate</param>
 	/// <param name="COORD_Y">- Y Coordinate</param>
-	/// <param name="W">- Width</param>
-	/// <param name="H">- Height</param>
+	/// <param name="WIDTH">- Width</param>
+	/// <param name="HEIGTH">- Height</param>
 	/// <param name="Color">- Romb Color</param>
-	static VOID drawRomb(HDC hdc, INT COORD_X = 0, INT COORD_Y = 0, INT W = 60, INT H = 60, COLORREF Color = BLACK_COLOR) {
+	static VOID drawRomb(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 60, INT HEIGTH = 60, COLORREF Color = BLACK_COLOR) {
 
 		INT OFFSET = 0;
 
-		for (INT Y = COORD_Y; Y <= COORD_Y + H; Y++) {
-			if (Y < H / 2) OFFSET++;
-			else OFFSET--;
-			for (INT X = COORD_X + W / 2 - OFFSET; X <= COORD_X + W / 2 + OFFSET; X++) {
+		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGTH; Y++) {
+			for (INT X = COORD_X + WIDTH / 2 - OFFSET; X <= COORD_X + WIDTH / 2 + OFFSET; X++) {
 				SetPixel(hdc, X, Y, Color);
+			}
+			if (Y < COORD_Y + HEIGTH / 2) {
+				OFFSET++;
+			} else {
+				OFFSET--;
 			}
 		}
 
@@ -256,10 +245,10 @@ public:
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
 	/// <param name="COORD_X">- X Coordinate</param>
-	/// <param name="COORD_xY">- Y Coordinate</param>
+	/// <param name="COORD_Y">- Y Coordinate</param>
 	/// <param name="WIDTH">- Width</param>
 	/// <param name="HEIGHT">- Height</param>
-	static VOID drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF Color = BLACK_COLOR) {
+	static VOID drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 40, INT HEIGHT = 40, COLORREF Color = BLACK_COLOR) {
 
 		CONST SHORT Proportion = 3;
 		INT OFFSET = 0, XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
@@ -417,7 +406,7 @@ public:
 			GetSystemTime(&st); // Gets System Time
 			srand(st.wMilliseconds); // Random Sead
 
-			for (UINT i = 0; i < Proportion * Proportion; i++) {
+			for (UINT I = 0; I < Proportion * Proportion; I++) {
 
 				INT STARX = rand() % XCELL + XS; // XS - (XS + XCELL)
 				INT STARY = rand() % YCELL + YS; // YS - (YS + YCELL)
@@ -467,47 +456,47 @@ public:
 	/// This Function Draws Cross
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
-	/// <param name="X">- X Coordinate</param>
-	/// <param name="Y">- Y Coordinate</param>
-	/// <param name="W">- Width</param>
-	/// <param name="H">- Height</param>
+	/// <param name="COORD_X">- X Coordinate</param>
+	/// <param name="COORD_Y">- Y Coordinate</param>
+	/// <param name="WIDTH">- Width</param>
+	/// <param name="HEIGTH">- Height</param>
 	/// <param name="CrossColor">- Cross Color</param>
-	static VOID drawCross(HDC hdc, INT X = 0, INT Y = 0, INT W = 23, INT H = 23, COLORREF CrossColor = BLACK_COLOR) {
+	static VOID drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 23, INT HEIGHT = 23, COLORREF CrossColor = BLACK_COLOR) {
 
-		if (W % 2 != NULL && H % 2 != NULL) {
+		if (WIDTH % 2 != NULL && HEIGHT % 2 != NULL) {
 
 			CONST SHORT Proportion = 3;
-			INT XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
+			INT XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
 
-			YS = H / 2;
-			for (XS = 0; XS <= XE; XS++) {
+			// Horizontal Line
+			for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
 
-				if (XS > W / 2 - XCELL / 2 && XS < W / 2 + XCELL / 2) {
+				if (X > COORD_X + XCELL && X < COORD_X + XCELL * 2) {
 					continue;
 				}
 
-				SetPixel(hdc, X + XS, Y + YS - 1, CrossColor);
-				SetPixel(hdc, X + XS, Y + YS, CrossColor);
-				SetPixel(hdc, X + XS, Y + YS + 1, CrossColor);
+				SetPixel(hdc, X, COORD_Y + HEIGHT / 2 - 1, CrossColor); // ==
+				SetPixel(hdc, X, COORD_Y + HEIGHT / 2, CrossColor); // --
+				SetPixel(hdc, X, COORD_Y + HEIGHT / 2 + 1, CrossColor); // ==
 
 			}
-			XS = W / 2;
-			for (YS = 0; YS <= YE; YS++) {
+			// Vertical Line
+			for (INT Y = COORD_Y; Y <= COORD_Y + HEIGHT; Y++) {
 
-				if (YS > H / 2 - YCELL / 2 && YS < H / 2 + YCELL / 2) {
+				if (Y > COORD_Y + YCELL && Y < COORD_Y + YCELL * 2) {
 					continue;
 				}
 
-				SetPixel(hdc, X + XS - 1, Y + YS, CrossColor);
-				SetPixel(hdc, X + XS, Y + YS, CrossColor);
-				SetPixel(hdc, X + XS + 1, Y + YS, CrossColor);
+				SetPixel(hdc, COORD_X + WIDTH / 2 - 1, Y, CrossColor); // ==
+				SetPixel(hdc, COORD_X + WIDTH / 2, Y, CrossColor); // --
+				SetPixel(hdc, COORD_X + WIDTH / 2 + 1, Y, CrossColor); // ==
 
 			}
 
 		}
 		else {
 
-			OutputDebugString(L"ERROR [Draw::drawCross] - Width or Height Must be Odd Number Value!\r\n");
+			OutputDebugString(L"ERROR [Draw::drawCross] - Width or Height Must be Odd Number!\r\n");
 
 		}
 

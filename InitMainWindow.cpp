@@ -241,7 +241,7 @@ VOID MainWindow::onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 		SIZE size = { 0 };
 		WCHAR StaticText[MAX_CHAR_STRING] = { 0 };
-		SetDCBrushColor(item->hDC, GREEN_COLOR);
+		SetDCBrushColor(item->hDC, DARK_GREEN_COLOR);
 		FillRect(item->hDC, &item->rcItem, (HBRUSH)GetStockObject(DC_BRUSH));
 		SetBkMode(item->hDC, TRANSPARENT);
 		SetTextColor(item->hDC, WHITE_COLOR);
@@ -307,9 +307,6 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 		PRINT("R: " << Functions::_itos(GetRValue((COLORREF)lParam)) <<
 			"\tG: " << Functions::_itos(GetGValue((COLORREF)lParam)) <<
 			"\tB: " << Functions::_itos(GetBValue((COLORREF)lParam)));
-
-		std::string RGB = Functions::_itos(GetRValue((COLORREF)lParam)) + ", " + Functions::_itos(GetGValue((COLORREF)lParam)) + ", " + Functions::_itos(GetBValue((COLORREF)lParam));
-		Functions::CopyTextToClipboard(hMainWindow, RGB);
 
 		break;
 

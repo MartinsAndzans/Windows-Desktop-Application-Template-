@@ -4,7 +4,6 @@
 #define _COLOR_PICKER_
 
 #include <Windows.h>
-#include <string>
 
 #define GWL_USERDATA -21
 
@@ -30,13 +29,12 @@ private:
 	static CONST SIZE DimensionsLarge;
 
 	static POINT mousePosition;
-	static BOOL LMButtonPressed;
 	static RECT Dimensions;
 	#pragma endregion
 
 	#pragma region Functions
-	static VOID drawCross(HDC hdc, INT X = 0, INT Y = 0, INT W = 23, INT H = 23, COLORREF Color = RGB(0, 0, 0));
-	static SHORT drawGradientSmall(HDC hdc, INT X, INT Y, SHORT BorderWidth = 2, COLORREF BorderColor = RGB(0, 0, 0));
+	static VOID drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 23, INT HEIGHT = 23, COLORREF CrossColor = RGB(0, 0, 0));
+	static SHORT drawGradientSmall(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = RGB(0, 0, 0));
 	static SHORT drawGradientLarge(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = RGB(0, 0, 0));
 	#pragma endregion
 

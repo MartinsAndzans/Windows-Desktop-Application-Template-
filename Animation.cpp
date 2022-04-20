@@ -77,7 +77,7 @@ VOID Animation::drawStars(HDC hdc, RECT &Rectangle, COLORREF SymbolColor, CONST 
 		GetSystemTime(&st); // Gets System Time
 		srand(st.wMilliseconds); // Random Sead
 
-		for (UINT i = 0; i < Proportion * Proportion; i++) {
+		for (UINT I = 0; I < Proportion * Proportion; I++) {
 
 			INT STARX = rand() % XCELL + XS; // XS - (XS + XCELL)
 			INT STARY = rand() % YCELL + YS; // YS - (YS + YCELL)

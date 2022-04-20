@@ -41,14 +41,8 @@ RECT Console::getConsoleSize() {
 
 }
 
-BOOL Console::setConsoleSize(SIZE &CONSOLE_NEW_SIZE) {
-
-	PWINDOWINFO info = { 0 };
-
-	//return SetWindowPos(GetConsoleWindow(), NULL, );
-
-	return TRUE;
-
+BOOL Console::setConsoleSize(INT WIDTH, INT HEIGHT) {
+	return SetWindowPos(GetConsoleWindow(), NULL, CW_USEDEFAULT, CW_USEDEFAULT, WIDTH, HEIGHT, SWP_SHOWWINDOW | SWP_NOMOVE);
 }
 
 BOOL Console::setCursorVisible(BOOL CURSOR_VISIBLE) {

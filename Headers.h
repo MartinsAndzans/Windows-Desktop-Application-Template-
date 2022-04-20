@@ -51,10 +51,11 @@
 #pragma region Colors
 #define WHITE_COLOR RGB(255, 255, 255)
 #define BLACK_COLOR RGB(0, 0, 0)
-#define ORANGE_COLOR RGB(214, 152, 45)
-#define RED_COLOR RGB(238, 20, 20)
-#define BLUE_COLOR RGB(40, 34, 214)
-#define GREEN_COLOR RGB(45, 125, 15)
+#define ORANGE_COLOR RGB(240, 190, 0)
+#define RED_COLOR RGB(255, 0, 0)
+#define BLUE_COLOR RGB(0, 0, 255)
+#define GREEN_COLOR RGB(0, 255, 0)
+#define DARK_GREEN_COLOR RGB(0, 145, 0)
 
 #define LighterColor(SourceColor, LighterTo) RGB(GetRValue(SourceColor) + LighterTo, GetGValue(SourceColor) + LighterTo, GetBValue(SourceColor) + LighterTo) // Returns LighterColor
 #define DarkerColor(SourceColor, DarkerTo) RGB(GetRValue(SourceColor) - DarkerTo, GetGValue(SourceColor) - DarkerTo, GetBValue(SourceColor) - DarkerTo) // Returns DarkerColor
