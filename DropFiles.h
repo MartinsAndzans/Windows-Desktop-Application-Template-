@@ -4,7 +4,6 @@
 #define _DROP_FILES_
 
 #include <Windows.h>
-#include <string>
 
 #define MAX_DROP_FILES_CHAR_STRING 256
 #define HInstance() GetModuleHandle(NULL)
@@ -50,7 +49,7 @@ public:
 	typedef struct DropFilesStyle {
 		COLORREF BackgroundColor;
 		COLORREF ForegroundColor;
-	}DFStyle, *LpDFStyle, *LpDropFilesStyle;
+	}DFStyle, *LPDFStyle, *LPDropFilesStyle;
 
 	#pragma region InitDropFiles
 	static BOOL InitDropFiles();

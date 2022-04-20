@@ -134,7 +134,7 @@ SHORT ColorPicker::drawGradientSmall(HDC hdc, INT COORD_X, INT COORD_Y, SHORT Bo
 
 }
 
-INT ColorPicker::drawGradientLarge(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth, COLORREF BorderColor) {
+SHORT ColorPicker::drawGradientLarge(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth, COLORREF BorderColor) {
 
 	CONST SHORT Width = 420, Height = 100;
 
@@ -247,8 +247,7 @@ VOID ColorPicker::onWindowPosChanging(HWND hColorPicker, LPARAM lParam) {
 VOID ColorPicker::onMouseMove(HWND hColorPicker, WPARAM wParam, LPARAM lParam) {
 
 	if (LMButtonPressed) {
-		GetClientRect(hColorPicker, &Dimensions);
-		RedrawWindow(hColorPicker, &Dimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
+		RedrawWindow(hColorPicker, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 	}
 
 }
@@ -346,22 +345,19 @@ LRESULT CALLBACK ColorPicker::ColorPickerProcedure(HWND hColorPicker, UINT Msg, 
 	case WM_NCMOUSEMOVE:
 	{
 		LMButtonPressed = FALSE;
-		GetClientRect(hColorPicker, &Dimensions);
-		RedrawWindow(hColorPicker, &Dimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
+		RedrawWindow(hColorPicker, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 		return 0;
 	}
 	case WM_LBUTTONDOWN:
 	{
 		LMButtonPressed = TRUE;
-		GetClientRect(hColorPicker, &Dimensions);
-		RedrawWindow(hColorPicker, &Dimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
+		RedrawWindow(hColorPicker, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 		return 0;
 	}
 	case WM_LBUTTONUP:
 	{
 		LMButtonPressed = FALSE;
-		GetClientRect(hColorPicker, &Dimensions);
-		RedrawWindow(hColorPicker, &Dimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
+		RedrawWindow(hColorPicker, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 		return 0;
 	}
 	}

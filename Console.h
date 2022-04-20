@@ -5,26 +5,28 @@
 
 #include <Windows.h>
 #include <iostream>
-#include <string.h>
 #include <conio.h>
 
 class Console {
 
 private:
 
-	static DWORD length;
-	static DWORD written;
-	static SMALL_RECT consoleSize;
+	static DWORD Length;
+	static DWORD Written;
+	static HANDLE hOut;
+	static HANDLE hIn;
+	static HANDLE HErr;
 	static CONSOLE_CURSOR_INFO info;
 	static CONSOLE_SCREEN_BUFFER_INFO csbi;
 	
 public:
 
-	static VOID setConsoleTitle(const char* Title);
-	static VOID setCursorPosition(short int x, short int y, bool buffer_flush, bool move_cursor, bool cls);
-	static RECT getConsoleRect();
-	static VOID setCursorVisible(bool cursor_visible);
-	static VOID setCursorSize(int cursor_size);
+	static BOOL setConsoleTitle(CONST CHAR *Title);
+	static BOOL setCursorPosition(SHORT COORD_X, SHORT COORD_Y, BOOL MOVE_CURSOR = TRUE, BOOL FLUSH_BUFFER = FALSE, BOOL CLS = FALSE);
+	static RECT getConsoleSize();
+	static BOOL setConsoleSize(SIZE &CONSOLE_NEW_SIZE);
+	static BOOL setCursorVisible(BOOL CURSOR_VISIBLE = TRUE);
+	static BOOL setCursorSize(UINT CURSOR_SIZE);
 
 };
 

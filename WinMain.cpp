@@ -23,8 +23,12 @@ int wmain(int ArrgumentCount, wchar_t *Arrguments[]) {
 	Console::setConsoleTitle("Don't Close");
 	#endif
 
+	#ifdef APP_DEBUG
 	SetConsoleColor("1F");
 	PRINT("Debug Console Is Initilaized Correctly ...");
+	#endif
+
+	Console::setCursorPosition(0, 0, FALSE, FALSE, FALSE);
 	
 	if (MainWindow::InitMainWindowClass(MAIN_WINDOW_CLASS)) {
 		if (MainWindow::CreateMainWindow(MAIN_WINDOW_CLASS, MAIN_WINDOW_TITLE)) {
@@ -33,8 +37,7 @@ int wmain(int ArrgumentCount, wchar_t *Arrguments[]) {
 	}
 
 	#ifdef APP_DEBUG
-	PRINT("[App Closed Successfully] - Press Any Key To Close Debug Console ...");
-	CHAR Key = _getch();
+	PRINT("App Closed Successfully ...");
 	#endif
 
 	return 0;

@@ -1,90 +1,78 @@
 #include "Console.h"
 
-DWORD Console::length = 0;
-DWORD Console::written = 0;
-SMALL_RECT Console::consoleSize = { 0 };
+DWORD Console::Length = 0;
+DWORD Console::Written = 0;
+HANDLE Console::hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+HANDLE Console::hIn = GetStdHandle(STD_INPUT_HANDLE);
+HANDLE Console::HErr = GetStdHandle(STD_ERROR_HANDLE);
 CONSOLE_CURSOR_INFO Console::info = { 0 };
 CONSOLE_SCREEN_BUFFER_INFO Console::csbi = { 0 };
 
-VOID Console::setConsoleTitle(const char *Title) {
-
-	SetConsoleTitleA(Title);
-
+BOOL Console::setConsoleTitle(CONST CHAR *Title) {
+	return SetConsoleTitleA(Title);
 }
 
-VOID Console::setCursorPosition(short int x, short int y, bool buffer_flush, bool move_cursor, bool cls) {
+BOOL Console::setCursorPosition(SHORT COORD_X, SHORT COORD_Y, BOOL MOVE_CURSOR, BOOL FLUSH_BUFFER, BOOL CLS) {
 
-	static const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD Coordinates = { COORD_X, COORD_Y };
 
-	COORD coordinates = { (SHORT)x, (SHORT)y };
+	if (!GetConsoleScreenBufferInfo(hOut, &csbi)) return FALSE;
 
-	if (!GetConsoleScreenBufferInfo(hOut, &csbi)) {
-		abort();
+	if (MOVE_CURSOR == TRUE) {
+		SetConsoleCursorPosition(hOut, Coordinates);
 	}
-
-	length = csbi.dwSize.X * csbi.dwSize.Y;
-
-	if (buffer_flush == true) {
+	if (FLUSH_BUFFER == TRUE) {
 		std::cout.flush();
 	}
-
-	if (move_cursor == true) {
-		SetConsoleCursorPosition(hOut, coordinates);
+	if (CLS == TRUE) {
+		Length = csbi.dwSize.X * csbi.dwSize.Y;
+		FillConsoleOutputCharacterA(hOut, ' ', Length, Coordinates, &Written);
 	}
 
-	if (cls == true) {
-		FillConsoleOutputCharacter(hOut, L' ', length, coordinates, &written);
-	}
+	return TRUE;
 
 }
 
-RECT Console::getConsoleRect() {
+RECT Console::getConsoleSize() {
 
-	RECT ConsoleSize{};
-
-	static const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-
-	if (!GetConsoleScreenBufferInfo(hOut, &csbi)) {
-		abort();
-	}
-
-	consoleSize = csbi.srWindow;
-
-	ConsoleSize = { 0, 0, consoleSize.Right, consoleSize.Bottom };
-
+	RECT ConsoleSize = { 0 };
+	GetClientRect(GetConsoleWindow(), &ConsoleSize);
 	return ConsoleSize;
 
 }
 
-VOID Console::setCursorVisible(bool cursor_visible) {
+BOOL Console::setConsoleSize(SIZE &CONSOLE_NEW_SIZE) {
 
-	static const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	PWINDOWINFO info = { 0 };
 
-	if (!GetConsoleCursorInfo(hOut, &info)) {
-		abort();
-	}
+	//return SetWindowPos(GetConsoleWindow(), NULL, );
 
-	info.bVisible = cursor_visible;
-
-	SetConsoleCursorInfo(hOut, &info);
+	return TRUE;
 
 }
 
-VOID Console::setCursorSize(int cursor_size) {
+BOOL Console::setCursorVisible(BOOL CURSOR_VISIBLE) {
 
-	static const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (!GetConsoleCursorInfo(hOut, &info)) return FALSE;
+	info.bVisible = CURSOR_VISIBLE;
+	SetConsoleCursorInfo(hOut, &info);
 
-	if (!GetConsoleCursorInfo(hOut, &info)) {
-		abort();
-	}
+	return TRUE;
 
-	if (cursor_size >= 1 && cursor_size <= 100) {
-		info.dwSize = cursor_size;
+}
+
+BOOL Console::setCursorSize(UINT CURSOR_SIZE) {
+
+	if (!GetConsoleCursorInfo(hOut, &info)) return FALSE;
+
+	if (CURSOR_SIZE >= 1 && CURSOR_SIZE <= 100) {
+		info.dwSize = CURSOR_SIZE;
 		SetConsoleCursorInfo(hOut, &info);
-	}
-	else {
+	} else {
 		info.dwSize = 20;
 		SetConsoleCursorInfo(hOut, &info);
 	}
+
+	return TRUE;
 
 }

@@ -16,12 +16,14 @@
 #include <conio.h>
 #include <thread>
 
+#include "resource.h"
+
 #include "Functions.h"
 #include "Draw.h"
 #include "Console.h"
 
 #include "ColorPicker.h"
-#include "AnimationStars.h"
+#include "Animation.h"
 #include "Calculator.h"
 #include "DropFiles.h"
 #pragma endregion
@@ -30,7 +32,6 @@
 #pragma region Important
 #define IF if
 #define ELSE else
-
 #define RETURN return
 
 #ifdef APP_DEBUG
@@ -54,16 +55,14 @@
 #define RED_COLOR RGB(238, 20, 20)
 #define BLUE_COLOR RGB(40, 34, 214)
 #define GREEN_COLOR RGB(45, 125, 15)
+
+#define LighterColor(SourceColor, LighterTo) RGB(GetRValue(SourceColor) + LighterTo, GetGValue(SourceColor) + LighterTo, GetBValue(SourceColor) + LighterTo) // Returns LighterColor
+#define DarkerColor(SourceColor, DarkerTo) RGB(GetRValue(SourceColor) - DarkerTo, GetGValue(SourceColor) - DarkerTo, GetBValue(SourceColor) - DarkerTo) // Returns DarkerColor
 #pragma endregion
 
 #pragma region MainWindow|Class|Title
 #define MAIN_WINDOW_CLASS L"MAIN WINDOW CLASS"
 #define MAIN_WINDOW_TITLE L"Window [TEMPLATE]"
-#pragma endregion
-
-#pragma region Cursor|Icon
-#define MAIN_WINDOW_CURSOR L"\\Crosshair.cur"
-#define MAIN_WINDOW_ICON L"\\WindowIcon.ico"
 #pragma endregion
 
 #pragma region MainWindowDimensions
@@ -88,7 +87,7 @@
 /// <para>>> 6 = Yellow | E = Light Yellow</para>
 /// <para>>> 7 = White | F = Bright White</para>
 /// </summary>
-#define SetConsoleColor(color) CHAR buffer[10] = "color ";\
+#define SetConsoleColor(color) CHAR buffer[20] = "color ";\
 strcat_s(buffer, color);\
 system(buffer)
 #pragma endregion

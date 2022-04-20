@@ -40,7 +40,7 @@ public:
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
 	/// <param name="Rectangle">- Rectangle</param>
-	static VOID drawRectangle(HDC hdc, RECT &Rectangle) {
+	static VOID drawRectangle(HDC hdc, RECT & Rectangle) {
 
 		// TOP
 		MoveToEx(hdc, Rectangle.left, Rectangle.top, NULL);
@@ -64,25 +64,25 @@ public:
 	/// <param name="Rectangle">- Rectangle</param>
 	/// <param name="Width">- Width</param>
 	/// <param name="Color">- Color</param>
-	static VOID drawDashedRectangle(HDC hdc, RECT &Rectangle, SIZE_T Width, COLORREF Color) {
+	static VOID drawDashedRectangle(HDC hdc, RECT& Rectangle, SIZE_T Width, COLORREF Color) {
 
 		HPEN Pen = CreatePen(PS_DASH, 1, Color);
 		HPEN PreviousPen = (HPEN)SelectObject(hdc, Pen);
 
-		for (int width = 0; width < Width; width++) {
+		for (INT Counter = 0; Counter < Width; Counter++) {
 
 			// TOP
-			MoveToEx(hdc, Rectangle.left, Rectangle.top + width, NULL);
-			LineTo(hdc, Rectangle.right, Rectangle.top + width);
+			MoveToEx(hdc, Rectangle.left, Rectangle.top + Counter, NULL);
+			LineTo(hdc, Rectangle.right, Rectangle.top + Counter);
 			// BOTTOM
-			MoveToEx(hdc, Rectangle.left, Rectangle.bottom - width, NULL);
-			LineTo(hdc, Rectangle.right, Rectangle.bottom - width);
+			MoveToEx(hdc, Rectangle.left, Rectangle.bottom - Counter, NULL);
+			LineTo(hdc, Rectangle.right, Rectangle.bottom - Counter);
 			// LEFT
-			MoveToEx(hdc, Rectangle.left + width, Rectangle.top, NULL);
-			LineTo(hdc, Rectangle.left + width, Rectangle.bottom);
+			MoveToEx(hdc, Rectangle.left + Counter, Rectangle.top, NULL);
+			LineTo(hdc, Rectangle.left + Counter, Rectangle.bottom);
 			// RIGHT
-			MoveToEx(hdc, Rectangle.right - width, Rectangle.top, NULL);
-			LineTo(hdc, Rectangle.right - width, Rectangle.bottom);
+			MoveToEx(hdc, Rectangle.right - Counter, Rectangle.top, NULL);
+			LineTo(hdc, Rectangle.right - Counter, Rectangle.bottom);
 
 		}
 
@@ -100,7 +100,7 @@ public:
 	/// <param name="BitmapType">- IMAGE_BITMAP || IMAGE_ICON || IMAGE_CURSOR</param>
 	/// <param name="DrawMethod">- Draw Method - [EXAMPLE - SRCCOPY]</param>
 	/// <returns>If Succeeded Returns TRUE, but If not Returns FALSE</returns>
-	static BOOL drawBitmapFromFile(HDC DestinationDC, RECT &DestinationRectangle, std::string FilePath, UINT BitmapType = IMAGE_BITMAP, DWORD DrawMethod = SRCCOPY) {
+	static BOOL drawBitmapFromFile(HDC DestinationDC, RECT& DestinationRectangle, std::string FilePath, UINT BitmapType = IMAGE_BITMAP, DWORD DrawMethod = SRCCOPY) {
 
 		HDC BitmapDC = CreateCompatibleDC(DestinationDC);
 		if (BitmapDC == NULL) return FALSE;
@@ -166,16 +166,14 @@ public:
 	static VOID FillRectOpacity50(HDC hdc, RECT &Rectangle, COLORREF Color) {
 
 		BOOL DRAWPIXEL; // TRUE = |X| - FALSE = | |
-		for (int x = Rectangle.left; x <= Rectangle.right; x++) {
-			(x % 2 == NULL) ? DRAWPIXEL = TRUE : DRAWPIXEL = FALSE; // 0, 2, 4, 5 = TRUE - 1, 3, 5, 7 = FALSE 
-			for (int y = Rectangle.top; y <= Rectangle.bottom; y++) {
+		for (INT X = Rectangle.left; X <= Rectangle.right; X++) {
+			(X % 2 == NULL) ? DRAWPIXEL = TRUE : DRAWPIXEL = FALSE; // 0, 2, 4, 5 = TRUE - 1, 3, 5, 7 = FALSE 
+			for (INT Y = Rectangle.top; Y <= Rectangle.bottom; Y++) {
 				if (DRAWPIXEL) {
 					DRAWPIXEL = FALSE;
-					SetPixel(hdc, x, y, Color);
-				}
-				else {
+					SetPixel(hdc, X, Y, Color);
+				} else {
 					DRAWPIXEL = TRUE;
-					continue;
 				}
 			}
 		}
@@ -206,49 +204,76 @@ public:
 	}
 
 	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="hdc">- Device Context</param>
+	/// <param name="COORD_X"></param>
+	/// <param name="COORD_Y"></param>
+	/// <param name="WIDTH"></param>
+	/// <param name="HEIGHT"></param>
+	/// <param name="Color"></param>
+	static VOID drawX(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF Color = BLACK_COLOR) {
+
+		INT DIAGONAL = 0;
+
+		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGHT; Y++) {
+
+			SetPixel(hdc, COORD_X + DIAGONAL + 1, Y, Color); // |
+			SetPixel(hdc, COORD_X + DIAGONAL, Y, Color);     //  |
+			SetPixel(hdc, COORD_X + DIAGONAL - 1, Y, Color); //   |
+
+			SetPixel(hdc, COORD_X + WIDTH - DIAGONAL + 1, Y, Color); //   |
+			SetPixel(hdc, COORD_X + WIDTH - DIAGONAL, Y, Color);     //  |
+			SetPixel(hdc, COORD_X + WIDTH - DIAGONAL - 1, Y, Color); // |
+
+			DIAGONAL++;
+
+		}
+
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="hdc"></param>
+	/// <param name="COORD_X"></param>
+	/// <param name="COORD_Y"></param>
+	/// <param name="WIDTH"></param>
+	/// <param name="HEIGHT"></param>
+	/// <param name="Color"></param>
+	static VOID drawO(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF Color = BLACK_COLOR) {
+
+		for (INT Y = COORD_Y; Y < COORD_Y + HEIGHT; Y++) {
+
+
+
+		}
+
+	}
+
+	/// <summary>
 	/// This Function Draws Arrow
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
-	/// <param name="X">- X Coordinate</param>
-	/// <param name="Y">- Y Coordinate</param>
-	/// <param name="W">- Width</param>
-	/// <param name="H">- Height</param>
-	static VOID drawArrow(HDC hdc, INT X, INT Y, INT W, INT H, COLORREF Color) {
+	/// <param name="COORD_X">- X Coordinate</param>
+	/// <param name="COORD_xY">- Y Coordinate</param>
+	/// <param name="WIDTH">- Width</param>
+	/// <param name="HEIGHT">- Height</param>
+	static VOID drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF Color = BLACK_COLOR) {
 
 		CONST SHORT Proportion = 3;
-		INT OFFSET = 0, XS = 0, XE = W, YS = 0, YE = H, XCELL = W / Proportion, YCELL = H / Proportion;
+		INT OFFSET = 0, XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
 
-		// XS    |    |    XE
-		// ******+----+****** YS
-		// ******|    |******
-		// ******|    |******
-		// ******|    |******
-		// ******|    |******
-		// ******+----+******--
-		// ******|    |******
-		// ******|    |******
-		// ******|    |******
-		// ******|    |******
-		// ***+----------+***--
-		// ****\        /****
-		// *****\      /*****
-		// ******\    /******
-		// *******\  /*******
-		// ********\/******** YE
+		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGHT; Y++) {
 
-		for (YS = 0; YS <= YE; YS++) {
-
-			if (YS >= YCELL * 2) {
-				for (XS = XCELL / 2 + OFFSET; XS <= XCELL * 2 + XCELL / 2 - OFFSET; XS++) {
-					SetPixel(hdc, X + XS, Y + YS, Color);
-				}
-				OFFSET++;
-				continue;
-			}
-
-			for (XS = XCELL; XS <= XCELL * 2; XS++) {
-				SetPixel(hdc, X + XS, Y + YS, Color);
-			}
+			if (Y > COORD_Y + YCELL * 2) {
+				for (INT X = (COORD_X + XCELL / 2) + OFFSET; X <= (COORD_X + XCELL * 2 + XCELL / 2) - OFFSET; X++) // +----+
+					SetPixel(hdc, X, Y, Color);                                                                    //  \  /  x 1
+				OFFSET++;                                                                                          //   \/
+			} else {
+				for (INT X = COORD_X + XCELL; X <= COORD_X + XCELL * 2; X++) // |====|
+					SetPixel(hdc, X, Y, Color);                              // |====| x 2
+			}                                                                // |====|
 
 		}
 
@@ -373,12 +398,10 @@ public:
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
 	/// <param name="Rectangle">- Drawing Rectangle</param>
-	/// <param name="StarColor">- Star Color</param>
-	/// <param name="StarSymbol">- Star Symbol</param>
+	/// <param name="SymbolColor">- Symbol Color</param>
+	/// <param name="Symbol">- Symbol</param>
 	/// <param name="Proportion">- Proportion</param>
-	static VOID drawStars(HDC hdc, RECT &Rectangle, COLORREF StarColor, CONST CHAR StarSymbol[], UINT Proportion) {
-
-		if (Proportion == 0) Proportion++;
+	static VOID drawStars(HDC hdc, RECT &Rectangle, COLORREF SymbolColor = WHITE_COLOR, CONST CHAR Symbol = '+', UINT Proportion = 4) {
 
 		if (Rectangle.right != 0 && Rectangle.bottom != 0) {
 
@@ -387,19 +410,19 @@ public:
 			INT XS = 0, YS = 0, XCELL = (Rectangle.right - Rectangle.left) / Proportion, YCELL = (Rectangle.bottom - Rectangle.top) / Proportion;
 
 			COLORREF PreviousColor = GetTextColor(hdc);
-			SetTextColor(hdc, StarColor);
+			SetTextColor(hdc, SymbolColor);
 
-			GetTextExtentPointA(hdc, StarSymbol, (int)strlen(StarSymbol), &size);
+			GetTextExtentPointA(hdc, &Symbol, 1, &size); // Size Symbol In Pixels
 
-			GetSystemTime(&st);
-			srand(st.wMilliseconds);
+			GetSystemTime(&st); // Gets System Time
+			srand(st.wMilliseconds); // Random Sead
 
 			for (UINT i = 0; i < Proportion * Proportion; i++) {
 
 				INT STARX = rand() % XCELL + XS; // XS - (XS + XCELL)
 				INT STARY = rand() % YCELL + YS; // YS - (YS + YCELL)
 
-				TextOutA(hdc, Rectangle.left + STARX - size.cx / 2, Rectangle.top + STARY - size.cy / 2, StarSymbol, (int)strlen(StarSymbol));
+				TextOutA(hdc, Rectangle.left + STARX - size.cx / 2, Rectangle.top + STARY - size.cy / 2, &Symbol, 1);
 
 				///////////////////////////
 				//// -->               ////

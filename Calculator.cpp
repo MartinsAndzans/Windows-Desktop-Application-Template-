@@ -73,7 +73,7 @@ VOID Calculator::CreateCalculatorFont() {
 
 }
 
-SIZE_T Calculator::FindChar(LPSTR Text, const char Char, SIZE_T TextLength) {
+SIZE_T Calculator::FindChar(LPSTR Text, CONST CHAR Char, SIZE_T TextLength) {
 
 	for (SIZE_T I = 0; I < TextLength; I++) {
 		if (Text[I] == Char) {
@@ -142,37 +142,37 @@ BOOL Calculator::CreateCalculatorControls(HWND hCalculator) {
 	// NUMPAD CONTROLS
 	POINTS NumPad = { Padding, ButtonHeight + StaticHeight * 2 + Padding * 4 };
 
-	for (int i = 0; i < CalculatorControlsID.size(); i++) {
+	for (SIZE_T I = 0; I < CalculatorControlsID.size(); I++) {
 
-		if (i == 0) {
+		if (I == 0) {
 
 			// ID_CL_CLOSE
 			hwnd = CreateWindowExA(WS_EX_STATICEDGE,
 				"BUTTON",
-				Captions[i].c_str(),
+				Captions[I].c_str(),
 				WS_CHILD | WS_BORDER | WS_VISIBLE | BS_CENTER | BS_VCENTER,
 				CalculatorDimensions.cx - ButtonWidth - Padding, Padding, ButtonWidth, ButtonHeight,
 				hCalculator,
-				(HMENU)CalculatorControlsID[i],
+				(HMENU)CalculatorControlsID[I],
 				HInstance(),
 				NULL);
 
 		}
-		else if (i == 1 || i == 2) {
+		else if (I == 1 || I == 2) {
 
 			// ID_CL_OPERATION | ID_CL_OUTPUT_RESULT
 			hwnd = CreateWindowExA(WS_EX_STATICEDGE,
 				"STATIC",
-				Captions[i].c_str(),
+				Captions[I].c_str(),
 				WS_CHILD | WS_BORDER | WS_VISIBLE | SS_OWNERDRAW,
-				Padding, StaticY[i - 1], StaticWidth, StaticHeight,
+				Padding, StaticY[I - 1], StaticWidth, StaticHeight,
 				hCalculator,
-				(HMENU)CalculatorControlsID[i],
+				(HMENU)CalculatorControlsID[I],
 				HInstance(),
 				NULL);
 
-			if (i == 1) Outputs->Opearation = hwnd;
-			if (i == 2) Outputs->Result = hwnd;
+			if (I == 1) Outputs->Opearation = hwnd;
+			if (I == 2) Outputs->Result = hwnd;
 
 		}
 		else {
@@ -180,11 +180,11 @@ BOOL Calculator::CreateCalculatorControls(HWND hCalculator) {
 			//NUMPAD CONTROLS
 			hwnd = CreateWindowExA(WS_EX_STATICEDGE,
 				"BUTTON",
-				Captions[i].c_str(),
+				Captions[I].c_str(),
 				WS_CHILD | WS_BORDER | WS_VISIBLE | BS_CENTER | BS_VCENTER,
 				NumPad.x, NumPad.y, ButtonWidth, ButtonHeight,
 				hCalculator,
-				(HMENU)CalculatorControlsID[i],
+				(HMENU)CalculatorControlsID[I],
 				HInstance(),
 				NULL);
 
@@ -219,20 +219,20 @@ VOID Calculator::onCreate(HWND hCalculator, LPARAM lParam) {
 		(window->style & WS_OVERLAPPED) == NULL && (window->style & WS_SYSMENU) == NULL &&
 		(window->style & WS_THICKFRAME) == NULL) {
 
-		if (window->cx != 0 && window->cy != 0) {
-			SetWindowPos(hCalculator, NULL, window->x, window->y, CalculatorDimensions.cx, CalculatorDimensions.cy, SWP_SHOWWINDOW);
-		}
-
 		if (!CreateCalculatorControls(hCalculator)) {
 			std::string ErrorMessage = "ERROR " + std::to_string(GetLastError()) + " - Out of Memory!";
 			MessageBoxA(hCalculator, ErrorMessage.c_str(), "ERROR", MB_OK | MB_ICONERROR);
 			DestroyWindow(hCalculator);
 		}
 
+		if (window->cx != 0 && window->cy != 0) {
+			SetWindowPos(hCalculator, NULL, window->x, window->y, CalculatorDimensions.cx, CalculatorDimensions.cy, SWP_SHOWWINDOW);
+		}
+
 	}
 	else {
 
-		OutputDebugString(L"ERROR [Color Picker] - \"hwndParent\" Must Be Non Zero Value\r\n");
+		OutputDebugString(L"ERROR [Calculator] - \"hwndParent\" Must Be Non Zero Value\r\n");
 		DestroyWindow(hCalculator);
 
 	}

@@ -167,7 +167,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AnimationStars.cpp" />
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Calculator.cpp" />
     <ClCompile Include="ColorPicker.cpp" />
     <ClCompile Include="Console.cpp" />
@@ -176,7 +176,7 @@
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnimationStars.h" />
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="Calculator.h" />
     <ClInclude Include="ColorPicker.h" />
     <ClInclude Include="Console.h" />
@@ -185,12 +185,16 @@
     <ClInclude Include="Functions.h" />
     <ClInclude Include="Headers.h" />
     <ClInclude Include="InitMainWindow.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Crosshair.cur" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="WindowIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="AppResources.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

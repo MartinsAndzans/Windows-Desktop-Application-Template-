@@ -71,7 +71,7 @@
     <ClCompile Include="ColorPicker.cpp">
       <Filter>Custom Controls\Color Picker</Filter>
     </ClCompile>
-    <ClCompile Include="AnimationStars.cpp">
+    <ClCompile Include="Animation.cpp">
       <Filter>Custom Controls\Animation Stars</Filter>
     </ClCompile>
     <ClCompile Include="Calculator.cpp">
@@ -100,7 +100,7 @@
     <ClInclude Include="ColorPicker.h">
       <Filter>Custom Controls\Color Picker</Filter>
     </ClInclude>
-    <ClInclude Include="AnimationStars.h">
+    <ClInclude Include="Animation.h">
       <Filter>Custom Controls\Animation Stars</Filter>
     </ClInclude>
     <ClInclude Include="Console.h">
@@ -112,6 +112,9 @@
     <ClInclude Include="DropFiles.h">
       <Filter>Custom Controls\Drop Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resource Files\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Crosshair.cur">
@@ -122,5 +125,10 @@
     <Image Include="WindowIcon.ico">
       <Filter>Resource Files\Icons</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="AppResources.rc">
+      <Filter>Resource Files\Resources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

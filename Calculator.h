@@ -82,7 +82,7 @@ private:
 
 	#pragma region Functions
 	static VOID CreateCalculatorFont();
-	static SIZE_T FindChar(LPSTR Text, const char Char, SIZE_T TextLength);
+	static SIZE_T FindChar(LPSTR Text, CONST CHAR Char, SIZE_T TextLength);
 	static std::string RoundDoubleString(std::string Text);
 	static BOOL CreateCalculatorControls(HWND hCalculator);
 	#pragma endregion

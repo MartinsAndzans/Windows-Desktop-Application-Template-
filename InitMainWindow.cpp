@@ -29,25 +29,15 @@ BOOL MainWindow::InitMainWindowClass(std::wstring ClassName) {
 
 	GetCurrentDirectory(ARRAYSIZE(ApplicationDirectory), ApplicationDirectory);
 
-	WCHAR CursorPath[MAX_CHAR_STRING] = { 0 };
-
-	wcscpy_s(CursorPath, ApplicationDirectory);
-	wcscat_s(CursorPath, MAIN_WINDOW_CURSOR);
-
-	WCHAR IconPath[MAX_CHAR_STRING] = { 0 };
-
-	wcscpy_s(IconPath, ApplicationDirectory);
-	wcscat_s(IconPath, MAIN_WINDOW_ICON);
-
 	WNDCLASSEX mainwcex = { 0 };
 
 	mainwcex.cbClsExtra = 0;
 	mainwcex.cbWndExtra = 0;
 	mainwcex.cbSize = sizeof(WNDCLASSEX);
 	mainwcex.hbrBackground = MainWindowBackgroundBrush;
-	mainwcex.hCursor = LoadCursorFromFile(CursorPath);
-	mainwcex.hIcon = (HICON)LoadImage(NULL, IconPath, IMAGE_ICON, 0, 0, LR_LOADFROMFILE);
-	mainwcex.hIconSm = (HICON)LoadImage(NULL, IconPath, IMAGE_ICON, 0, 0, LR_LOADFROMFILE);
+	mainwcex.hCursor = LoadCursor(HInstance(), MAKEINTRESOURCE(IDC_WINDOWCURSOR));
+	mainwcex.hIcon = LoadIcon(HInstance(), MAKEINTRESOURCE(IDI_WINDOWICON));
+	mainwcex.hIcon = LoadIcon(HInstance(), MAKEINTRESOURCEW(IDI_WINDOWICON));
 	mainwcex.hInstance = HInstance();
 	mainwcex.lpfnWndProc = MainWindowProcedure;
 	mainwcex.lpszClassName = ClassName.c_str();
@@ -178,10 +168,10 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 	MainWindow::hMainWindow = hMainWindow;
 
 	// INIT CUSTOM CONTROLS
-	ColorPicker::InitColorPicker();
-	AnimationStars::InitAnimationStars();
-	Calculator::InitCalculator();
+	Animation::InitAnimation();
 	DropFiles::InitDropFiles();
+	ColorPicker::InitColorPicker();
+	Calculator::InitCalculator();
 	////
 
 	CreateFonts();
@@ -191,24 +181,20 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 	#endif
 
 	#pragma region Examples
-	AnimationStars::AnimationStarsStyle ass = { 0 };
-	ass.StarColor = RGB(0, 255, 155);
-	ass.Proportion = 4;
-	ass.StarSymbol = '+';
+	Animation::AnimationStyle as = { 0 };
+	as.SymbolColor = RGB(25, 255, 60);
+	as.Proportion = 4;
+	as.Symbol = '+';
 
 	DropFiles::DropFilesStyle dfs = { 0 };
 	dfs.BackgroundColor = RGB(255, 195, 30);
 	dfs.ForegroundColor = RGB(0, 55, 255);
 
-	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION STARS", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 5, 140, 140, hMainWindow, (HMENU)ID_ANIMATION_STARS, HInstance(), &ass);
-	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"Drop File/s Here", WS_CHILD | WS_BORDER | WS_VISIBLE, 260, 110, 220, 120, hMainWindow, (HMENU)ID_DROP_FILES, HInstance(), &dfs);
-	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 150, 5, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)ID_COLOR_PICKER, HInstance(), NULL);
-	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"SUPER CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 5, 150, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)ID_CALCULATOR, HInstance(), NULL);
+	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 10, 140, 140, hMainWindow, (HMENU)ID_ANIMATION_STARS, HInstance(), &as);
+	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"Drop File/s Here", WS_CHILD | WS_BORDER | WS_VISIBLE, 270, 120, 240, 140, hMainWindow, (HMENU)ID_DROP_FILES, HInstance(), &dfs);
+	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 160, 10, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)ID_COLOR_PICKER, HInstance(), NULL);
+	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"SUPER CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 160, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)ID_CALCULATOR, HInstance(), NULL);
 	#pragma endregion
-
-	CreateWindow(L"BUTTON", L"PLAY", WS_CHILD | WS_BORDER | WS_VISIBLE, MainWindowDimensions.right / 2 - 100 / 2, 10, 100, 40, hMainWindow, (HMENU)10, HInstance(), NULL);
-	CreateWindow(L"BUTTON", L"PAUSE", WS_CHILD | WS_BORDER | WS_VISIBLE, MainWindowDimensions.right / 2 - 100 / 2, 60, 100, 40, hMainWindow, (HMENU)11, HInstance(), NULL);
-	CreateWindow(L"BUTTON", L"STOP", WS_CHILD | WS_BORDER | WS_VISIBLE, MainWindowDimensions.right / 2 - 100 / 2, 110, 100, 40, hMainWindow, (HMENU)12, HInstance(), NULL);
 
 }
 
@@ -227,7 +213,7 @@ VOID MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	#endif
 	#pragma endregion
 
-	RedrawWindow(hMainWindow, &MainWindowDimensions, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
+	RedrawWindow(hMainWindow, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 
 }
 
@@ -289,8 +275,7 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 	GetTextExtentPoint(MainWindowDC, Text, ARRAYSIZE(Text), &size);
 	TextOut(MemoryDC, MainWindowDimensions.right / 2 - size.cx / 2, MainWindowDimensions.bottom / 2 - size.cy / 2, Text, ARRAYSIZE(Text) - 1);
 
-	SIZE bmsize = { MainWindowDimensions.right, MainWindowDimensions.bottom };
-	Functions::SaveBitmapToFile(MainBitmap, "BM.bmp", bmsize);
+	Draw::drawX(MemoryDC, MainWindowDimensions.right / 2 - 40 / 2, MainWindowDimensions.bottom / 4 - 40 / 2, 40, 40);
 
 	BitBlt(MainWindowDC, 0, 0, MainWindowDimensions.right, MainWindowDimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
@@ -303,15 +288,10 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 
 VOID MainWindow::onMCINotify(HWND hMainWindow, LPARAM lParam) {
 
-	#define DEFAULT_MCI_ID 0xFFFF
+	if (mciGetDeviceID(L"Music")) {
 
-	switch (LOWORD(lParam)) {
-	case DEFAULT_MCI_ID:
-	{
+		Sound::Play(hMainWindow, L"Music", TRUE);
 
-		break;
-
-	}
 	}
 
 }
@@ -328,6 +308,9 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 			"\tG: " << Functions::_itos(GetGValue((COLORREF)lParam)) <<
 			"\tB: " << Functions::_itos(GetBValue((COLORREF)lParam)));
 
+		std::string RGB = Functions::_itos(GetRValue((COLORREF)lParam)) + ", " + Functions::_itos(GetGValue((COLORREF)lParam)) + ", " + Functions::_itos(GetBValue((COLORREF)lParam));
+		Functions::CopyTextToClipboard(hMainWindow, RGB);
+
 		break;
 
 	}
@@ -343,38 +326,6 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 		DragFinish((HDROP)lParam);
 
-		MCIERROR Error = Sound::Open(Buffer, L"Sound");
-
-		break;
-
-	}
-	case 10: // PLAY
-	{
-
-		MCIERROR Error = Sound::Play(hMainWindow, L"Sound");
-
-		break;
-
-	}
-	case 11: // PAUSE
-	{;
-
-		if (Sound::GetPlaybackStatus(L"Sound", MCI_STATUS_MODE) == MCI_MODE_PLAY)
-			MCIERROR Error = Sound::Pause(L"Sound");
-		else if (Sound::GetPlaybackStatus(L"Sound", MCI_STATUS_MODE) == MCI_MODE_PAUSE)
-			MCIERROR Error = Sound::Resume(L"Sound");
-
-		break;
-
-	}
-	case 12: // STOP
-	{
-
-		if (Sound::GetPlaybackStatus(L"Sound", MCI_STATUS_MODE) == MCI_MODE_PLAY)
-			MCIERROR Error = Sound::Stop(L"Sound");
-		else if (Sound::GetPlaybackStatus(L"Sound", MCI_STATUS_MODE) == MCI_MODE_STOP)
-			MCIERROR Error = Sound::Close(L"Sound");
-
 		break;
 
 	}
@@ -387,8 +338,56 @@ VOID MainWindow::onKeyDown(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	#define DEFAULT_VK 0xFFFFFFFF
 
 	switch (wParam) {
-	case DEFAULT_VK:
+	case VK_UP:
 	{
+
+		WCHAR File[MAX_CHAR_STRING] = { 0 };
+
+		OPENFILENAME ofn = { 0 };
+		ofn.lStructSize = sizeof(OPENFILENAME);
+		ofn.hwndOwner = hMainWindow;
+		ofn.Flags = OFN_FILEMUSTEXIST | OFN_EXPLORER | OFN_READONLY | OFN_NOLONGNAMES | OFN_HIDEREADONLY;
+		ofn.hInstance = NULL;
+		ofn.lpstrFilter = L"Music Files\0*.mp3;*.wma;*.wav\0MP3 Files\0*.mp3\0WMA Files\0*.wma\0WAV Files\0*.wav\0\0";
+		ofn.nFilterIndex = 1;
+		ofn.lpstrTitle = L"Open Music";
+		ofn.lpstrInitialDir = L"%USERPROFILE%";
+		ofn.lpstrFile = File;
+		ofn.nMaxFile = MAX_CHAR_STRING;
+
+		GetOpenFileName(&ofn);
+
+		Sound::Open(L"Music", File);
+
+		break;
+
+	}
+	case VK_RIGHT:
+	{
+		if(Sound::GetPlaybackStatus(L"Music", MCI_STATUS_MODE) != MCI_MODE_PLAY)
+			Sound::Play(hMainWindow, L"Music");
+
+		break;
+
+	}
+	case VK_LEFT:
+	{
+
+		if (Sound::GetPlaybackStatus(L"Music", MCI_STATUS_MODE) == MCI_MODE_PLAY)
+			Sound::Pause(L"Music");
+		else if (Sound::GetPlaybackStatus(L"Music", MCI_STATUS_MODE) == MCI_MODE_PAUSE)
+			Sound::Resume(L"Music");
+
+		break;
+
+	}
+	case VK_DOWN:
+	{
+
+		if (Sound::GetPlaybackStatus(L"Music", MCI_STATUS_MODE) == MCI_MODE_PLAY)
+			Sound::Stop(L"Music");
+		else if (Sound::GetPlaybackStatus(L"Music", MCI_STATUS_MODE) == MCI_MODE_STOP)
+			Sound::Close(L"Music");
 
 		break;
 

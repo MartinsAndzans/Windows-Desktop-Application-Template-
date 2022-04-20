@@ -10,9 +10,7 @@
 #define _FUNCTIONS_
 
 #include <Windows.h>
-#include <fstream>
 #include <string>
-#include <vector>
 #include <math.h>
 
 class Functions {
@@ -136,7 +134,7 @@ public:
 	/// <param name="Char">- Character To Find</param>
 	/// <param name="TextLength">- Text Length Without [null character] - [\0]</param>
 	/// <returns>If Character Has Been Found Returns Character Position, but If not -1</returns>
-	static SIZE_T FindChar(LPSTR Text, const char Char, SIZE_T TextLength) {
+	static SIZE_T FindChar(LPSTR Text, CONST CHAR Char, SIZE_T TextLength) {
 
 		for (int i = 0; i < TextLength; i++) {
 			if (Text[i] == Char) {
@@ -357,6 +355,13 @@ public:
 
 	}
 
+	template<typename Numbers> 
+	static Numbers SortArray(Numbers Array[], UINT Length) {
+
+
+
+	}
+
 	/// <summary>
 	/// Shows Error Message
 	/// </summary>
@@ -451,7 +456,7 @@ public:
 	/// <param name="FilePath">- Music File Path "*.wav" | "*.wma" | "*.mp3" || Video Formats not Supported Yet ||</param>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
-	static MCIERROR Open(std::wstring FilePath, CONST WCHAR *Alias) {
+	static MCIERROR Open(CONST WCHAR *Alias, std::wstring FilePath) {
 
 		MCI_OPEN_PARMS open = { 0 };
 		open.lpstrAlias = Alias;
