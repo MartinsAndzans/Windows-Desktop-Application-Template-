@@ -4,6 +4,7 @@
 #define _COLOR_PICKER_
 
 #include <Windows.h>
+#include <ciso646>
 
 #define GWL_USERDATA -21
 

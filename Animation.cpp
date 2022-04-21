@@ -15,7 +15,7 @@ RECT Animation::Dimensions = { 0 };
 /// <summary>
 /// Optional Function - Creates Class "ANIMATION"
 /// </summary>
-/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
+/// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
 BOOL Animation::InitAnimation() {
 	
 	CreateStarFont();
@@ -63,7 +63,7 @@ VOID Animation::CreateStarFont() {
 
 VOID Animation::drawStars(HDC hdc, RECT &Rectangle, COLORREF SymbolColor, CONST CHAR Symbol, UINT Proportion) {
 
-	if (Rectangle.right != 0 && Rectangle.bottom != 0) {
+	if (Rectangle.right - Rectangle.left != 0 and Rectangle.bottom - Rectangle.top != 0) {
 
 		SIZE size = { 0 };
 		SYSTEMTIME st = { 0 };
@@ -129,9 +129,9 @@ VOID Animation::onCreate(HWND hAnimation, LPARAM lParam) {
 
 	LPCREATESTRUCT window = LPCREATESTRUCT(lParam);
 
-	if (window->hwndParent != NULL && (window->style & WS_CHILD) != NULL &&
-		(window->style & WS_THICKFRAME) == NULL && (window->style & WS_DLGFRAME) == NULL &&
-		(window->style & WS_OVERLAPPED) == NULL && (window->style & WS_SYSMENU) == NULL) {
+	if (window->hwndParent != NULL and (window->style & WS_CHILD) != NULL and
+		(window->style & WS_THICKFRAME) == NULL and (window->style & WS_DLGFRAME) == NULL and
+		(window->style & WS_OVERLAPPED) == NULL and (window->style & WS_SYSMENU) == NULL) {
 
 		AnimationStyle *Style = new AnimationStyle{ AnimationSymbolColor, 4, '+' }; // Default Initialization
 
@@ -145,7 +145,7 @@ VOID Animation::onCreate(HWND hAnimation, LPARAM lParam) {
 
 		SetWindowLongPtr(hAnimation, GWLP_USERDATA, (LONG_PTR)Style);
 
-		if (window->cx != 0 && window->cy != 0) {
+		if (window->cx != 0 and window->cy != 0) {
 			SetTimer(hAnimation, AnimationTimer, SEC / 10, (TIMERPROC)NULL);
 		}
 
@@ -162,7 +162,7 @@ VOID Animation::onWindowPosChanging(HWND hAnimation, LPARAM lParam) {
 
 	LPWINDOWPOS window = LPWINDOWPOS(lParam);
 
-	if (window->cx != 0 && window->cy != 0) {
+	if (window->cx != 0 and window->cy != 0) {
 		KillTimer(hAnimation, AnimationTimer);
 		SetTimer(hAnimation, AnimationTimer, SEC / 10, (TIMERPROC)NULL);
 	}

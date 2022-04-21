@@ -25,6 +25,8 @@ int wmain(int ArrgumentCount, wchar_t *Arrguments[]) {
 
 	PRINT(0x0A, "Debug Console Initilaized Correctly . . .");
 
+	GetCurrentDirectory(ARRAYSIZE(MainWindow::ApplicationDirectory), MainWindow::ApplicationDirectory);
+
 	if (MainWindow::InitMainWindowClass(MAIN_WINDOW_CLASS)) {
 		if (MainWindow::CreateMainWindow(MAIN_WINDOW_CLASS, MAIN_WINDOW_TITLE)) {
 			BroadcastMessages();

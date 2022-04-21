@@ -22,7 +22,7 @@ POINT ColorPicker::mousePosition = { 0 };
 /// Window Title "SMALL" Creates Small "COLOR PICKER" X | Y = 420 | 40
 /// Window Title "LARGE" Creates Large "COLOR PICKER" X | Y = 420 | 100
 /// </summary>
-/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
+/// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
 BOOL ColorPicker::InitColorPicker() {
 
 	WNDCLASSEX ColorPickerEx = { 0 };
@@ -52,7 +52,7 @@ BOOL ColorPicker::InitColorPicker() {
 #pragma region Functions
 VOID ColorPicker::drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF CrossColor) {
 
-	if (WIDTH % 2 != NULL && HEIGHT % 2 != NULL) {
+	if (WIDTH % 2 != NULL and HEIGHT % 2 != NULL) {
 
 		CONST SHORT Proportion = 3;
 		INT XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
@@ -60,7 +60,7 @@ VOID ColorPicker::drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HE
 		// Horizontal Line
 		for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
 
-			if (X > COORD_X + XCELL && X < COORD_X + XCELL * 2) {
+			if (X > COORD_X + XCELL and X < COORD_X + XCELL * 2) {
 				continue;
 			}
 
@@ -72,7 +72,7 @@ VOID ColorPicker::drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HE
 		// Vertical Line
 		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGHT; Y++) {
 
-			if (Y > COORD_Y + YCELL && Y < COORD_Y + YCELL * 2) {
+			if (Y > COORD_Y + YCELL and Y < COORD_Y + YCELL * 2) {
 				continue;
 			}
 
@@ -118,7 +118,7 @@ SHORT ColorPicker::drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT Bo
 		for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + Height - BorderWidth; Y++) {
 			SetPixel(hdc, X, Y, RGB(R, G, B));
 		}
-		if (DONE == 0) (G == 0 && B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP); // White [255 255 255] -> Red [255 0 0]
+		if (DONE == 0) (G == 0 and B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP); // White [255 255 255] -> Red [255 0 0]
 		else if (DONE == 1) (G == 255) ? DONE = 2 : G += COLORSTEP; // Red [255 0 0] -> Yellow [255 255 0]
 		else if (DONE == 2) (R == 0) ? DONE = 3 : R -= COLORSTEP; // Yellow [255 255 0] -> Grean [0 255 0]
 		else if (DONE == 3) (B == 255) ? DONE = 4 : B += COLORSTEP; // Grean [0 255 0] -> Light Blue [0 255 255]
@@ -171,7 +171,7 @@ SHORT ColorPicker::drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT Bo
 			}
 		}
 		RY = 255, GY = 255, BY = 255;
-		if (DONE == 0) (G == 0 && B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP); // White [255 255 255] -> Red [255 0 0]
+		if (DONE == 0) (G == 0 and B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP); // White [255 255 255] -> Red [255 0 0]
 		else if (DONE == 1) (G == 255) ? DONE = 2 : G += COLORSTEP; // Red [255 0 0] -> Yellow [255 255 0]
 		else if (DONE == 2) (R == 0) ? DONE = 3 : R -= COLORSTEP; // Yellow [255 255 0] -> Grean [0 255 0]
 		else if (DONE == 3) (B == 255) ? DONE = 4 : B += COLORSTEP; // Grean [0 255 0] -> Light Blue [0 255 255]
@@ -189,8 +189,8 @@ SHORT ColorPicker::drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT Bo
 #pragma region OverloadedOperator
 static BOOL operator==(POINT &mousePosition, RECT &Rectangle) {
 
-	if (mousePosition.x >= Rectangle.left && mousePosition.x <= Rectangle.right &&
-		mousePosition.y >= Rectangle.top && mousePosition.y <= Rectangle.bottom) {
+	if (mousePosition.x >= Rectangle.left and mousePosition.x <= Rectangle.right and
+		mousePosition.y >= Rectangle.top and mousePosition.y <= Rectangle.bottom) {
 		return TRUE;
 	}
 	else {
@@ -205,15 +205,15 @@ VOID ColorPicker::onCreate(HWND hColorPicker, LPARAM lParam) {
 
 	LPCREATESTRUCT window = LPCREATESTRUCT(lParam);
 
-	if (window->hwndParent != NULL && (window->style & WS_CHILD) != NULL &&
-		(window->style & WS_THICKFRAME) == NULL && (window->style & WS_DLGFRAME) == NULL &&
-		(window->style & WS_OVERLAPPED) == NULL && (window->style & WS_SYSMENU) == NULL) {
+	if (window->hwndParent != NULL and (window->style & WS_CHILD) != NULL and
+		(window->style & WS_THICKFRAME) == NULL and (window->style & WS_DLGFRAME) == NULL and
+		(window->style & WS_OVERLAPPED) == NULL and (window->style & WS_SYSMENU) == NULL) {
 
-		if (lstrcmpW(window->lpszName, L"SMALL") == 0 && window->cx != 0 && window->cy != 0)
+		if (lstrcmpW(window->lpszName, L"SMALL") == 0 and window->cx != 0 and window->cy != 0)
 			SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.cx, DimensionsSmall.cy, SWP_SHOWWINDOW);
-		else if (lstrcmpW(window->lpszName, L"LARGE") == 0 && window->cx != 0 && window->cy != 0)
+		else if (lstrcmpW(window->lpszName, L"LARGE") == 0 and window->cx != 0 and window->cy != 0)
 			SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsLarge.cx, DimensionsLarge.cy, SWP_SHOWWINDOW);
-		else if (window->cx != 0 && window->cy != 0)
+		else if (window->cx != 0 and window->cy != 0)
 			SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.cx, DimensionsSmall.cy, SWP_SHOWWINDOW);
 
 	} else {
@@ -232,11 +232,11 @@ VOID ColorPicker::onWindowPosChanging(HWND hColorPicker, LPARAM lParam) {
 	WCHAR WindowTitle[MAX_COLOR_PICKER_CHAR_STRING] = { 0 };
 	GetWindowText(hColorPicker, WindowTitle, ARRAYSIZE(WindowTitle));
 
-	if (lstrcmpW(WindowTitle, L"SMALL") == 0 && window->cx != 0 && window->cy != 0)
+	if (lstrcmpW(WindowTitle, L"SMALL") == 0 and window->cx != 0 and window->cy != 0)
 		window->cx = DimensionsSmall.cx, window->cy = DimensionsSmall.cy;
-	else if (lstrcmpW(WindowTitle, L"LARGE") == 0 && window->cx != 0 && window->cy != 0)
+	else if (lstrcmpW(WindowTitle, L"LARGE") == 0 and window->cx != 0 and window->cy != 0)
 		window->cx = DimensionsLarge.cx, window->cy = DimensionsLarge.cy;
-	else if (window->cx != 0 && window->cy != 0)
+	else if (window->cx != 0 and window->cy != 0)
 		window->cx = DimensionsSmall.cx, window->cy = DimensionsSmall.cy;
 
 }
@@ -281,7 +281,7 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 	RECT GradientRectangle = { Dimensions.left + BorderWidth, Dimensions.top + BorderWidth,
 		Dimensions.right - BorderWidth, Dimensions.bottom - BorderWidth };
 
-	if (GetAsyncKeyState(VK_LBUTTON) && mousePosition == GradientRectangle) {
+	if (GetAsyncKeyState(VK_LBUTTON) and mousePosition == GradientRectangle) {
 		COLORREF Color = GetPixel(MemoryDC, mousePosition.x, mousePosition.y);
 		drawCross(MemoryDC, mousePosition.x - 23 / 2, mousePosition.y - 23 / 2);
 		SetWindowLong(hColorPicker, GWL_USERDATA, MAKELONG(mousePosition.x, mousePosition.y));

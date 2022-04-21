@@ -10,6 +10,7 @@
 ************************************************/
 
 #include <Windows.h>
+#include <ciso646>
 
 #define WHITE_COLOR RGB(255, 255, 255)
 #define BLACK_COLOR RGB(0, 0, 0)
@@ -87,7 +88,7 @@ public:
 	/// <param name="FilePath">- File Path - Supported Image Formats : "*.bmp; *.ico; *.cur"</param>
 	/// <param name="BitmapType">- IMAGE_BITMAP || IMAGE_ICON || IMAGE_CURSOR</param>
 	/// <param name="DrawMethod">- Draw Method - [EXAMPLE - SRCCOPY]</param>
-	/// <returns>If Succeeded Returns TRUE, but If not Returns FALSE</returns>
+	/// <returns>If Succeeded returns TRUE, but If not returns FALSE</returns>
 	static VOID drawBitmapFromFile(HDC DestinationDC, RECT &DestinationRectangle, LPSTR FilePath, UINT BitmapType = IMAGE_BITMAP, DWORD DrawMethod = SRCCOPY) {
 
 		HDC BitmapDC = CreateCompatibleDC(DestinationDC);
@@ -276,7 +277,7 @@ public:
 	/// <param name="COORD_Y">- Y Coordinate</param>
 	/// <param name="BorderWidth">- Border Width</param>
 	/// <param name="BorderColor">- Border Color</param>
-	/// <returns>Returns Border Width</returns>
+	/// <returns>returns Border Width</returns>
 	static SHORT drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = BLACK_COLOR) {
 
 		CONST SHORT Width = 420, Height = 40;
@@ -304,7 +305,7 @@ public:
 			for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + Height - BorderWidth; Y++) {
 				SetPixel(hdc, X, Y, RGB(R, G, B));
 			}
-			if (DONE == 0) (G == 0 && B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP); // White [255 255 255] -> Red [255 0 0]
+			if (DONE == 0) (G == 0 and B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP); // White [255 255 255] -> Red [255 0 0]
 			else if (DONE == 1) (G == 255) ? DONE = 2 : G += COLORSTEP; // Red [255 0 0] -> Yellow [255 255 0]
 			else if (DONE == 2) (R == 0) ? DONE = 3 : R -= COLORSTEP; // Yellow [255 255 0] -> Grean [0 255 0]
 			else if (DONE == 3) (B == 255) ? DONE = 4 : B += COLORSTEP; // Grean [0 255 0] -> Light Blue [0 255 255]
@@ -327,7 +328,7 @@ public:
 	/// <param name="COORD_Y">- Y Coordinate</param>
 	/// <param name="BorderWidth">- Border Width</param>
 	/// <param name="BorderColor">- Border Color</param>
-	/// <returns>Returns Border Width</returns>
+	/// <returns>returns Border Width</returns>
 	static SHORT drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = BLACK_COLOR) {
 
 		CONST SHORT Width = 420, Height = 100;
@@ -367,7 +368,7 @@ public:
 				}
 			}
 			RY = 255, GY = 255, BY = 255;
-			if (DONE == 0) (G == 0 && B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP); // White [255 255 255] -> Red [255 0 0]
+			if (DONE == 0) (G == 0 and B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP); // White [255 255 255] -> Red [255 0 0]
 			else if (DONE == 1) (G == 255) ? DONE = 2 : G += COLORSTEP; // Red [255 0 0] -> Yellow [255 255 0]
 			else if (DONE == 2) (R == 0) ? DONE = 3 : R -= COLORSTEP; // Yellow [255 255 0] -> Grean [0 255 0]
 			else if (DONE == 3) (B == 255) ? DONE = 4 : B += COLORSTEP; // Grean [0 255 0] -> Light Blue [0 255 255]
@@ -391,7 +392,7 @@ public:
 	/// <param name="Proportion">- Proportion</param>
 	static VOID drawStars(HDC hdc, RECT &Rectangle, COLORREF SymbolColor = WHITE_COLOR, CONST CHAR Symbol = '+', UINT Proportion = 4) {
 
-		if (Rectangle.right != 0 && Rectangle.bottom != 0) {
+		if (Rectangle.right - Rectangle.left != 0 and Rectangle.bottom - Rectangle.top != 0) {
 
 			SIZE size = { 0 };
 			SYSTEMTIME st = { 0 };
@@ -462,7 +463,7 @@ public:
 	/// <param name="CrossColor">- Cross Color</param>
 	static VOID drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 23, INT HEIGHT = 23, COLORREF CrossColor = BLACK_COLOR) {
 
-		if (WIDTH % 2 != NULL && HEIGHT % 2 != NULL) {
+		if (WIDTH % 2 != NULL and HEIGHT % 2 != NULL) {
 
 			CONST SHORT Proportion = 3;
 			INT XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
@@ -470,7 +471,7 @@ public:
 			// Horizontal Line
 			for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
 
-				if (X > COORD_X + XCELL && X < COORD_X + XCELL * 2) {
+				if (X > COORD_X + XCELL and X < COORD_X + XCELL * 2) {
 					continue;
 				}
 
@@ -482,7 +483,7 @@ public:
 			// Vertical Line
 			for (INT Y = COORD_Y; Y <= COORD_Y + HEIGHT; Y++) {
 
-				if (Y > COORD_Y + YCELL && Y < COORD_Y + YCELL * 2) {
+				if (Y > COORD_Y + YCELL and Y < COORD_Y + YCELL * 2) {
 					continue;
 				}
 

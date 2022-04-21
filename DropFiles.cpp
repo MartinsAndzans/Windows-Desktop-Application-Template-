@@ -16,7 +16,7 @@ RECT DropFiles::Dimensions = { 0 };
 /// <summary>
 /// Optional Function - Creates Class "DROP FILES"
 /// </summary>
-/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
+/// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
 BOOL DropFiles::InitDropFiles() {
 
 	CreateDropFilesFont();
@@ -132,9 +132,9 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 	LPCREATESTRUCT window = (LPCREATESTRUCT)lParam;
 
-	if (window->hwndParent != NULL && (window->style & WS_CHILD) != NULL &&
-		(window->style & WS_THICKFRAME) == NULL && (window->style & WS_DLGFRAME) == NULL &&
-		(window->style & WS_OVERLAPPED) == NULL && (window->style & WS_SYSMENU) == NULL) {
+	if (window->hwndParent != NULL and (window->style & WS_CHILD) != NULL and
+		(window->style & WS_THICKFRAME) == NULL and (window->style & WS_DLGFRAME) == NULL and
+		(window->style & WS_OVERLAPPED) == NULL and (window->style & WS_SYSMENU) == NULL) {
 
 		DragAcceptFiles(hDropFiles, TRUE);
 

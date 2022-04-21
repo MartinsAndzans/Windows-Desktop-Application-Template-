@@ -65,7 +65,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_WINDOWICON          ICON                    "WindowIcon.ico"
+IDI_MAINWINDOWICON      ICON                    "WindowIcon.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ IDI_WINDOWICON          ICON                    "WindowIcon.ico"
 // Cursor
 //
 
-IDC_WINDOWCURSOR        CURSOR                  "Crosshair.cur"
+IDC_MAINWINDOWCURSOR    CURSOR                  "Crosshair.cur"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

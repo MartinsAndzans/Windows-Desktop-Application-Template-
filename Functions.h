@@ -10,6 +10,7 @@
 ************************************************/
 
 #include <Windows.h>
+#include <ciso646>
 #include <string>
 #include <math.h>
 
@@ -19,7 +20,7 @@ public:
 
 	/// <summary>
 	/// Converts Integer To StringValue
-	/// <para>1234 % 10 = 4 | 1234 / 10 = 123 || 123 % 10 = 3 | 123 / 10 = 12 || 12 % 10 = 2 | 12 / 10 = 1 | 1 % 10 = 1 | 1 / 10 = 0</para>
+	/// <para>1234 % 10 = 4 | 1234 / 10 = 123 || 123 % 10 = 3 | 123 / 10 = 12 || 12 % 10 = 2 | 12 / 10 = 1 || 1 % 10 = 1 | 1 / 10 = 0</para>
 	/// </summary>
 	/// <param name="Value">- Integer Type [int64_t] Value To Be Converted</param>
 	/// <returns>Converted Value</returns>
@@ -72,7 +73,7 @@ public:
 
 		StringValue = StringValue + "."; // Add Dot
 
-		if (Value * -1 > 0) Value = Value * -1; // -Value * -1 = Value || Value * -1 = -Value
+		if (Value * -1 > 0) Value = Value * -1; // -Value * -1 = Value or Value * -1 = -Value
 
 		for (UINT I = 0; I < Precision; I++) {
 			Value = Value / 0.1; // 0.1234 / 0.1 = 1.234 <-
@@ -96,9 +97,8 @@ public:
 
 		std::string EncryptedText = "";
 
-		for (size_t i = 0; i < Text.length(); i++) {
-			INT CharValue = Text[i];
-			EncryptedText = EncryptedText + _itos(CharValue) + "|";
+		for (SIZE_T I = 0; I < Text.length(); I++) {
+			EncryptedText = EncryptedText + _itos((INT)Text[I]) + "|";
 		}
 
 		return EncryptedText;
@@ -114,12 +114,10 @@ public:
 
 		std::string Text = "";
 
-		while (EncryptedText.length() != 0) {
-			INT CharValue = atoi(EncryptedText.c_str());
-			Text = Text + (char)CharValue;
-			size_t SeperatorPosition = EncryptedText.find_first_of(L'|', 0);
-			for (int i = (int)SeperatorPosition; i >= 0; i--) {
-				EncryptedText.erase(i);
+		if (EncryptedText[EncryptedText.length() - 1] == '|') {
+			while (EncryptedText.length() != 0) {
+				Text = Text + (CHAR)std::stoi(EncryptedText);
+				EncryptedText.replace(0, EncryptedText.find('|') + 1, "");
 			}
 		}
 
@@ -133,12 +131,12 @@ public:
 	/// <param name="Text">- [CHAR] Text</param>
 	/// <param name="Char">- Character To Find</param>
 	/// <param name="TextLength">- Text Length Without [null character] - [\0]</param>
-	/// <returns>If Character Has Been Found Returns Character Position, but If not -1</returns>
+	/// <returns>If Character Has Been Found returns Character Position, but If not -1</returns>
 	static SIZE_T FindChar(LPSTR Text, CONST CHAR Char, SIZE_T TextLength) {
 
-		for (int i = 0; i < TextLength; i++) {
-			if (Text[i] == Char) {
-				return i;
+		for (SIZE_T I = 0; I < TextLength; I++) {
+			if (Text[I] == Char) {
+				return I;
 			}
 		}
 
@@ -153,11 +151,11 @@ public:
 	/// <returns>Rounded Double String</returns>
 	static std::string RoundDoubleString(std::string Text) {
 
-	#define LastSymbol Text.length() - 1
+		CONST SIZE_T LastSymbol = Text.length() - 1;
 
 		if (Text.find('.') != std::string::npos) {
 
-			while (Text[LastSymbol] == '0' || Text[LastSymbol] == '.') {
+			while (Text[LastSymbol] == '0' or Text[LastSymbol] == '.') {
 
 				if (Text[LastSymbol] == '.') {
 					Text.erase(LastSymbol, 1);
@@ -174,7 +172,42 @@ public:
 
 		return Text;
 
-	#undef LastSymbol
+	}
+
+	/// <summary>
+	/// This Function Copy Text into Clipboard
+	/// </summary>
+	/// <param name="Hwnd">- New Clipboard Owner</param>
+	/// <param name="Text">- Text into Clipboard</param>
+	/// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
+	static BOOL CopyTextToClipboard(HWND Hwnd, std::string Text) {
+
+		if (Text.length() != 0) {
+
+			if (OpenClipboard(Hwnd)) {
+				EmptyClipboard();
+				HLOCAL CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(CHAR) * Text.length() + 1);
+				if (CopyData == NULL) {
+					CloseClipboard();
+					return FALSE;
+				}
+				VOID* buffer = LocalLock(CopyData);
+				if (buffer == NULL) {
+					LocalFree(CopyData);
+					CloseClipboard();
+					return FALSE;
+				}
+				memcpy(buffer, (void*)Text.c_str(), sizeof(CHAR) * Text.length() + 1);
+				LocalUnlock(CopyData);
+				SetClipboardData(CF_TEXT, CopyData);
+				LocalFree(CopyData);
+				CloseClipboard();
+				return TRUE;
+			}
+
+		}
+
+		return FALSE;
 
 	}
 
@@ -183,7 +216,7 @@ public:
 	/// </summary>
 	/// <param name="Hwnd">- New Clipboard Owner</param>
 	/// <param name="WText">- WText into Clipboard</param>
-	/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
+	/// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
 	static BOOL CopyTextToClipboard(HWND Hwnd, std::wstring WText) {
 
 		if (WText.length() != 0) {
@@ -216,48 +249,11 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Copy Text into Clipboard
-	/// </summary>
-	/// <param name="Hwnd">- New Clipboard Owner</param>
-	/// <param name="Text">- Text into Clipboard</param>
-	/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
-	static BOOL CopyTextToClipboard(HWND Hwnd, std::string Text) {
-
-		if (Text.length() != 0) {
-
-			if (OpenClipboard(Hwnd)) {
-				EmptyClipboard();
-				HLOCAL CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(CHAR) * Text.length() + 1);
-				if (CopyData == NULL) {
-					CloseClipboard();
-					return FALSE;
-				}
-				VOID *buffer = LocalLock(CopyData);
-				if (buffer == NULL) {
-					LocalFree(CopyData);
-					CloseClipboard();
-					return FALSE;
-				}
-				memcpy(buffer, (void*)Text.c_str(), sizeof(CHAR) * Text.length() + 1);
-				LocalUnlock(CopyData);
-				SetClipboardData(CF_TEXT, CopyData);
-				LocalFree(CopyData);
-				CloseClipboard();
-				return TRUE;
-			}
-
-		}
-
-		return FALSE;
-
-	}
-
-	/// <summary>
 	/// This Function Gets WText From Clipboard
 	/// </summary>
 	/// <param name="Hwnd">- New Clipboard Owner</param>
 	/// <returns>
-	/// If Function Succeeded Returns Received WText, but If not Error Code:
+	/// If Function Succeeded returns Received WText, but If not Error Code:
 	/// <para>"-1" - Clipboard Is Taken by Another Program!</para>
 	/// <para>"-2" - Clipboard Is Empty!</para>
 	/// </returns>
@@ -292,7 +288,7 @@ public:
 	/// </summary>
 	/// <param name="Hwnd">- New Clipboard Owner</param>
 	/// <returns>
-	/// If Function Succeeded Returns Received Text, but If not Error Code:
+	/// If Function Succeeded returns Received Text, but If not Error Code:
 	/// <para>"-1" - Clipboard Is Taken by Another Program!</para>
 	/// <para>"-2" - Clipboard Is Empty!</para>
 	/// </returns>
@@ -380,7 +376,7 @@ public:
 	/// <param name="Bitmap">- Bitmap</param>
 	/// <param name="FilePath">- File Path With ".bmp" Extension</param>
 	/// <param name="BitmapSize">- Bitmap Size In Pixels</param>
-	/// <returns>If Succeeded Returns TRUE, but If not Returns FALSE</returns>
+	/// <returns>If Succeeded returns TRUE, but If not returns FALSE</returns>
 	static BOOL SaveBitmapToFile(HBITMAP Bitmap, CONST CHAR *FilePath, SIZE &BitmapSize) {
 
 		std::ofstream image;
@@ -452,9 +448,9 @@ public:
 	/// <summary>
 	/// > This Function Opens MCIDevice
 	/// </summary>
-	/// <param name="FilePath">- Music File Path "*.wav" | "*.wma" | "*.mp3" || Video Formats not Supported Yet ||</param>
+	/// <param name="FilePath">- Music File Path "*.wav" | "*.wma" | "*.mp3" or Video Formats not Supported Yet or</param>
 	/// <param name="Alias">- Alias for MCIDevice</param>
-	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
+	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
 	static MCIERROR Open(CONST WCHAR *Alias, CONST WCHAR *FilePath) {
 
 		MCI_OPEN_PARMS open = { 0 };
@@ -479,12 +475,12 @@ public:
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <param name="StatusCode">- [EXAMPLE] - MCI_STATUS_[]</param>
 	/// <param name="AdditionalFlags">- Additional Flags</param>
-	/// <returns>If Succeeded Returns Requested Status Information, but If not Returns [MAXDWORD]</returns>
+	/// <returns>If Succeeded returns Requested Status Information, but If not returns [MAXDWORD]</returns>
 	static MCISTATUS GetPlaybackStatus(CONST WCHAR *Alias, MCISTATUS StatusCode) {
 
 		MCI_STATUS_PARMS status = { 0 };
 		status.dwItem = StatusCode; // Status Code
-		status.dwReturn = NULL; // Return
+		status.dwReturn = NULL; // return
 
 		if (mciSendCommand(mciGetDeviceID(Alias), MCI_STATUS, MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)&status) != 0)
 			return MAXDWORD;
@@ -501,7 +497,7 @@ public:
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <param name="PlayFrom">Playback Starting Position</param>
 	/// <param name="Notify">- Notify Callback Window or Not</param>
-	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
+	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
 	static MCIERROR Play(HWND CallbackWindow, CONST WCHAR *Alias, BOOL Notify = FALSE) {
 
 		MCI_PLAY_PARMS play = { 0 };
@@ -520,7 +516,7 @@ public:
 	/// </summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <param name="SeekTo">- How Much Move Playback Current Position</param>
-	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
+	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
 	static MCIERROR Seek(CONST WCHAR *Alias, DWORD SeekTo) {
 
 		MCI_SEEK_PARMS seek = { 0 };
@@ -536,7 +532,7 @@ public:
 	/// > This Function Pauses Playbeck
 	/// </summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
-	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
+	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
 	static MCIERROR Pause(CONST WCHAR *Alias) {
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_PAUSE, MCI_WAIT, NULL);
 	}
@@ -545,7 +541,7 @@ public:
 	/// > This Function Resumes Playbeck
 	/// </summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
-	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
+	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
 	static MCIERROR Resume(CONST WCHAR *Alias) {
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_RESUME, MCI_WAIT, NULL);
 	}
@@ -554,7 +550,7 @@ public:
 	/// > This Function Stops Playbeck
 	/// </summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
-	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
+	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
 	static MCIERROR Stop(CONST WCHAR *Alias) {
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_STOP, MCI_WAIT, NULL);
 	}
@@ -563,7 +559,7 @@ public:
 	/// > This Function Closes MCIDevice
 	/// </summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
-	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
+	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
 	static MCIERROR Close(CONST WCHAR *Alias) {
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_CLOSE, MCI_WAIT, NULL);
 	}

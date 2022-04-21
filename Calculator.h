@@ -4,9 +4,9 @@
 #define _CALCULATOR_
 
 #include <Windows.h>
+#include <ciso646>
 #include <string>
 #include <vector>
-#include <math.h>
 
 #define CL_SHOW 20002 // 250 - 460
 

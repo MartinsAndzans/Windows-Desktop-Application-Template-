@@ -27,7 +27,7 @@ RECT Calculator::Dimensions = { 0 };
 /// Optional Function - Creates Class "CALCULATOR"
 /// <para>Width | Height = 250 | 460</para>
 /// </summary>
-/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
+/// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
 BOOL Calculator::InitCalculator() {
 	
 	CreateCalculatorFont();
@@ -87,11 +87,11 @@ SIZE_T Calculator::FindChar(LPSTR Text, CONST CHAR Char, SIZE_T TextLength) {
 
 std::string Calculator::RoundDoubleString(std::string Text) {
 
-	#define LastSymbol Text.length() - 1
+	CONST SIZE_T LastSymbol = Text.length() - 1;
 
 	if (Text.find('.') != std::string::npos) {
 
-		while (Text[LastSymbol] == '0' || Text[LastSymbol] == '.') {
+		while (Text[LastSymbol] == '0' or Text[LastSymbol] == '.') {
 
 			if (Text[LastSymbol] == '.') {
 				Text.erase(LastSymbol, 1);
@@ -107,8 +107,6 @@ std::string Calculator::RoundDoubleString(std::string Text) {
 	}
 
 	return Text;
-
-	#undef LastSymbol
 
 }
 
@@ -158,7 +156,7 @@ BOOL Calculator::CreateCalculatorControls(HWND hCalculator) {
 				NULL);
 
 		}
-		else if (I == 1 || I == 2) {
+		else if (I == 1 or I == 2) {
 
 			// ID_CL_OPERATION | ID_CL_OUTPUT_RESULT
 			hwnd = CreateWindowExA(WS_EX_STATICEDGE,
@@ -214,9 +212,9 @@ VOID Calculator::onCreate(HWND hCalculator, LPARAM lParam) {
 
 	LPCREATESTRUCT window = (LPCREATESTRUCT)lParam;
 
-	if (window->hwndParent != NULL && (window->style & WS_CHILD) != NULL &&
-		(window->style & WS_THICKFRAME) == NULL && (window->style & WS_DLGFRAME) == NULL &&
-		(window->style & WS_OVERLAPPED) == NULL && (window->style & WS_SYSMENU) == NULL) {
+	if (window->hwndParent != NULL and (window->style & WS_CHILD) != NULL and
+		(window->style & WS_THICKFRAME) == NULL and (window->style & WS_DLGFRAME) == NULL and
+		(window->style & WS_OVERLAPPED) == NULL and (window->style & WS_SYSMENU) == NULL) {
 
 		if (!CreateCalculatorControls(hCalculator)) {
 			std::string ErrorMessage = "ERROR " + std::to_string(GetLastError()) + " - Out of Memory!";
@@ -224,7 +222,7 @@ VOID Calculator::onCreate(HWND hCalculator, LPARAM lParam) {
 			DestroyWindow(hCalculator);
 		}
 
-		if (window->cx != 0 && window->cy != 0) {
+		if (window->cx != 0 and window->cy != 0) {
 			SetWindowPos(hCalculator, NULL, window->x, window->y, CalculatorDimensions.cx, CalculatorDimensions.cy, SWP_SHOWWINDOW);
 		}
 
@@ -241,7 +239,7 @@ VOID Calculator::onWindowPosChanging(HWND hCalculator, LPARAM lParam) {
 
 	LPWINDOWPOS window = (LPWINDOWPOS)lParam;
 
-	if (window->cx != 0 && window->cy != 0) {
+	if (window->cx != 0 and window->cy != 0) {
 		window->cx = CalculatorDimensions.cx, window->cy = CalculatorDimensions.cy;
 	}
 
@@ -251,7 +249,7 @@ VOID Calculator::onDrawItem(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 	LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lParam;
 
-	if (item->CtlID == ID_CL_OPERATION || item->CtlID == ID_CL_OUTPUT_RESULT) {
+	if (item->CtlID == ID_CL_OPERATION or item->CtlID == ID_CL_OUTPUT_RESULT) {
 
 		SIZE size = { 0 };
 		WCHAR StaticText[MAX_CALCULATOR_CHAR_STRING] = { 0 };
@@ -348,8 +346,8 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 		INT ResultLength = GetWindowTextA(Outputs->Result, Result, ARRAYSIZE(Result));
 
-		if (ResultLength == 1 || (ResultLength == 2 && Result[0] == L'-') ||
-			strcmp(Result, DEVISION_ZERO_BY_ZERO) == 0 || strcmp(Result, DEVISION_BY_ZERO) == 0) {
+		if (ResultLength == 1 or (ResultLength == 2 and Result[0] == L'-') or
+			strcmp(Result, DEVISION_ZERO_BY_ZERO) == 0 or strcmp(Result, DEVISION_BY_ZERO) == 0) {
 			SetWindowTextA(Outputs->Result, "0");
 		}
 		else {
@@ -372,7 +370,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 		INT ResultLength = GetWindowTextA(Outputs->Result, Result, ARRAYSIZE(Result));
 
-		if (strcmp(Result, DEVISION_ZERO_BY_ZERO) == 0 || strcmp(Result, DEVISION_BY_ZERO) == 0) {
+		if (strcmp(Result, DEVISION_ZERO_BY_ZERO) == 0 or strcmp(Result, DEVISION_BY_ZERO) == 0) {
 			SetWindowTextA(Outputs->Result, Num);
 			break;
 		}
@@ -405,12 +403,12 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 		INT ResultLength = GetWindowTextA(Outputs->Result, Result, ARRAYSIZE(Result));
 
-		if (strcmp(Result, DEVISION_ZERO_BY_ZERO) == 0 || strcmp(Result, DEVISION_BY_ZERO) == 0) {
+		if (strcmp(Result, DEVISION_ZERO_BY_ZERO) == 0 or strcmp(Result, DEVISION_BY_ZERO) == 0) {
 			SetWindowTextA(Outputs->Result, "0.");
 			break;
 		}
 
-		if (FindChar(Result, '.', ResultLength) == -1 && ResultLength < MAX_RESULT_LENGTH) {
+		if (FindChar(Result, '.', ResultLength) == -1 and ResultLength < MAX_RESULT_LENGTH) {
 			strcat_s(Result, ".");
 			SetWindowTextA(Outputs->Result, Result);
 		}
@@ -429,7 +427,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 		INT ResultLength = GetWindowTextA(Outputs->Result, Result, ARRAYSIZE(Result));
 
-		if (strcmp(Result, DEVISION_ZERO_BY_ZERO) == 0 || strcmp(Result, DEVISION_BY_ZERO) == 0) {
+		if (strcmp(Result, DEVISION_ZERO_BY_ZERO) == 0 or strcmp(Result, DEVISION_BY_ZERO) == 0) {
 			SetWindowTextA(Outputs->Result, "-0");
 			break;
 		}
@@ -458,7 +456,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 		INT ResultLength = GetWindowTextA(Outputs->Result, Result, ARRAYSIZE(Result));
 
-		if (strcmp(Result, DEVISION_ZERO_BY_ZERO) != 0 && strcmp(Result, DEVISION_BY_ZERO) != 0) {
+		if (strcmp(Result, DEVISION_ZERO_BY_ZERO) != 0 and strcmp(Result, DEVISION_BY_ZERO) != 0) {
 
 			strcat_s(Result, " "), strcat_s(Result, Operator);
 
@@ -483,7 +481,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 		INT ResultLength = GetWindowTextA(Outputs->Result, Result, ARRAYSIZE(Result));
 
-		if (strcmp(Operation, "") != 0 && strcmp(Result, DEVISION_ZERO_BY_ZERO) != 0 && strcmp(Result, DEVISION_BY_ZERO) != 0) {
+		if (strcmp(Operation, "") != 0 and strcmp(Result, DEVISION_ZERO_BY_ZERO) != 0 and strcmp(Result, DEVISION_BY_ZERO) != 0) {
 
 			std::string SOperation = Operation, SResult = Result;
 
@@ -526,7 +524,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				//
 				
 				// Check For Invalid Operations
-				if (Num1 == 0 && Num2 == 0) {
+				if (Num1 == 0 and Num2 == 0) {
 					SResult = DEVISION_ZERO_BY_ZERO;
 					goto SetWindowTextADevide;
 				}
@@ -614,7 +612,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				//
 
 				// Check For Invalid Operations
-				if (Num1 == 0 && Num2 == 0) {
+				if (Num1 == 0 and Num2 == 0) {
 					SResult = DEVISION_ZERO_BY_ZERO;
 					goto SetWindowTextAModule;
 				}

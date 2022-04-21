@@ -5,9 +5,9 @@
 
 #pragma region Headers
 #include <Windows.h>
-#include <future>
-#include <fstream>
+#include <ciso646>
 #include <string>
+#include <fstream>
 #include <vector>
 #include <iostream>
 #include <conio.h>
@@ -26,9 +26,6 @@
 
 #pragma region Macros
 #pragma region Basic
-#define IF if
-#define ELSE else
-#define RETURN return
 #define MAX_CHAR_STRING 256
 #define HInstance() GetModuleHandle(NULL)
 #define MainWindowBackgroundColor RGB(15, 160, 255)
@@ -43,8 +40,8 @@
 #define GREEN_COLOR RGB(0, 255, 0)
 #define DARK_GREEN_COLOR RGB(0, 145, 0)
 
-#define LighterColor(SourceColor, LighterTo) RGB(GetRValue(SourceColor) + LighterTo, GetGValue(SourceColor) + LighterTo, GetBValue(SourceColor) + LighterTo) // Returns LighterColor
-#define DarkerColor(SourceColor, DarkerTo) RGB(GetRValue(SourceColor) - DarkerTo, GetGValue(SourceColor) - DarkerTo, GetBValue(SourceColor) - DarkerTo) // Returns DarkerColor
+#define LighterColor(SourceColor, LighterTo) RGB(GetRValue(SourceColor) + LighterTo, GetGValue(SourceColor) + LighterTo, GetBValue(SourceColor) + LighterTo) // returns LighterColor
+#define DarkerColor(SourceColor, DarkerTo) RGB(GetRValue(SourceColor) - DarkerTo, GetGValue(SourceColor) - DarkerTo, GetBValue(SourceColor) - DarkerTo) // returns DarkerColor
 #pragma endregion
 
 #pragma region MainWindow|Class|Title
@@ -59,8 +56,10 @@
 
 #pragma region DebugLog
 #ifdef APP_DEBUG
+// Color Example 0x0A -- Black Background and Grean Foreground
 #define PRINT(color, text) Console::setConsoleTextColor(color),\
 std::cout << text << std::endl
+// Color Example 0x0A -- Black Background and Grean Foreground
 #define PRINTW(color, text) Console::setConsoleTextColor(color),\
 std::wcout << text << std::endl
 #else

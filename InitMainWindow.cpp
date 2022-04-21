@@ -27,17 +27,15 @@ BOOL MainWindow::InitMainWindowClass(std::wstring ClassName) {
 
 	SetLastError(0);
 
-	GetCurrentDirectory(ARRAYSIZE(ApplicationDirectory), ApplicationDirectory);
-
 	WNDCLASSEX mainwcex = { 0 };
 
 	mainwcex.cbClsExtra = 0;
 	mainwcex.cbWndExtra = 0;
 	mainwcex.cbSize = sizeof(WNDCLASSEX);
 	mainwcex.hbrBackground = MainWindowBackgroundBrush;
-	mainwcex.hCursor = LoadCursor(HInstance(), MAKEINTRESOURCE(IDC_WINDOWCURSOR));
-	mainwcex.hIcon = LoadIcon(HInstance(), MAKEINTRESOURCE(IDI_WINDOWICON));
-	mainwcex.hIcon = LoadIcon(HInstance(), MAKEINTRESOURCEW(IDI_WINDOWICON));
+	mainwcex.hCursor = LoadCursor(HInstance(), MAKEINTRESOURCE(IDC_MAINWINDOWCURSOR));
+	mainwcex.hIcon = LoadIcon(HInstance(), MAKEINTRESOURCE(IDI_MAINWINDOWICON));
+	mainwcex.hIcon = LoadIcon(HInstance(), MAKEINTRESOURCEW(IDI_MAINWINDOWICON));
 	mainwcex.hInstance = HInstance();
 	mainwcex.lpfnWndProc = MainWindowProcedure;
 	mainwcex.lpszClassName = ClassName.c_str();
@@ -46,10 +44,10 @@ BOOL MainWindow::InitMainWindowClass(std::wstring ClassName) {
 
 	if (!RegisterClassEx(&mainwcex)) {
 		Functions::ShowError(HWND_DESKTOP, " - Main Window Class not Created!");
-		RETURN FALSE;
+		return FALSE;
 	}
 
-	RETURN TRUE;
+	return TRUE;
 
 }
 
@@ -75,13 +73,13 @@ BOOL MainWindow::CreateMainWindow(std::wstring ClassName, std::wstring WindowTit
 
 	if (hMainWindow == NULL) {
 		Functions::ShowError(HWND_DESKTOP, " - Main Window not Created!");
-		RETURN FALSE;
+		return FALSE;
 	}
 
 	ShowWindow(hMainWindow, SW_SHOW);
 	UpdateWindow(hMainWindow);
 
-	RETURN TRUE;
+	return TRUE;
 
 }
 #pragma endregion
@@ -137,7 +135,7 @@ VOID MainWindow::CreateDebugTools() {
 	std::vector <std::wstring> Captions = { L"X = 0 Y = 0", L"Width = 0 Height = 0" };
 	std::vector <SHORT> DebugToolsID = { ID_DEBUG_TOOL_1, ID_DEBUG_TOOL_2 };
 
-	for (int i = 0; i < DebugTools.size(); i++) {
+	for (size_t i = 0; i < DebugTools.size(); i++) {
 
 		if (!(DebugTools[i] = CreateWindowEx(WS_EX_CLIENTEDGE,
 			L"STATIC",
@@ -237,7 +235,7 @@ VOID MainWindow::onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 	#pragma region DebugTools
 	#ifdef APP_DEBUG
-	if (item->CtlID == ID_DEBUG_TOOL_1 || item->CtlID == ID_DEBUG_TOOL_2) {
+	if (item->CtlID == ID_DEBUG_TOOL_1 or item->CtlID == ID_DEBUG_TOOL_2) {
 
 		SIZE size = { 0 };
 		WCHAR StaticText[MAX_CHAR_STRING] = { 0 };
@@ -319,6 +317,12 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 		DragFinish((HDROP)lParam);
 
+		std::string EncryptedText = Functions::EncryptText("HELLO WORLD!");
+		std::string DecryptedText = Functions::DecryptText(EncryptedText);
+
+		PRINT(0x08, EncryptedText);
+		PRINT(0x08, DecryptedText);
+
 		break;
 
 	}
@@ -396,17 +400,17 @@ LRESULT CALLBACK MainWindow::MainWindowProcedure(HWND hMainWindow, UINT Msg, WPA
 	case WM_CREATE:
 	{
 		onCreate(hMainWindow, lParam);
-		RETURN 0;
+		return 0;
 	}
 	case WM_SIZE:
 	{
 		onSize(hMainWindow, wParam, lParam);
-		RETURN 0;
+		return 0;
 	}
 	case WM_MOUSEMOVE:
 	{
 		onMouseMove(hMainWindow, wParam, lParam);
-		RETURN 0;
+		return 0;
 	}
 	case WM_GETMINMAXINFO:
 	{
@@ -415,49 +419,49 @@ LRESULT CALLBACK MainWindow::MainWindowProcedure(HWND hMainWindow, UINT Msg, WPA
 		POINT minsize = { MainWindowWidth, MainWindowHeight };
 		minmax->ptMinTrackSize = minsize;
 
-		RETURN 0;
+		return 0;
 	}
 	case WM_DRAWITEM:
 	{
 		onDrawItem(hMainWindow, wParam, lParam);
-		RETURN 0;
+		return 0;
 	}
 	case WM_PAINT:
 	{
 		onPaint(hMainWindow);
-		RETURN 0;
+		return 0;
 	}
 	case MM_MCINOTIFY:
 	{
 		onMCINotify(hMainWindow, lParam);
-		RETURN 0;
+		return 0;
 	}
 	case WM_COMMAND:
 	{
 		onCommand(hMainWindow, wParam, lParam);
-		RETURN 0;
+		return 0;
 	}
 	case WM_KEYDOWN:
 	{
 		onKeyDown(hMainWindow, wParam, lParam);
-		RETURN 0;
+		return 0;
 	}
 	case WM_CLOSE:
 	{
-		IF(MessageBox(hMainWindow, L"Are You Serious!", L"INFORMATION", MB_YESNO | MB_ICONINFORMATION | MB_DEFBUTTON2) == IDYES) {
+		if (MessageBox(hMainWindow, L"Are You Serious!", L"INFORMATION", MB_YESNO | MB_ICONINFORMATION | MB_DEFBUTTON2) == IDYES) {
 			mciSendCommand(MCI_ALL_DEVICE_ID, MCI_CLOSE, NULL, NULL);
 			DestroyWindow(hMainWindow);
 		}
-		RETURN 0;
+		return 0;
 	}
 	case WM_DESTROY:
 	{
 		PostQuitMessage(0);
-		RETURN 0;
+		return 0;
 	}
 	}
 
-	RETURN DefWindowProc(hMainWindow, Msg, wParam, lParam);
+	return DefWindowProc(hMainWindow, Msg, wParam, lParam);
 
 }
 #pragma endregion
