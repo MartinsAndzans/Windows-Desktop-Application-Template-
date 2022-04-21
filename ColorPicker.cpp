@@ -91,7 +91,7 @@ VOID ColorPicker::drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HE
 
 }
 
-SHORT ColorPicker::drawGradientSmall(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth, COLORREF BorderColor) {
+SHORT ColorPicker::drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth, COLORREF BorderColor) {
 
 	CONST SHORT Width = 420, Height = 40;
 
@@ -132,7 +132,7 @@ SHORT ColorPicker::drawGradientSmall(HDC hdc, INT COORD_X, INT COORD_Y, SHORT Bo
 
 }
 
-SHORT ColorPicker::drawGradientLarge(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth, COLORREF BorderColor) {
+SHORT ColorPicker::drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth, COLORREF BorderColor) {
 
 	CONST SHORT Width = 420, Height = 100;
 
@@ -159,7 +159,7 @@ SHORT ColorPicker::drawGradientLarge(HDC hdc, INT COORD_X, INT COORD_Y, SHORT Bo
 	for (INT X = COORD_X + BorderWidth; X <= COORD_X + Width - BorderWidth; X++) {
 		for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + Height - BorderWidth; Y++) {
 			SetPixel(hdc, X, Y, RGB(RY, GY, BY));
-			if (Y < Height / 2) {
+			if (Y < COORD_Y + Height / 2) {
 				if (RY != R) RY -= COLORSTEP; //
 				if (GY != G) GY -= COLORSTEP; // Up - Middle
 				if (BY != B) BY -= COLORSTEP; //
@@ -206,9 +206,8 @@ VOID ColorPicker::onCreate(HWND hColorPicker, LPARAM lParam) {
 	LPCREATESTRUCT window = LPCREATESTRUCT(lParam);
 
 	if (window->hwndParent != NULL && (window->style & WS_CHILD) != NULL &&
-		(window->style & WS_POPUP) == NULL && (window->style & WS_DLGFRAME) == NULL &&
-		(window->style & WS_OVERLAPPED) == NULL && (window->style & WS_SYSMENU) == NULL &&
-		(window->style & WS_THICKFRAME) == NULL) {
+		(window->style & WS_THICKFRAME) == NULL && (window->style & WS_DLGFRAME) == NULL &&
+		(window->style & WS_OVERLAPPED) == NULL && (window->style & WS_SYSMENU) == NULL) {
 
 		if (lstrcmpW(window->lpszName, L"SMALL") == 0 && window->cx != 0 && window->cy != 0)
 			SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.cx, DimensionsSmall.cy, SWP_SHOWWINDOW);
@@ -217,8 +216,8 @@ VOID ColorPicker::onCreate(HWND hColorPicker, LPARAM lParam) {
 		else if (window->cx != 0 && window->cy != 0)
 			SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.cx, DimensionsSmall.cy, SWP_SHOWWINDOW);
 
-	}
-	else {
+	} else {
+
 		OutputDebugString(L"ERROR [Color Picker] - \"hwndParent\" Must Be Non Zero Value\r\n");
 		DestroyWindow(hColorPicker);
 
@@ -272,11 +271,11 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 	// Draw Gradient
 	SHORT BorderWidth = 0;
 	if (lstrcmpW(WindowTitle, L"SMALL") == 0)
-		BorderWidth = drawGradientSmall(MemoryDC, Dimensions.left, Dimensions.top);
+		BorderWidth = drawSmallGradient(MemoryDC, Dimensions.left, Dimensions.top);
 	else if (lstrcmpW(WindowTitle, L"LARGE") == 0)
-		BorderWidth = drawGradientLarge(MemoryDC, Dimensions.left, Dimensions.top);
+		BorderWidth = drawLargeGradient(MemoryDC, Dimensions.left, Dimensions.top);
 	else
-		BorderWidth = drawGradientSmall(MemoryDC, Dimensions.left, Dimensions.top);
+		BorderWidth = drawSmallGradient(MemoryDC, Dimensions.left, Dimensions.top);
 	////
 	
 	RECT GradientRectangle = { Dimensions.left + BorderWidth, Dimensions.top + BorderWidth,

@@ -12,6 +12,10 @@ BOOL Console::setConsoleTitle(CONST CHAR *Title) {
 	return SetConsoleTitleA(Title);
 }
 
+BOOL Console::setConsoleTextColor(WORD Color) {
+	return SetConsoleTextAttribute(hOut, FOREGROUND_INTENSITY | Color);
+}
+
 BOOL Console::setCursorPosition(SHORT COORD_X, SHORT COORD_Y, BOOL MOVE_CURSOR, BOOL FLUSH_BUFFER, BOOL CLS) {
 
 	COORD Coordinates = { COORD_X, COORD_Y };
@@ -31,18 +35,6 @@ BOOL Console::setCursorPosition(SHORT COORD_X, SHORT COORD_Y, BOOL MOVE_CURSOR, 
 
 	return TRUE;
 
-}
-
-RECT Console::getConsoleSize() {
-
-	RECT ConsoleSize = { 0 };
-	GetClientRect(GetConsoleWindow(), &ConsoleSize);
-	return ConsoleSize;
-
-}
-
-BOOL Console::setConsoleSize(INT WIDTH, INT HEIGHT) {
-	return SetWindowPos(GetConsoleWindow(), NULL, CW_USEDEFAULT, CW_USEDEFAULT, WIDTH, HEIGHT, SWP_SHOWWINDOW | SWP_NOMOVE);
 }
 
 BOOL Console::setCursorVisible(BOOL CURSOR_VISIBLE) {
@@ -69,4 +61,16 @@ BOOL Console::setCursorSize(UINT CURSOR_SIZE) {
 
 	return TRUE;
 
+}
+
+RECT Console::getConsoleSize() {
+
+	RECT ConsoleSize = { 0 };
+	GetClientRect(GetConsoleWindow(), &ConsoleSize);
+	return ConsoleSize;
+
+}
+
+BOOL Console::setConsoleSize(INT WIDTH, INT HEIGHT) {
+	return SetWindowPos(GetConsoleWindow(), NULL, 0, 0, WIDTH, HEIGHT, SWP_SHOWWINDOW | SWP_NOMOVE);
 }

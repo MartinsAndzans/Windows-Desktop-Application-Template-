@@ -18,27 +18,20 @@ int wmain(int ArrgumentCount, wchar_t *Arrguments[]) {
 	#ifdef APP_DEBUG
 	ShowWindow(GetConsoleWindow(), SW_SHOW);
 	Console::setConsoleTitle("Debug Console");
-	#else defined(APP_RELEASE)
+	#else
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
 	Console::setConsoleTitle("Don't Close");
 	#endif
 
-	#ifdef APP_DEBUG
-	SetConsoleColor("1F");
-	PRINT("Debug Console Is Initilaized Correctly ...");
-	#endif
+	PRINT(0x0A, "Debug Console Initilaized Correctly . . .");
 
-	Console::setCursorPosition(0, 0, FALSE, FALSE, FALSE);
-	
 	if (MainWindow::InitMainWindowClass(MAIN_WINDOW_CLASS)) {
 		if (MainWindow::CreateMainWindow(MAIN_WINDOW_CLASS, MAIN_WINDOW_TITLE)) {
 			BroadcastMessages();
 		}
 	}
 
-	#ifdef APP_DEBUG
-	PRINT("App Closed Successfully ...");
-	#endif
+	PRINT(0x0A, "App Closed Successfully . . .");
 
 	return 0;
 

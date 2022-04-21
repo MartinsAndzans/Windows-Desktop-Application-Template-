@@ -130,7 +130,7 @@ VOID Animation::onCreate(HWND hAnimation, LPARAM lParam) {
 	LPCREATESTRUCT window = LPCREATESTRUCT(lParam);
 
 	if (window->hwndParent != NULL && (window->style & WS_CHILD) != NULL &&
-		(window->style & WS_POPUP) == NULL && (window->style & WS_DLGFRAME) == NULL &&
+		(window->style & WS_THICKFRAME) == NULL && (window->style & WS_DLGFRAME) == NULL &&
 		(window->style & WS_OVERLAPPED) == NULL && (window->style & WS_SYSMENU) == NULL) {
 
 		AnimationStyle *Style = new AnimationStyle{ AnimationSymbolColor, 4, '+' }; // Default Initialization
@@ -149,8 +149,7 @@ VOID Animation::onCreate(HWND hAnimation, LPARAM lParam) {
 			SetTimer(hAnimation, AnimationTimer, SEC / 10, (TIMERPROC)NULL);
 		}
 
-	}
-	else {
+	} else {
 
 		OutputDebugString(L"ERROR [Animation Stars] - \"hwndParent\" Must Be Non Zero Value\r\n");
 		DestroyWindow(hAnimation);
@@ -213,7 +212,7 @@ VOID Animation::onPaint(HWND hAnimation) {
 	drawStars(MemoryDC, Dimensions, Style->SymbolColor, Style->Symbol, Style->Proportion);
 
 	// Text Shadow
-	SetTextColor(MemoryDC, DarkerColor(Style->SymbolColor, 0x50)); // 0x50 - 80
+	SetTextColor(MemoryDC, DarkerColor(Style->SymbolColor, 0x20)); // 0x20 / 32
 	TextOut(MemoryDC, Dimensions.left + 4, Dimensions.top + 4, WindowTitle, lstrlenW(WindowTitle));
 	// Text
 	SetTextColor(MemoryDC, Style->SymbolColor);

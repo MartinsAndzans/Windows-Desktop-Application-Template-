@@ -52,7 +52,7 @@ public:
 	/// <param name="Rectangle">- Rectangle</param>
 	/// <param name="Width">- Width</param>
 	/// <param name="Color">- Color</param>
-	static VOID drawDashedRectangle(HDC hdc, RECT& Rectangle, SIZE_T Width, COLORREF Color) {
+	static VOID drawDashedRectangle(HDC hdc, RECT &Rectangle, SIZE_T Width, COLORREF Color) {
 
 		HPEN Pen = CreatePen(PS_DASH, 1, Color);
 		HPEN PreviousPen = (HPEN)SelectObject(hdc, Pen);
@@ -84,24 +84,20 @@ public:
 	/// </summary>
 	/// <param name="DestinationDC">- Device Context</param>
 	/// <param name="DestinationRectangle">- Where Draw Bitmap</param>
-	/// <param name="FilePath">- File Path - Supported Image Formats : "*.bmp *.ico  *.cur"</param>
+	/// <param name="FilePath">- File Path - Supported Image Formats : "*.bmp; *.ico; *.cur"</param>
 	/// <param name="BitmapType">- IMAGE_BITMAP || IMAGE_ICON || IMAGE_CURSOR</param>
 	/// <param name="DrawMethod">- Draw Method - [EXAMPLE - SRCCOPY]</param>
 	/// <returns>If Succeeded Returns TRUE, but If not Returns FALSE</returns>
-	static BOOL drawBitmapFromFile(HDC DestinationDC, RECT &DestinationRectangle, std::string FilePath, UINT BitmapType = IMAGE_BITMAP, DWORD DrawMethod = SRCCOPY) {
+	static VOID drawBitmapFromFile(HDC DestinationDC, RECT &DestinationRectangle, LPSTR FilePath, UINT BitmapType = IMAGE_BITMAP, DWORD DrawMethod = SRCCOPY) {
 
 		HDC BitmapDC = CreateCompatibleDC(DestinationDC);
-		if (BitmapDC == NULL) return FALSE;
-		HBITMAP Bitmap = (HBITMAP)LoadImageA(NULL, FilePath.c_str(), BitmapType, 0, 0, LR_LOADFROMFILE | LR_VGACOLOR);
-		if (Bitmap == NULL) return FALSE;
+		HBITMAP Bitmap = (HBITMAP)LoadImageA(NULL, FilePath, BitmapType, 0, 0, LR_LOADFROMFILE | LR_VGACOLOR);
 
 		SelectObject(BitmapDC, Bitmap);
 		BitBlt(DestinationDC, DestinationRectangle.left, DestinationRectangle.top, DestinationRectangle.right, DestinationRectangle.bottom, BitmapDC, 0, 0, DrawMethod);
 
 		DeleteDC(BitmapDC);
 		DeleteObject(Bitmap);
-
-		return TRUE;
 
 	}
 
@@ -134,8 +130,8 @@ public:
 		}
 
 		// Rectangle
-		for (INT X = BorderWidth; X <= COORD_X + WIDTH - BorderWidth; X++) {
-			for (INT Y = BorderWidth; Y <= COORD_Y + HEIGTH - BorderWidth; Y++) {
+		for (INT X = COORD_X + BorderWidth; X <= COORD_X + WIDTH - BorderWidth; X++) {
+			for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + HEIGTH - BorderWidth; Y++) {
 				SetPixel(hdc, X, Y, RectangleColor);
 			}
 		}
@@ -193,50 +189,52 @@ public:
 	}
 
 	/// <summary>
-	/// 
+	/// This Function Draws "X"
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
-	/// <param name="COORD_X"></param>
-	/// <param name="COORD_Y"></param>
-	/// <param name="WIDTH"></param>
-	/// <param name="HEIGHT"></param>
-	/// <param name="Color"></param>
-	static VOID drawX(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF Color = BLACK_COLOR) {
+	/// <param name="COORD_X">- X Coordinate</param>
+	/// <param name="COORD_Y">- Y Coordinate</param>
+	/// <param name="WIDTH">- Width</param>
+	/// <param name="HEIGHT">- Height</param>
+	/// <param name="LineWidth">- Line Width</param>
+	/// <param name="Color">- Color</param>
+	static VOID drawX(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 40, INT HEIGHT = 40, SHORT LineWidth = 2, COLORREF Color = BLACK_COLOR) {
 
-		INT DIAGONAL = 0;
+		HPEN XPen = CreatePen(PS_SOLID, LineWidth, Color);
+		HPEN PreviousPen = (HPEN)SelectObject(hdc, XPen);
 
-		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGHT; Y++) {
+		// Left - Top To Right - Bottom
+		MoveToEx(hdc, COORD_X, COORD_Y, NULL);
+		LineTo(hdc, COORD_X + WIDTH, COORD_Y + HEIGHT);
 
-			SetPixel(hdc, COORD_X + DIAGONAL + 1, Y, Color); // |
-			SetPixel(hdc, COORD_X + DIAGONAL, Y, Color);     //  |
-			SetPixel(hdc, COORD_X + DIAGONAL - 1, Y, Color); //   |
+		// Right - Top To Left - Bottom
+		MoveToEx(hdc, COORD_X + WIDTH, COORD_Y, NULL);
+		LineTo(hdc, COORD_X, COORD_Y + HEIGHT);
 
-			SetPixel(hdc, COORD_X + WIDTH - DIAGONAL + 1, Y, Color); //   |
-			SetPixel(hdc, COORD_X + WIDTH - DIAGONAL, Y, Color);     //  |
-			SetPixel(hdc, COORD_X + WIDTH - DIAGONAL - 1, Y, Color); // |
-
-			DIAGONAL++;
-
-		}
+		SelectObject(hdc, PreviousPen);
+		DeleteObject(XPen);
 
 	}
 
 	/// <summary>
-	/// 
+	/// This Function Draws "O"
 	/// </summary>
-	/// <param name="hdc"></param>
-	/// <param name="COORD_X"></param>
-	/// <param name="COORD_Y"></param>
-	/// <param name="WIDTH"></param>
-	/// <param name="HEIGHT"></param>
-	/// <param name="Color"></param>
-	static VOID drawO(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF Color = BLACK_COLOR) {
+	/// <param name="hdc">- Device Context</param>
+	/// <param name="COORD_X">- X Coordinate</param>
+	/// <param name="COORD_Y">- Y Coordinate</param>
+	/// <param name="WIDTH">- Width</param>
+	/// <param name="HEIGHT">- Height</param>
+	/// <param name="LineWidth">- Line Width</param>
+	/// <param name="Color">- Color</param>
+	static VOID drawO(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 40, INT HEIGHT = 40, SHORT LineWidth = 2, COLORREF Color = BLACK_COLOR) {
 
-		for (INT Y = COORD_Y; Y < COORD_Y + HEIGHT; Y++) {
+		HPEN OPen = CreatePen(PS_SOLID, LineWidth, Color);
+		HPEN PreviousPen = (HPEN)SelectObject(hdc, OPen);
 
-
-
-		}
+		Ellipse(hdc, COORD_X, COORD_Y, COORD_X + WIDTH, COORD_Y + HEIGHT);
+		
+		SelectObject(hdc, PreviousPen);
+		DeleteObject(OPen);
 
 	}
 
@@ -248,6 +246,7 @@ public:
 	/// <param name="COORD_Y">- Y Coordinate</param>
 	/// <param name="WIDTH">- Width</param>
 	/// <param name="HEIGHT">- Height</param>
+	/// <param name="Color">- Color</param>
 	static VOID drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 40, INT HEIGHT = 40, COLORREF Color = BLACK_COLOR) {
 
 		CONST SHORT Proportion = 3;
@@ -278,7 +277,7 @@ public:
 	/// <param name="BorderWidth">- Border Width</param>
 	/// <param name="BorderColor">- Border Color</param>
 	/// <returns>Returns Border Width</returns>
-	static SHORT drawGradientSmall(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = BLACK_COLOR) {
+	static SHORT drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = BLACK_COLOR) {
 
 		CONST SHORT Width = 420, Height = 40;
 
@@ -329,7 +328,7 @@ public:
 	/// <param name="BorderWidth">- Border Width</param>
 	/// <param name="BorderColor">- Border Color</param>
 	/// <returns>Returns Border Width</returns>
-	static SHORT drawGradientLarge(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth, COLORREF BorderColor) {
+	static SHORT drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = BLACK_COLOR) {
 
 		CONST SHORT Width = 420, Height = 100;
 
@@ -356,7 +355,7 @@ public:
 		for (INT X = COORD_X + BorderWidth; X <= COORD_X + Width - BorderWidth; X++) {
 			for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + Height - BorderWidth; Y++) {
 				SetPixel(hdc, X, Y, RGB(RY, GY, BY));
-				if (Y < Height / 2) {
+				if (Y < COORD_Y + Height / 2) {
 					if (RY != R) RY -= COLORSTEP; //
 					if (GY != G) GY -= COLORSTEP; // Up - Middle
 					if (BY != B) BY -= COLORSTEP; //

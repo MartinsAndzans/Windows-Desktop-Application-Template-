@@ -34,8 +34,8 @@ private:
 
 	#pragma region Functions
 	static VOID drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 23, INT HEIGHT = 23, COLORREF CrossColor = RGB(0, 0, 0));
-	static SHORT drawGradientSmall(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = RGB(0, 0, 0));
-	static SHORT drawGradientLarge(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = RGB(0, 0, 0));
+	static SHORT drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = RGB(0, 0, 0));
+	static SHORT drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = RGB(0, 0, 0));
 	#pragma endregion
 
 	#pragma region Events

@@ -3,18 +3,14 @@
 #ifndef _HEADERS_
 #define _HEADERS_
 
-#ifndef UNICODE
-#define UNICODE
-#endif
-
 #pragma region Headers
 #include <Windows.h>
+#include <future>
+#include <fstream>
 #include <string>
 #include <vector>
-#include <fstream>
 #include <iostream>
 #include <conio.h>
-#include <thread>
 
 #include "resource.h"
 
@@ -29,21 +25,11 @@
 #pragma endregion
 
 #pragma region Macros
-#pragma region Important
+#pragma region Basic
 #define IF if
 #define ELSE else
 #define RETURN return
-
-#ifdef APP_DEBUG
-#define PRINT(text) std::cout << text << std::endl
-#define PRINTW(text) std::wcout << text << std::endl
-#else
-#define PRINT(text)
-#define PRINTW(text)
-#endif
-
 #define MAX_CHAR_STRING 256
-
 #define HInstance() GetModuleHandle(NULL)
 #define MainWindowBackgroundColor RGB(15, 160, 255)
 #pragma endregion
@@ -71,32 +57,33 @@
 #define MainWindowHeight 800
 #pragma endregion
 
+#pragma region DebugLog
+#ifdef APP_DEBUG
+#define PRINT(color, text) Console::setConsoleTextColor(color),\
+std::cout << text << std::endl
+#define PRINTW(color, text) Console::setConsoleTextColor(color),\
+std::wcout << text << std::endl
+#else
+#define PRINT(color, text)
+#define PRINTW(color, text)
+#endif
+#pragma endregion
+
 #pragma region SetMacros
 #define SetFont(hwnd, font) SendMessage(hwnd, WM_SETFONT, (WPARAM)font, NULL)
 #define SetIcon(hwnd, type, hicon) SendMessage(hwnd, WM_SETICON, (WPARAM)type, (LPARAM)hicon)
-#pragma endregion
-
-#pragma region ConsoleMacros
-/// <summary>
-/// > First Character Corresponds To The Background Color and Second Character Corresponds To The Foreground Color
-/// <para>>> 0 = Black | 8 = Gray</para>
-/// <para>>> 1 = Blue | 9 = Light Blue</para>
-/// <para>>> 2 = Green | A = Light Green</para>
-/// <para>>> 3 = Aqua | B = Light Aqua</para>
-/// <para>>> 4 = Red | C = Light Red</para>
-/// <para>>> 5 = Purple | D = Light Purple</para>
-/// <para>>> 6 = Yellow | E = Light Yellow</para>
-/// <para>>> 7 = White | F = Bright White</para>
-/// </summary>
-#define SetConsoleColor(color) CHAR buffer[20] = "color ";\
-strcat_s(buffer, color);\
-system(buffer)
 #pragma endregion
 
 #pragma region WindowMacros
 #define MaximizeWindow(hwnd) SendMessage(hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, NULL)
 #define MinimizeWindow(hwnd) SendMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, NULL)
 #define RestoreWindow(hwnd) SendMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE, NULL)
+#pragma endregion
+
+#pragma region CheckBoxMacros
+#define CheckBox_GetCheckboxState(hwnd) SendMessage(hwnd, BM_GETCHECK, NULL, NULL) // Return Value is Checkbox State
+#define CheckBox_Check(hwnd) SendMessage(hwnd, BM_SETCHECK, (WPARAM)BST_CHECKED, NULL)
+#define CheckBox_UnCheck(hwnd) SendMessage(hwnd, BM_SETCHECK, (WPARAM)BST_UNCHECKED, NULL)
 #pragma endregion
 
 #pragma region ListBoxMacros

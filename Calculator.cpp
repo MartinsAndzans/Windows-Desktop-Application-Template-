@@ -215,9 +215,8 @@ VOID Calculator::onCreate(HWND hCalculator, LPARAM lParam) {
 	LPCREATESTRUCT window = (LPCREATESTRUCT)lParam;
 
 	if (window->hwndParent != NULL && (window->style & WS_CHILD) != NULL &&
-		(window->style & WS_POPUP) == NULL && (window->style & WS_DLGFRAME) == NULL &&
-		(window->style & WS_OVERLAPPED) == NULL && (window->style & WS_SYSMENU) == NULL &&
-		(window->style & WS_THICKFRAME) == NULL) {
+		(window->style & WS_THICKFRAME) == NULL && (window->style & WS_DLGFRAME) == NULL &&
+		(window->style & WS_OVERLAPPED) == NULL && (window->style & WS_SYSMENU) == NULL) {
 
 		if (!CreateCalculatorControls(hCalculator)) {
 			std::string ErrorMessage = "ERROR " + std::to_string(GetLastError()) + " - Out of Memory!";
@@ -229,8 +228,7 @@ VOID Calculator::onCreate(HWND hCalculator, LPARAM lParam) {
 			SetWindowPos(hCalculator, NULL, window->x, window->y, CalculatorDimensions.cx, CalculatorDimensions.cy, SWP_SHOWWINDOW);
 		}
 
-	}
-	else {
+	} else {
 
 		OutputDebugString(L"ERROR [Calculator] - \"hwndParent\" Must Be Non Zero Value\r\n");
 		DestroyWindow(hCalculator);
@@ -460,8 +458,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 		INT ResultLength = GetWindowTextA(Outputs->Result, Result, ARRAYSIZE(Result));
 
-		if (Result[ResultLength - 1] != '.' && strcmp(Result, DEVISION_ZERO_BY_ZERO) != 0 &&
-			strcmp(Result, DEVISION_BY_ZERO) != 0) {
+		if (strcmp(Result, DEVISION_ZERO_BY_ZERO) != 0 && strcmp(Result, DEVISION_BY_ZERO) != 0) {
 
 			strcat_s(Result, " "), strcat_s(Result, Operator);
 
@@ -486,8 +483,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 		INT ResultLength = GetWindowTextA(Outputs->Result, Result, ARRAYSIZE(Result));
 
-		if (Result[ResultLength - 1] != '.' && strcmp(Operation, "") != 0 &&
-			strcmp(Result, DEVISION_ZERO_BY_ZERO) != 0 && strcmp(Result, DEVISION_BY_ZERO) != 0) {
+		if (strcmp(Operation, "") != 0 && strcmp(Result, DEVISION_ZERO_BY_ZERO) != 0 && strcmp(Result, DEVISION_BY_ZERO) != 0) {
 
 			std::string SOperation = Operation, SResult = Result;
 
@@ -528,7 +524,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				// Operation Output
 				SOperation = RoundDoubleString(std::to_string(Num1)) + " / " + RoundDoubleString(std::to_string(Num2)) + " =";
 				//
-
+				
 				// Check For Invalid Operations
 				if (Num1 == 0 && Num2 == 0) {
 					SResult = DEVISION_ZERO_BY_ZERO;
@@ -629,6 +625,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				//
 
 				// Result Output
+
 				Module = (int)round(Num1) % (int)round(Num2);
 				SResult = RoundDoubleString(std::to_string(Module));
 				//

@@ -268,14 +268,14 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 
 	SelectObject(MemoryDC, MainFont);
 
-	Draw::drawGradientSmall(MemoryDC, MainWindowDimensions.right / 2 - 420 / 2, MainWindowDimensions.bottom / 2 - 40 / 2);
+	Draw::drawSmallGradient(MemoryDC, MainWindowDimensions.right / 2 - 420 / 2, MainWindowDimensions.bottom / 2 - 40 / 2);
 
 	SIZE size = { 0 };
-	WCHAR Text[] = L"Hello World!";
-	GetTextExtentPoint(MainWindowDC, Text, ARRAYSIZE(Text), &size);
-	TextOut(MemoryDC, MainWindowDimensions.right / 2 - size.cx / 2, MainWindowDimensions.bottom / 2 - size.cy / 2, Text, ARRAYSIZE(Text) - 1);
+	CHAR Text[] = "Hello World!";
+	GetTextExtentPointA(MainWindowDC, Text, ARRAYSIZE(Text), &size);
+	TextOutA(MemoryDC, MainWindowDimensions.right / 2 - size.cx / 2, MainWindowDimensions.bottom / 2 - size.cy / 2, Text, ARRAYSIZE(Text) - 1);
 
-	Draw::drawX(MemoryDC, MainWindowDimensions.right / 2 - 40 / 2, MainWindowDimensions.bottom / 4 - 40 / 2, 40, 40);
+	Draw::drawO(MemoryDC, MainWindowDimensions.right / 2 - 60 / 2, MainWindowDimensions.bottom / 4 - 60 / 2, 60, 60);
 
 	BitBlt(MainWindowDC, 0, 0, MainWindowDimensions.right, MainWindowDimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
@@ -288,11 +288,7 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 
 VOID MainWindow::onMCINotify(HWND hMainWindow, LPARAM lParam) {
 
-	if (mciGetDeviceID(L"Music")) {
 
-		Sound::Play(hMainWindow, L"Music", TRUE);
-
-	}
 
 }
 
@@ -304,7 +300,7 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	case ID_COLOR_PICKER:
 	{
 
-		PRINT("R: " << Functions::_itos(GetRValue((COLORREF)lParam)) <<
+		PRINT(0x0B, "R: " << Functions::_itos(GetRValue((COLORREF)lParam)) <<
 			"\tG: " << Functions::_itos(GetGValue((COLORREF)lParam)) <<
 			"\tB: " << Functions::_itos(GetBValue((COLORREF)lParam)));
 
@@ -316,9 +312,9 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 		WCHAR Buffer[MAX_CHAR_STRING] = { 0 };
 		UINT FileCount = DragQueryFile((HDROP)lParam, 0xFFFFFFFF, Buffer, ARRAYSIZE(Buffer));
-		for (UINT counter = 0; counter < FileCount; counter++) {
-			DragQueryFile((HDROP)lParam, counter, Buffer, ARRAYSIZE(Buffer));
-			PRINTW(Buffer);
+		for (UINT File = 0; File < FileCount; File++) {
+			DragQueryFile((HDROP)lParam, File, Buffer, ARRAYSIZE(Buffer));
+			PRINTW(0x09, Buffer);
 		}
 
 		DragFinish((HDROP)lParam);
@@ -354,15 +350,14 @@ VOID MainWindow::onKeyDown(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 		GetOpenFileName(&ofn);
 
-		Sound::Open(L"Music", File);
+		PRINT(0x0C, Sound::Open(L"Music", File));
 
 		break;
 
 	}
 	case VK_RIGHT:
 	{
-		if(Sound::GetPlaybackStatus(L"Music", MCI_STATUS_MODE) != MCI_MODE_PLAY)
-			Sound::Play(hMainWindow, L"Music");
+		PRINT(0x0C, Sound::Play(hMainWindow, L"Music"));
 
 		break;
 
@@ -371,9 +366,9 @@ VOID MainWindow::onKeyDown(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	{
 
 		if (Sound::GetPlaybackStatus(L"Music", MCI_STATUS_MODE) == MCI_MODE_PLAY)
-			Sound::Pause(L"Music");
+			PRINT(0x0C, Sound::Pause(L"Music"));
 		else if (Sound::GetPlaybackStatus(L"Music", MCI_STATUS_MODE) == MCI_MODE_PAUSE)
-			Sound::Resume(L"Music");
+			PRINT(0x0C, Sound::Resume(L"Music"));
 
 		break;
 
@@ -382,9 +377,9 @@ VOID MainWindow::onKeyDown(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	{
 
 		if (Sound::GetPlaybackStatus(L"Music", MCI_STATUS_MODE) == MCI_MODE_PLAY)
-			Sound::Stop(L"Music");
+			PRINT(0x0C, Sound::Stop(L"Music"));
 		else if (Sound::GetPlaybackStatus(L"Music", MCI_STATUS_MODE) == MCI_MODE_STOP)
-			Sound::Close(L"Music");
+			PRINT(0x0C, Sound::Close(L"Music"));
 
 		break;
 

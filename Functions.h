@@ -381,18 +381,16 @@ public:
 	/// <param name="FilePath">- File Path With ".bmp" Extension</param>
 	/// <param name="BitmapSize">- Bitmap Size In Pixels</param>
 	/// <returns>If Succeeded Returns TRUE, but If not Returns FALSE</returns>
-	static BOOL SaveBitmapToFile(HBITMAP Bitmap, std::string FilePath, SIZE &BitmapSize) {
+	static BOOL SaveBitmapToFile(HBITMAP Bitmap, CONST CHAR *FilePath, SIZE &BitmapSize) {
 
-		#define BITMAP_SIZE_IN_PIXELS (int64_t)BitmapSize.cx * (int64_t)BitmapSize.cy
-		#define BITMAP_SIZE_IN_BYTES sizeof(COLORREF) * ((int64_t)BitmapSize.cx * (int64_t)BitmapSize.cy)
+		std::ofstream image;
 
-		std::fstream image;
-
-		CONST WORD BM = 0x4D42; // ASCII B - Decimal = 66 / Hex = 42 | M - Decimal = 77 / Hex = 4D
+		CONST WORD BM = 0x4D42; // ASCII "B" = 66 / 0x42 | "M" = 77 / 0x4D
+		CONST DWORD BitmapSizeCXxCY = BitmapSize.cx * BitmapSize.cy; // Bitmap Size [CX * CY]
 
 		BITMAPFILEHEADER bmfheader = { 0 };
 		bmfheader.bfType = BM;
-		bmfheader.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + BITMAP_SIZE_IN_BYTES; // File Size
+		bmfheader.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + sizeof(COLORREF) * BitmapSizeCXxCY; // File Size
 		bmfheader.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER); // Offset To Color Bits
 		bmfheader.bfReserved1 = NULL;
 		bmfheader.bfReserved2 = NULL;
@@ -404,22 +402,17 @@ public:
 		bmiheader.biPlanes = 0x01; // 1 - Bitmap has a one plane
 		bmiheader.biBitCount = 0x20; // 32 - Bitmap has a maximum of 2^32 colors
 		bmiheader.biCompression = BI_RGB;
-		bmiheader.biSizeImage = BITMAP_SIZE_IN_PIXELS;
+		bmiheader.biSizeImage = BitmapSizeCXxCY;
 		bmiheader.biXPelsPerMeter = BitmapSize.cx;
 		bmiheader.biYPelsPerMeter = BitmapSize.cy;
 		bmiheader.biClrUsed = NULL;
 		bmiheader.biClrImportant = NULL;
 
-		image.open(FilePath, std::ios::out | std::ios::binary); // Open File
+		std::unique_ptr<COLORREF> BitmapBytes(new COLORREF[BitmapSizeCXxCY]{});
 
-		if (!image.is_open()) {
-			return FALSE;
-		}
-
-		std::unique_ptr<BYTE> BitmapBytes(new BYTE[BITMAP_SIZE_IN_BYTES]{});
-
-		HDC ScreenDC = GetDC(HWND_DESKTOP);
-		HDC MemoryDC = CreateCompatibleDC(ScreenDC);
+		#pragma region GetBitmapColorBytes
+		HDC ScreenDC = GetDC(HWND_DESKTOP); // ScreenDC
+		HDC MemoryDC = CreateCompatibleDC(ScreenDC); // MemoryDC From ScreenDC
 
 		BITMAPINFO bminfo = { 0 };
 		bminfo.bmiHeader = bmiheader;
@@ -428,17 +421,23 @@ public:
 
 		ReleaseDC(HWND_DESKTOP, ScreenDC);
 		DeleteDC(MemoryDC);
+		#pragma endregion
 
-		image.write((char*)&bmfheader, sizeof(BITMAPFILEHEADER)); // BITMAP FILE HEADER
-		image.write((char*)&bmiheader, sizeof(BITMAPINFOHEADER)); // BITMAP INFO HEADER
-		image.write((char*)BitmapBytes.get(), BITMAP_SIZE_IN_BYTES); // BYTE ARRAY
+		image.open(FilePath, std::ios::binary); // Open File
 
-		image.close(); // Close File
+		if (image.is_open()) {
 
-		return TRUE;
+			image.write((char*)&bmfheader, sizeof(BITMAPFILEHEADER)); // BITMAP FILE HEADER
+			image.write((char*)&bmiheader, sizeof(BITMAPINFOHEADER)); // BITMAP INFO HEADER
+			image.write((char*)BitmapBytes.get(), sizeof(COLORREF) * BitmapSizeCXxCY); // COLOR BYTE ARRAY
 
-		#undef BITMAP_SIZE_IN_PIXELS
-		#undef BITMAP_SIZE_IN_BYTES
+			image.close(); // Close File
+
+			return TRUE;
+
+		}
+
+		return FALSE;
 
 	}
 
@@ -456,12 +455,12 @@ public:
 	/// <param name="FilePath">- Music File Path "*.wav" | "*.wma" | "*.mp3" || Video Formats not Supported Yet ||</param>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
-	static MCIERROR Open(CONST WCHAR *Alias, std::wstring FilePath) {
+	static MCIERROR Open(CONST WCHAR *Alias, CONST WCHAR *FilePath) {
 
 		MCI_OPEN_PARMS open = { 0 };
 		open.lpstrAlias = Alias;
 		open.lpstrDeviceType = NULL;
-		open.lpstrElementName = FilePath.c_str();
+		open.lpstrElementName = FilePath;
 		open.wDeviceID = NULL;
 
 		return mciSendCommand(NULL, MCI_OPEN, MCI_WAIT | MCI_OPEN_ELEMENT | MCI_OPEN_ALIAS, (DWORD_PTR)&open);

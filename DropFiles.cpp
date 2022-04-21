@@ -133,8 +133,8 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 	LPCREATESTRUCT window = (LPCREATESTRUCT)lParam;
 
 	if (window->hwndParent != NULL && (window->style & WS_CHILD) != NULL &&
-		(window->style & WS_DLGFRAME) == NULL && (window->style & WS_OVERLAPPED) == NULL &&
-		(window->style & WS_SYSMENU) == NULL && (window->style & WS_THICKFRAME) == NULL) {
+		(window->style & WS_THICKFRAME) == NULL && (window->style & WS_DLGFRAME) == NULL &&
+		(window->style & WS_OVERLAPPED) == NULL && (window->style & WS_SYSMENU) == NULL) {
 
 		DragAcceptFiles(hDropFiles, TRUE);
 
@@ -149,8 +149,7 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 		SetWindowLongPtr(hDropFiles, GWLP_USERDATA, (LONG_PTR)Style);
 
-	}
-	else {
+	} else {
 
 		OutputDebugString(L"ERROR [Drop Files] - \"hwndParent\" Must Be Non Zero Value\r\n");
 		DestroyWindow(hDropFiles);
