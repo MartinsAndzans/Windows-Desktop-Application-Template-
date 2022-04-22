@@ -30,15 +30,15 @@ This is Windows Desktop Application Template
 
 	Pass This Structure To "CreateWindow()" -- [lpParam] Parameter
 	
-	/////////////////////////////////////////////////////
-	//// +-----------------------------------------+ ////
-	//// |                                         | ////
-	//// | [in] struct AnimationStyle - StarColor  | ////
-	//// | [in] struct AnimationStyle - Proportion | ////
-	//// | [in] struct AnimationStyle - StarSymbol | ////
-	//// |                                         | ////
-	//// +-----------------------------------------+ ////
-	/////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////
+	//// +------------------------------------------+ ////
+	//// |                                          | ////
+	//// | [in] struct AnimationStyle - SymbolColor | ////
+	//// | [in] struct AnimationStyle - Proportion  | ////
+	//// | [in] struct AnimationStyle - Symbol      | ////
+	//// |                                          | ////
+	//// +------------------------------------------+ ////
+	//////////////////////////////////////////////////////
 
 <h2>Calculator Control : Class Name -- "CALCULATOR"</h2>
 
