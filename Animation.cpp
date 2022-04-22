@@ -165,15 +165,15 @@ VOID Animation::onPaint(HWND hAnimation) {
 
 	LPAnimationStyle Style = (LPAnimationStyle)GetWindowLongPtr(hAnimation, GWLP_USERDATA);
 	
-	/////////////////////////////////////////////////////
-	//// +-----------------------------------------+ ////
-	//// |                                         | ////
-	//// | [in] struct AnimationStyle - StarColor  | ////
-	//// | [in] struct AnimationStyle - Proportion | ////
-	//// | [in] struct AnimationStyle - StarSymbol | ////
-	//// |                                         | ////
-	//// +-----------------------------------------+ ////
-	/////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////
+	//// +------------------------------------------+ ////
+	//// |                                          | ////
+	//// | [in] struct AnimationStyle - SymbolColor | ////
+	//// | [in] struct AnimationStyle - Proportion  | ////
+	//// | [in] struct AnimationStyle - Symbol      | ////
+	//// |                                          | ////
+	//// +------------------------------------------+ ////
+	//////////////////////////////////////////////////////
 
 	WCHAR WindowTitle[MAX_ANIMATION_CHAR_STRING] = { 0 };
 	GetWindowText(hAnimation, WindowTitle, ARRAYSIZE(WindowTitle));
