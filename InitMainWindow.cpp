@@ -317,11 +317,10 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 		DragFinish((HDROP)lParam);
 
-		std::string EncryptedText = Functions::EncryptText("HELLO WORLD!");
-		std::string DecryptedText = Functions::DecryptText(EncryptedText);
-
-		PRINT(0x08, EncryptedText);
-		PRINT(0x08, DecryptedText);
+		std::string Secret = Functions::EncryptText("This is Very Secret Message!");
+		PRINT(0x0B, Secret);
+		std::string Message = Functions::DecryptText(Secret);
+		PRINT(0x08, Message);
 
 		break;
 

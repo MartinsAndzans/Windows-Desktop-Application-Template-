@@ -93,12 +93,13 @@ public:
 	/// </summary>
 	/// <param name="Text">- Text To Be Encrypted</param>
 	/// <returns>Encrypted Text</returns>
-	static std::string EncryptText(std::string Text) {
+	static std::string EncryptText(CONST std::string &Text) {
 
 		std::string EncryptedText = "";
 
-		for (SIZE_T I = 0; I < Text.length(); I++) {
-			EncryptedText = EncryptedText + _itos((INT)Text[I]) + "|";
+		for (CHAR Character : Text) {
+			SHORT ASCII_VALUE = Character;
+			EncryptedText += std::to_string(ASCII_VALUE) + "|";
 		}
 
 		return EncryptedText;
@@ -112,16 +113,20 @@ public:
 	/// <returns>Decrypted Text</returns>
 	static std::string DecryptText(std::string EncryptedText) {
 
-		std::string Text = "";
+		std::string DecryptedText = "";
 
-		if (EncryptedText[EncryptedText.length() - 1] == '|') {
-			while (EncryptedText.length() != 0) {
-				Text = Text + (CHAR)std::stoi(EncryptedText);
+		while (EncryptedText.length() != 0) {
+			if (EncryptedText.back() == '|') {
+				CHAR Character = std::stoi(EncryptedText);
+				DecryptedText += Character;
 				EncryptedText.replace(0, EncryptedText.find('|') + 1, "");
+			} else {
+				return DecryptedText;
 			}
+
 		}
 
-		return Text;
+		return DecryptedText;
 
 	}
 
@@ -149,28 +154,26 @@ public:
 	/// </summary>
 	/// <param name="Text">- Double String</param>
 	/// <returns>Rounded Double String</returns>
-	static std::string RoundDoubleString(std::string Text) {
+	static std::string RoundDoubleString(std::string DoubleString) {
 
-		CONST SIZE_T LastSymbol = Text.length() - 1;
+		if (DoubleString.find('.') != std::string::npos) {
 
-		if (Text.find('.') != std::string::npos) {
+			while (DoubleString.back() == '0' or DoubleString.back() == '.') {
 
-			while (Text[LastSymbol] == '0' or Text[LastSymbol] == '.') {
-
-				if (Text[LastSymbol] == '.') {
-					Text.erase(LastSymbol, 1);
-					return Text;
+				if (DoubleString.back() == '.') {
+					DoubleString.pop_back();
+					return DoubleString;
 				}
 
-				Text.erase(LastSymbol, 1);
+				DoubleString.pop_back();
 
 			}
 
-			return Text;
+			return DoubleString;
 
 		}
 
-		return Text;
+		return DoubleString;
 
 	}
 

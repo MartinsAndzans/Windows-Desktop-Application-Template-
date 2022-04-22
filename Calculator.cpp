@@ -85,28 +85,26 @@ SIZE_T Calculator::FindChar(LPSTR Text, CONST CHAR Char, SIZE_T TextLength) {
 
 }
 
-std::string Calculator::RoundDoubleString(std::string Text) {
+std::string Calculator::RoundDoubleString(std::string DoubleString) {
 
-	CONST SIZE_T LastSymbol = Text.length() - 1;
+	if (DoubleString.find('.') != std::string::npos) {
 
-	if (Text.find('.') != std::string::npos) {
+		while (DoubleString.back() == '0' or DoubleString.back() == '.') {
 
-		while (Text[LastSymbol] == '0' or Text[LastSymbol] == '.') {
-
-			if (Text[LastSymbol] == '.') {
-				Text.erase(LastSymbol, 1);
-				return Text;
+			if (DoubleString.back() == '.') {
+				DoubleString.pop_back();
+				return DoubleString;
 			}
 
-			Text.erase(LastSymbol, 1);
+			DoubleString.pop_back();
 
 		}
 
-		return Text;
+		return DoubleString;
 
 	}
 
-	return Text;
+	return DoubleString;
 
 }
 

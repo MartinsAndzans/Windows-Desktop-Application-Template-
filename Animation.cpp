@@ -61,7 +61,7 @@ VOID Animation::CreateStarFont() {
 
 }
 
-VOID Animation::drawStars(HDC hdc, RECT &Rectangle, COLORREF SymbolColor, CONST CHAR Symbol, UINT Proportion) {
+VOID Animation::drawFrame(HDC hdc, RECT &Rectangle, COLORREF SymbolColor, CONST CHAR Symbol, UINT Proportion) {
 
 	if (Rectangle.right - Rectangle.left != 0 and Rectangle.bottom - Rectangle.top != 0) {
 
@@ -209,7 +209,7 @@ VOID Animation::onPaint(HWND hAnimation) {
 	WCHAR WindowTitle[MAX_ANIMATION_CHAR_STRING] = { 0 };
 	GetWindowText(hAnimation, WindowTitle, ARRAYSIZE(WindowTitle));
 
-	drawStars(MemoryDC, Dimensions, Style->SymbolColor, Style->Symbol, Style->Proportion);
+	drawFrame(MemoryDC, Dimensions, Style->SymbolColor, Style->Symbol, Style->Proportion);
 
 	// Text Shadow
 	SetTextColor(MemoryDC, DarkerColor(Style->SymbolColor, 0x20)); // 0x20 / 32

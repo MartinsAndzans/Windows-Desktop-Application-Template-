@@ -383,14 +383,14 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Draws Stars
+	/// This Function Draws Frame
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
 	/// <param name="Rectangle">- Drawing Rectangle</param>
 	/// <param name="SymbolColor">- Symbol Color</param>
 	/// <param name="Symbol">- Symbol</param>
 	/// <param name="Proportion">- Proportion</param>
-	static VOID drawStars(HDC hdc, RECT &Rectangle, COLORREF SymbolColor = WHITE_COLOR, CONST CHAR Symbol = '+', UINT Proportion = 4) {
+	static VOID drawFrame(HDC hdc, RECT &Rectangle, COLORREF SymbolColor = WHITE_COLOR, CONST CHAR Symbol = '+', UINT Proportion = 4) {
 
 		if (Rectangle.right - Rectangle.left != 0 and Rectangle.bottom - Rectangle.top != 0) {
 
