@@ -32,7 +32,7 @@ private:
 	static VOID CreateDropFilesFont();
 	static VOID drawDashedRectangle(HDC hdc, RECT &Rectangle, SIZE_T Width, COLORREF Color);
 	static VOID FillRectOpacity50(HDC hdc, RECT &Rectangle,COLORREF Color);
-	static VOID drawArrow(HDC hdc, INT X = 0, INT Y = 0, INT W = 20, INT H = 20, COLORREF Color = RGB(0, 0, 0));
+	static VOID drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 20, INT HEIGHT = 20, COLORREF Color = BLACK_COLOR);
 	#pragma endregion
 
 	#pragma region Events

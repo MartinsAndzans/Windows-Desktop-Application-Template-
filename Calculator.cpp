@@ -113,9 +113,7 @@ BOOL Calculator::CreateCalculatorControls(HWND hCalculator) {
 	SetLastError(0);
 
 	HWND hwnd = { 0 };
-
 	MathOutputs *Outputs = new MathOutputs{};
-
 	SetWindowLongPtr(hCalculator, GWLP_USERDATA, (LONG_PTR)Outputs);
 
 	std::vector <SHORT> CalculatorControlsID = { ID_CL_CLOSE, ID_CL_OPERATION, ID_CL_OUTPUT_RESULT,
@@ -193,7 +191,6 @@ BOOL Calculator::CreateCalculatorControls(HWND hCalculator) {
 		}
 
 		if (hwnd == NULL) return FALSE;
-
 		SetFont(hwnd, CalculatorFont);
 
 	}
@@ -217,7 +214,7 @@ VOID Calculator::onCreate(HWND hCalculator, LPARAM lParam) {
 		if (!CreateCalculatorControls(hCalculator)) {
 			std::string ErrorMessage = "ERROR " + std::to_string(GetLastError()) + " - Out of Memory!";
 			MessageBoxA(hCalculator, ErrorMessage.c_str(), "ERROR", MB_OK | MB_ICONERROR);
-			DestroyWindow(hCalculator);
+			PostMessage(GetParent(hCalculator), WM_COMMAND, MAKEWPARAM(window->hMenu, hCalculator), DestroyWindow(hCalculator));
 		}
 
 		if (window->cx != 0 and window->cy != 0) {
@@ -225,10 +222,7 @@ VOID Calculator::onCreate(HWND hCalculator, LPARAM lParam) {
 		}
 
 	} else {
-
-		OutputDebugString(L"ERROR [Calculator] - \"hwndParent\" Must Be Non Zero Value\r\n");
 		DestroyWindow(hCalculator);
-
 	}
 
 }
@@ -247,11 +241,13 @@ VOID Calculator::onDrawItem(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 	LPDRAWITEMSTRUCT item = (LPDRAWITEMSTRUCT)lParam;
 
+	CONST COLORREF LIGHT_GRAY_COLOR = RGB(240, 240, 240); // R: 240 | G: 240 | B: 240
+
 	if (item->CtlID == ID_CL_OPERATION or item->CtlID == ID_CL_OUTPUT_RESULT) {
 
 		SIZE size = { 0 };
 		WCHAR StaticText[MAX_CALCULATOR_CHAR_STRING] = { 0 };
-		SetDCBrushColor(item->hDC, RGB(240, 240, 240));
+		SetDCBrushColor(item->hDC, LIGHT_GRAY_COLOR);
 		FillRect(item->hDC, &item->rcItem, (HBRUSH)GetStockObject(DC_BRUSH));
 		SetBkMode(item->hDC, TRANSPARENT);
 		INT TextLength = GetWindowText(item->hwndItem, StaticText, ARRAYSIZE(StaticText));
@@ -276,18 +272,20 @@ VOID Calculator::onPaint(HWND hCalculator) {
 	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(WHITE_BRUSH));
 	SelectObject(MemoryDC, CalculatorFont);
 
+	// Title
 	SIZE size = { 0 };
 	WCHAR WindowTitle[MAX_CALCULATOR_CHAR_STRING] = { 0 };
 	GetWindowText(hCalculator, WindowTitle, ARRAYSIZE(WindowTitle));
-	GetTextExtentPoint(MemoryDC, WindowTitle, lstrlenW(WindowTitle), &size);
 
 	if (lstrcmpW(WindowTitle, L"") == 0) {
 		GetTextExtentPoint(MemoryDC, L"CALCULATOR", lstrlenW(L"CALCULATOR"), &size);
 		TextOut(MemoryDC, Padding, Padding + ButtonWidth / 2 - size.cy / 2, L"CALCULATOR", lstrlenW(L"CALCULATOR"));
 	}
 	else {
+		GetTextExtentPoint(MemoryDC, WindowTitle, lstrlenW(WindowTitle), &size);
 		TextOut(MemoryDC, Padding, Padding + ButtonWidth / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));
 	}
+	////
 
 	BitBlt(CalculatorDC, 0, 0, Dimensions.right, Dimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
@@ -620,8 +618,7 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 				//
 
 				// Result Output
-
-				Module = (int)round(Num1) % (int)round(Num2);
+				Module = (INT)round(Num1) % (INT)round(Num2);
 				SResult = RoundDoubleString(std::to_string(Module));
 				//
 

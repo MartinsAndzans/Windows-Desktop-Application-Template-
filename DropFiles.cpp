@@ -150,10 +150,7 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 		SetWindowLongPtr(hDropFiles, GWLP_USERDATA, (LONG_PTR)Style);
 
 	} else {
-
-		OutputDebugString(L"ERROR [Drop Files] - \"hwndParent\" Must Be Non Zero Value\r\n");
 		DestroyWindow(hDropFiles);
-
 	}
 
 }
@@ -187,7 +184,7 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(DC_BRUSH));
 	SelectObject(MemoryDC, DropFilesFont);
 
-	// Margin
+	// Border
 	CONST SHORT BorderPadding = 4, BorderWidth = 2;
 	RECT Border = { Dimensions.left + BorderPadding, Dimensions.top + BorderPadding, Dimensions.right - BorderPadding, Dimensions.bottom - BorderPadding };
 	drawDashedRectangle(MemoryDC, Border, BorderWidth, Style->ForegroundColor);

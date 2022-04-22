@@ -324,58 +324,11 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 VOID MainWindow::onKeyDown(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
-	#define DEFAULT_VK 0xFFFFFFFF
+	#define VK_DEFAULT 0xFFFFFFFF
 
 	switch (wParam) {
-	case VK_UP:
+	case VK_DEFAULT:
 	{
-
-		WCHAR File[MAX_CHAR_STRING] = { 0 };
-
-		OPENFILENAME ofn = { 0 };
-		ofn.lStructSize = sizeof(OPENFILENAME);
-		ofn.hwndOwner = hMainWindow;
-		ofn.Flags = OFN_FILEMUSTEXIST | OFN_EXPLORER | OFN_READONLY | OFN_NOLONGNAMES | OFN_HIDEREADONLY;
-		ofn.hInstance = NULL;
-		ofn.lpstrFilter = L"Music Files\0*.mp3;*.wma;*.wav\0MP3 Files\0*.mp3\0WMA Files\0*.wma\0WAV Files\0*.wav\0\0";
-		ofn.nFilterIndex = 1;
-		ofn.lpstrTitle = L"Open Music";
-		ofn.lpstrInitialDir = L"%USERPROFILE%";
-		ofn.lpstrFile = File;
-		ofn.nMaxFile = MAX_CHAR_STRING;
-
-		GetOpenFileName(&ofn);
-
-		PRINT(0x0C, Sound::Open(L"Music", File));
-
-		break;
-
-	}
-	case VK_RIGHT:
-	{
-		PRINT(0x0C, Sound::Play(hMainWindow, L"Music"));
-
-		break;
-
-	}
-	case VK_LEFT:
-	{
-
-		if (Sound::GetPlaybackStatus(L"Music", MCI_STATUS_MODE) == MCI_MODE_PLAY)
-			PRINT(0x0C, Sound::Pause(L"Music"));
-		else if (Sound::GetPlaybackStatus(L"Music", MCI_STATUS_MODE) == MCI_MODE_PAUSE)
-			PRINT(0x0C, Sound::Resume(L"Music"));
-
-		break;
-
-	}
-	case VK_DOWN:
-	{
-
-		if (Sound::GetPlaybackStatus(L"Music", MCI_STATUS_MODE) == MCI_MODE_PLAY)
-			PRINT(0x0C, Sound::Stop(L"Music"));
-		else if (Sound::GetPlaybackStatus(L"Music", MCI_STATUS_MODE) == MCI_MODE_STOP)
-			PRINT(0x0C, Sound::Close(L"Music"));
 
 		break;
 

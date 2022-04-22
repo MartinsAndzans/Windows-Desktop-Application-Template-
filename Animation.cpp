@@ -61,7 +61,7 @@ VOID Animation::CreateStarFont() {
 
 }
 
-VOID Animation::drawFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, CONST CHAR Symbol, UINT Proportion, COLORREF SymbolColor) {
+VOID Animation::drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, CONST CHAR Symbol, UINT Proportion, COLORREF SymbolColor) {
 
 	if (WIDTH != 0 and HEIGHT != 0) {
 
@@ -77,29 +77,21 @@ VOID Animation::drawFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIG
 		GetSystemTime(&st); // Gets System Time
 		srand(st.wMilliseconds); // Random Sead
 
-		for (UINT I = 0; I < Proportion * Proportion; I++) {
+		for (UINT Y = 0; Y < Proportion; Y++) {
+			for (UINT X = 0; X < Proportion; X++) {
 
-			INT SYMBOLX = rand() % XCELL; // Random Number From 0 To (XCELL - 1)
-			INT SYMBOLY = rand() % YCELL; // Random Number From 0 To (YCELL - 1)
+				INT SYMBOL_X = rand() % XCELL; // Random Number From 0 To (XCELL - 1)
+				INT SYMBOL_Y = rand() % YCELL; // Random Number From 0 To (YCELL - 1)
 
-			TextOutA(hdc, COORD_X + SYMBOLX - size.cx / 2, COORD_Y + SYMBOLY - size.cy / 2, &Symbol, 1);
+				TextOutA(hdc, COORD_X + (SYMBOL_X + XCELL * X) - size.cx / 2, COORD_Y + (SYMBOL_Y + YCELL * Y) - size.cy / 2, &Symbol, 1);
 
-			//XS = XS + XCELL;
-
-			//if (XS == XCELL * Proportion) {
-				//XS = 0;
-				//YS = YS + YCELL;
-			//}
-
+			}
 		}
 
 		SetTextColor(hdc, PreviousColor);
 
-	}
-	else {
-
-		OutputDebugString(L"ERROR [AnimationStars::drawStars] - Width or Height Must be non Zero Value!\r\n");
-
+	} else {
+		OutputDebugString(L"ERROR [Animation::drawAnimationFrame] - Width or Height Must be non Zero Value!\r\n");
 	}
 
 }
@@ -131,10 +123,7 @@ VOID Animation::onCreate(HWND hAnimation, LPARAM lParam) {
 		}
 
 	} else {
-
-		OutputDebugString(L"ERROR [Animation Stars] - \"hwndParent\" Must Be Non Zero Value\r\n");
 		DestroyWindow(hAnimation);
-
 	}
 
 }
@@ -189,7 +178,7 @@ VOID Animation::onPaint(HWND hAnimation) {
 	WCHAR WindowTitle[MAX_ANIMATION_CHAR_STRING] = { 0 };
 	GetWindowText(hAnimation, WindowTitle, ARRAYSIZE(WindowTitle));
 
-	drawFrame(MemoryDC, Dimensions.left, Dimensions.top, Dimensions.right, Dimensions.bottom, Style->Symbol, Style->Proportion, Style->SymbolColor);
+	drawAnimationFrame(MemoryDC, Dimensions.left, Dimensions.top, Dimensions.right, Dimensions.bottom, Style->Symbol, Style->Proportion, Style->SymbolColor);
 
 	// Text Shadow
 	SetTextColor(MemoryDC, DarkerColor(Style->SymbolColor, 0x20)); // 0x20 / 32

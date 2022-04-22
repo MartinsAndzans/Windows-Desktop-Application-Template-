@@ -333,20 +333,23 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Draws Frame
+	/// This Function Draws Animation Frame
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
-	/// <param name="Rectangle">- Drawing Rectangle</param>
-	/// <param name="SymbolColor">- Symbol Color</param>
+	/// <param name="COORD_X">- X Coordinate</param>
+	/// <param name="COORD_Y">- Y Coordinate</param>
+	/// <param name="WIDTH">- Width</param>
+	/// <param name="HEIGTH">- Height</param>
 	/// <param name="Symbol">- Symbol</param>
 	/// <param name="Proportion">- Proportion</param>
-	static VOID drawFrame(HDC hdc, RECT& Rectangle, COLORREF SymbolColor = WHITE_COLOR, CONST CHAR Symbol = '+', UINT Proportion = 4) {
+	/// <param name="SymbolColor">- Symbol Color</param>
+	static VOID drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, CONST CHAR Symbol = '+', UINT Proportion = 4, COLORREF SymbolColor = WHITE_COLOR) {
 
-		if (Rectangle.right - Rectangle.left != 0 and Rectangle.bottom - Rectangle.top != 0) {
+		if (WIDTH != 0 and HEIGHT != 0) {
 
 			SIZE size = { 0 };
 			SYSTEMTIME st = { 0 };
-			INT XS = 0, YS = 0, XCELL = (Rectangle.right - Rectangle.left) / Proportion, YCELL = (Rectangle.bottom - Rectangle.top) / Proportion;
+			INT XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
 
 			COLORREF PreviousColor = GetTextColor(hdc);
 			SetTextColor(hdc, SymbolColor);
@@ -356,48 +359,21 @@ public:
 			GetSystemTime(&st); // Gets System Time
 			srand(st.wMilliseconds); // Random Sead
 
-			for (UINT I = 0; I < Proportion * Proportion; I++) {
+			for (UINT Y = 0; Y < Proportion; Y++) {
+				for (UINT X = 0; X < Proportion; X++) {
 
-				INT SYMBOLX = rand() % XCELL + XS; // XS - (XS + XCELL)
-				INT SYMBOLY = rand() % YCELL + YS; // YS - (YS + YCELL)
+					INT SYMBOL_X = rand() % XCELL; // Random Number From 0 To (XCELL - 1)
+					INT SYMBOL_Y = rand() % YCELL; // Random Number From 0 To (YCELL - 1)
 
-				TextOutA(hdc, Rectangle.left + SYMBOLX - size.cx / 2, Rectangle.top + SYMBOLY - size.cy / 2, &Symbol, 1);
+					TextOutA(hdc, COORD_X + (SYMBOL_X + XCELL * X) - size.cx / 2, COORD_Y + (SYMBOL_Y + YCELL * Y) - size.cy / 2, &Symbol, 1);
 
-				///////////////////////////
-				//// -->               ////
-				//// +---+---+---+---+ ////
-				//// | 0 | 1 | 2 | 3 | ////
-				//// +---+---+---+---+ ////
-				///////////////////////////
-
-				XS = XS + XCELL;
-
-				/////////////////
-				//// +---+ | ////
-				//// | 0 | | ////
-				//// +---+ V ////
-				//// | 1 |   ////
-				//// +---+   ////
-				//// | 2 |   ////
-				//// +---+   ////
-				//// | 3 |   ////
-				//// +---+   ////
-				/////////////////
-
-				if (XS == XCELL * Proportion) {
-					XS = 0;
-					YS = YS + YCELL;
 				}
-
 			}
 
 			SetTextColor(hdc, PreviousColor);
 
-		}
-		else {
-
-			OutputDebugString(L"ERROR [AnimationStars::drawStars] - Width or Height Must be non Zero Value!\r\n");
-
+		} else {
+			OutputDebugString(L"ERROR [Draw::drawAnimationFrame] - Width or Height Must be non Zero Value!\r\n");
 		}
 
 	}
@@ -453,5 +429,13 @@ public:
 	}
 
 };
+
+#undef WHITE_COLOR
+#undef BLACK_COLOR
+#undef ORANGE_COLOR
+#undef RED_COLOR
+#undef BLUE_COLOR
+#undef GREEN_COLOR
+#undef DARK_GREEN_COLOR
 
 #endif
