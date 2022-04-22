@@ -180,13 +180,13 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	#pragma region Examples
 	Animation::AnimationStyle as = { 0 };
-	as.SymbolColor = RGB(25, 255, 60);
+	as.SymbolColor = ORANGE_COLOR;
 	as.Proportion = 4;
 	as.Symbol = '+';
 
 	DropFiles::DropFilesStyle dfs = { 0 };
-	dfs.BackgroundColor = RGB(255, 195, 30);
-	dfs.ForegroundColor = RGB(0, 55, 255);
+	dfs.BackgroundColor = ORANGE_COLOR;
+	dfs.ForegroundColor = BLUE_COLOR;
 
 	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION", L"STARS", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 10, 140, 140, hMainWindow, (HMENU)ID_ANIMATION_STARS, HInstance(), &as);
 	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"Drop File/s Here", WS_CHILD | WS_BORDER | WS_VISIBLE, 270, 120, 240, 140, hMainWindow, (HMENU)ID_DROP_FILES, HInstance(), &dfs);
@@ -273,8 +273,6 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 	GetTextExtentPointA(MainWindowDC, Text, ARRAYSIZE(Text), &size);
 	TextOutA(MemoryDC, MainWindowDimensions.right / 2 - size.cx / 2, MainWindowDimensions.bottom / 2 - size.cy / 2, Text, ARRAYSIZE(Text) - 1);
 
-	Draw::drawO(MemoryDC, MainWindowDimensions.right / 2 - 60 / 2, MainWindowDimensions.bottom / 4 - 60 / 2, 60, 60);
-
 	BitBlt(MainWindowDC, 0, 0, MainWindowDimensions.right, MainWindowDimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
 	DeleteDC(MemoryDC);
@@ -316,11 +314,6 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 		}
 
 		DragFinish((HDROP)lParam);
-
-		std::string Secret = Functions::EncryptText("This is Very Secret Message!");
-		PRINT(0x0B, Secret);
-		std::string Message = Functions::DecryptText(Secret);
-		PRINT(0x08, Message);
 
 		break;
 

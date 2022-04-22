@@ -190,56 +190,6 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Draws "X"
-	/// </summary>
-	/// <param name="hdc">- Device Context</param>
-	/// <param name="COORD_X">- X Coordinate</param>
-	/// <param name="COORD_Y">- Y Coordinate</param>
-	/// <param name="WIDTH">- Width</param>
-	/// <param name="HEIGHT">- Height</param>
-	/// <param name="LineWidth">- Line Width</param>
-	/// <param name="Color">- Color</param>
-	static VOID drawX(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 40, INT HEIGHT = 40, SHORT LineWidth = 2, COLORREF Color = BLACK_COLOR) {
-
-		HPEN XPen = CreatePen(PS_SOLID, LineWidth, Color);
-		HPEN PreviousPen = (HPEN)SelectObject(hdc, XPen);
-
-		// Left - Top To Right - Bottom
-		MoveToEx(hdc, COORD_X, COORD_Y, NULL);
-		LineTo(hdc, COORD_X + WIDTH, COORD_Y + HEIGHT);
-
-		// Right - Top To Left - Bottom
-		MoveToEx(hdc, COORD_X + WIDTH, COORD_Y, NULL);
-		LineTo(hdc, COORD_X, COORD_Y + HEIGHT);
-
-		SelectObject(hdc, PreviousPen);
-		DeleteObject(XPen);
-
-	}
-
-	/// <summary>
-	/// This Function Draws "O"
-	/// </summary>
-	/// <param name="hdc">- Device Context</param>
-	/// <param name="COORD_X">- X Coordinate</param>
-	/// <param name="COORD_Y">- Y Coordinate</param>
-	/// <param name="WIDTH">- Width</param>
-	/// <param name="HEIGHT">- Height</param>
-	/// <param name="LineWidth">- Line Width</param>
-	/// <param name="Color">- Color</param>
-	static VOID drawO(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 40, INT HEIGHT = 40, SHORT LineWidth = 2, COLORREF Color = BLACK_COLOR) {
-
-		HPEN OPen = CreatePen(PS_SOLID, LineWidth, Color);
-		HPEN PreviousPen = (HPEN)SelectObject(hdc, OPen);
-
-		Ellipse(hdc, COORD_X, COORD_Y, COORD_X + WIDTH, COORD_Y + HEIGHT);
-		
-		SelectObject(hdc, PreviousPen);
-		DeleteObject(OPen);
-
-	}
-
-	/// <summary>
 	/// This Function Draws Arrow
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
@@ -270,14 +220,14 @@ public:
 
 	/// <summary>
 	/// This Function Draws Small Gradient
-	/// <para>Size - Width = 420 Height = 40</para>
+	/// <para>Size - Width = 420 / Height = 40</para>
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
 	/// <param name="COORD_X">- X Coordinate</param>
 	/// <param name="COORD_Y">- Y Coordinate</param>
 	/// <param name="BorderWidth">- Border Width</param>
 	/// <param name="BorderColor">- Border Color</param>
-	/// <returns>returns Border Width</returns>
+	/// <returns>Returns Border Width</returns>
 	static SHORT drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = BLACK_COLOR) {
 
 		CONST SHORT Width = 420, Height = 40;
@@ -321,14 +271,14 @@ public:
 
 	/// <summary>
 	/// This Function Draws Large Gradient
-	/// <para>Size - Width = 420 Height = 100</para>
+	/// <para>Size - Width = 420 / Height = 100</para>
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
 	/// <param name="COORD_X">- X Coordinate</param>
 	/// <param name="COORD_Y">- Y Coordinate</param>
 	/// <param name="BorderWidth">- Border Width</param>
 	/// <param name="BorderColor">- Border Color</param>
-	/// <returns>returns Border Width</returns>
+	/// <returns>Returns Border Width</returns>
 	static SHORT drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = BLACK_COLOR) {
 
 		CONST SHORT Width = 420, Height = 100;
@@ -390,7 +340,7 @@ public:
 	/// <param name="SymbolColor">- Symbol Color</param>
 	/// <param name="Symbol">- Symbol</param>
 	/// <param name="Proportion">- Proportion</param>
-	static VOID drawFrame(HDC hdc, RECT &Rectangle, COLORREF SymbolColor = WHITE_COLOR, CONST CHAR Symbol = '+', UINT Proportion = 4) {
+	static VOID drawFrame(HDC hdc, RECT& Rectangle, COLORREF SymbolColor = WHITE_COLOR, CONST CHAR Symbol = '+', UINT Proportion = 4) {
 
 		if (Rectangle.right - Rectangle.left != 0 and Rectangle.bottom - Rectangle.top != 0) {
 
@@ -401,17 +351,17 @@ public:
 			COLORREF PreviousColor = GetTextColor(hdc);
 			SetTextColor(hdc, SymbolColor);
 
-			GetTextExtentPointA(hdc, &Symbol, 1, &size); // Size Symbol In Pixels
+			GetTextExtentPointA(hdc, &Symbol, 1, &size); // Symbol Size In Pixels
 
 			GetSystemTime(&st); // Gets System Time
 			srand(st.wMilliseconds); // Random Sead
 
 			for (UINT I = 0; I < Proportion * Proportion; I++) {
 
-				INT STARX = rand() % XCELL + XS; // XS - (XS + XCELL)
-				INT STARY = rand() % YCELL + YS; // YS - (YS + YCELL)
+				INT SYMBOLX = rand() % XCELL + XS; // XS - (XS + XCELL)
+				INT SYMBOLY = rand() % YCELL + YS; // YS - (YS + YCELL)
 
-				TextOutA(hdc, Rectangle.left + STARX - size.cx / 2, Rectangle.top + STARY - size.cy / 2, &Symbol, 1);
+				TextOutA(hdc, Rectangle.left + SYMBOLX - size.cx / 2, Rectangle.top + SYMBOLY - size.cy / 2, &Symbol, 1);
 
 				///////////////////////////
 				//// -->               ////

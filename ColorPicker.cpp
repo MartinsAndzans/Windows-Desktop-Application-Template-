@@ -262,8 +262,7 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
-	SetDCBrushColor(MemoryDC, ColorPickerBackgroundColor);
-	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(DC_BRUSH));
+	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(BLACK_BRUSH));
 
 	WCHAR WindowTitle[MAX_COLOR_PICKER_CHAR_STRING] = { 0 };
 	GetWindowText(hColorPicker, WindowTitle, ARRAYSIZE(WindowTitle));

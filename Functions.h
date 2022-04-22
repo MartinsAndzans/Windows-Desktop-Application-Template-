@@ -252,41 +252,6 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Gets WText From Clipboard
-	/// </summary>
-	/// <param name="Hwnd">- New Clipboard Owner</param>
-	/// <returns>
-	/// If Function Succeeded returns Received WText, but If not Error Code:
-	/// <para>"-1" - Clipboard Is Taken by Another Program!</para>
-	/// <para>"-2" - Clipboard Is Empty!</para>
-	/// </returns>
-	static std::wstring GetClipboardWText(HWND Hwnd) {
-
-		if (OpenClipboard(Hwnd)) {
-			std::wstring WText = L"";
-			HLOCAL ClipboardData = GetClipboardData(CF_UNICODETEXT);
-			if (ClipboardData == NULL) {
-				CloseClipboard();
-				return L"-2";
-			}
-			VOID *buffer = LocalLock(ClipboardData);
-			if (buffer == NULL) {
-				LocalFree(ClipboardData);
-				CloseClipboard();
-				return L"-2";
-			}
-			WText = (wchar_t*)buffer;
-			LocalUnlock(ClipboardData);
-			LocalFree(ClipboardData);
-			CloseClipboard();
-			return WText;
-		}
-
-		return L"-1";
-
-	}
-
-	/// <summary>
 	/// This Function Gets Text From Clipboard
 	/// </summary>
 	/// <param name="Hwnd">- New Clipboard Owner</param>
@@ -322,42 +287,52 @@ public:
 	}
 
 	/// <summary>
-	/// Creates Control On Heap Memory
-	/// <para>After Destroying This Control - Invoke This function [Delete Hwnd]</para>
+	/// This Function Gets WText From Clipboard
 	/// </summary>
-	/// <param name="Class">- Control Class</param>
-	/// <param name="Caption">- Control Caption</param>
-	/// <param name="Styles">- Control Styles</param>
-	/// <param name="Dimensions">- Control Dimensions</param>
-	/// <param name="ParentWindow">- Parent Window</param>
-	/// <param name="Id">- Control Id</param>
-	/// <returns>Pointer To Control Handle</returns>
-	static  HWND* CreateControlOnHeapMemory(LPWSTR Class, LPWSTR Caption, DWORD Styles, RECT Dimensions, HWND ParentWindow, HMENU ID) {
+	/// <param name="Hwnd">- New Clipboard Owner</param>
+	/// <returns>
+	/// If Function Succeeded returns Received WText, but If not Error Code:
+	/// <para>"-1" - Clipboard Is Taken by Another Program!</para>
+	/// <para>"-2" - Clipboard Is Empty!</para>
+	/// </returns>
+	static std::wstring GetClipboardWText(HWND Hwnd) {
 
-		HWND *Hwnd = new HWND;
-		ZeroMemory(Hwnd, sizeof(HWND));
-
-		if (!(*Hwnd = CreateWindowEx(WS_EX_STATICEDGE,
-			Class,
-			Caption,
-			Styles,
-			Dimensions.left, Dimensions.top, Dimensions.right, Dimensions.bottom,
-			ParentWindow,
-			ID,
-			NULL,
-			NULL))) {
-			delete Hwnd;
-			return NULL;
+		if (OpenClipboard(Hwnd)) {
+			std::wstring WText = L"";
+			HLOCAL ClipboardData = GetClipboardData(CF_UNICODETEXT);
+			if (ClipboardData == NULL) {
+				CloseClipboard();
+				return L"-2";
+			}
+			VOID *buffer = LocalLock(ClipboardData);
+			if (buffer == NULL) {
+				LocalFree(ClipboardData);
+				CloseClipboard();
+				return L"-2";
+			}
+			WText = (wchar_t*)buffer;
+			LocalUnlock(ClipboardData);
+			LocalFree(ClipboardData);
+			CloseClipboard();
+			return WText;
 		}
 
-		return Hwnd;
+		return L"-1";
 
 	}
 
 	template<typename Numbers> 
 	static Numbers SortArray(Numbers Array[], UINT Length) {
 
+		INT A[] = { 1, 5, 4, 7, 8 };
 
+		for (UINT I = 0; I < Length; I++) {
+
+
+
+		}
+
+		return Array;
 
 	}
 

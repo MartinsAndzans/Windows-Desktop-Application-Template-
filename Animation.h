@@ -16,8 +16,7 @@
 #define MAX_ANIMATION_CHAR_STRING 256
 #define HInstance() GetModuleHandle(NULL)
 
-#define AnimationBackgroundColor RGB(0, 0, 0)
-#define AnimationSymbolColor RGB(255, 255, 255)
+#define WHITE_COLOR RGB(255, 255, 255)
 
 class Animation {
 
@@ -36,7 +35,7 @@ private:
 
 	#pragma region Functions
 	static VOID CreateStarFont();
-	static VOID drawFrame(HDC hdc, RECT &Rectangle, COLORREF StarColor, CONST CHAR StarSymbol, UINT Proportion);
+	static VOID drawFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, CONST CHAR Symbol, UINT Proportion, COLORREF SymbolColor);
 	#pragma endregion
 
 	#pragma region Events

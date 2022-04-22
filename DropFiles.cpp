@@ -138,7 +138,7 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 		DragAcceptFiles(hDropFiles, TRUE);
 
-		DropFilesStyle *Style = new DropFilesStyle{ DropFilesBackroundColor, DropFilesForegroundColor }; // Default Initialization
+		DropFilesStyle *Style = new DropFilesStyle{ WHITE_COLOR, BLACK_COLOR }; // Default Initialization
 
 		// Move Style Data To Heap Memory Structure | if "DropFilesStyle" Structure is Passed To lpParam
 		if (window->lpCreateParams != NULL) {
@@ -216,7 +216,7 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 	EndPaint(hDropFiles, &ps);
 
 	if (FileDroped) {
-		Sleep(400); // 400 Milliseconds Delay
+		Sleep(200); // 200 Milliseconds Delay
 		FileDroped = FALSE;
 		RedrawWindow(hDropFiles, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 	}
@@ -264,7 +264,6 @@ LRESULT CALLBACK DropFiles::DropFilesProcedure(HWND hDropFiles, UINT Msg, WPARAM
 	{
 		LPDropFilesStyle Style = (LPDropFilesStyle)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
 		delete[] Style;
-		SetWindowLongPtr(hDropFiles, GWLP_USERDATA, NULL);
 		return 0;
 	}
 	}

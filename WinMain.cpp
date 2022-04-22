@@ -41,18 +41,15 @@ int wmain(int ArrgumentCount, wchar_t *Arrguments[]) {
 
 VOID BroadcastMessages() {
 
-	while (true) {
+	while (TRUE) {
 
-		if (MainWindow::ExtraProcessing) {
+		if (MainWindow::ExtraProcessing)
 			PeekMessage(&MainWindow::Msg, NULL, 0, 0, PM_REMOVE);
-		}
-		else {
+		else
 			GetMessage(&MainWindow::Msg, NULL, 0, 0);
-		}
 
-		if (MainWindow::Msg.message == WM_QUIT) {
+		if (MainWindow::Msg.message == WM_QUIT)
 			break;
-		}
 
 		TranslateMessage(&MainWindow::Msg);
 		DispatchMessage(&MainWindow::Msg);

@@ -16,6 +16,27 @@ BOOL Console::setConsoleTextColor(WORD Color) {
 	return SetConsoleTextAttribute(hOut, FOREGROUND_INTENSITY | Color);
 }
 
+VOID Console::drawRectangleInConsole(CONST SHORT Width, CONST SHORT Height, CONST CHAR Symbol, CONST WORD Color) {
+
+	SetConsoleTextAttribute(hOut, FOREGROUND_INTENSITY | Color);
+
+	for (SHORT H = 1; H <= Height; H++) {
+		for (SHORT W = 1; W <= Width; W++) {
+			if (H == 1 or H == Height) {
+				std::cout << Symbol;
+			} else {
+				if (W == 1 or W == Width) {
+					std::cout << Symbol;
+				} else {
+					std::cout << ' ';
+				}
+			}
+		}
+		std::cout << std::endl;
+	}
+
+}
+
 BOOL Console::setCursorPosition(SHORT COORD_X, SHORT COORD_Y, BOOL MOVE_CURSOR, BOOL FLUSH_BUFFER, BOOL CLS) {
 
 	COORD Coordinates = { COORD_X, COORD_Y };

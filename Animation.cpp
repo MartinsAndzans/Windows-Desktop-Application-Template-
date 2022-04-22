@@ -61,54 +61,35 @@ VOID Animation::CreateStarFont() {
 
 }
 
-VOID Animation::drawFrame(HDC hdc, RECT &Rectangle, COLORREF SymbolColor, CONST CHAR Symbol, UINT Proportion) {
+VOID Animation::drawFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, CONST CHAR Symbol, UINT Proportion, COLORREF SymbolColor) {
 
-	if (Rectangle.right - Rectangle.left != 0 and Rectangle.bottom - Rectangle.top != 0) {
+	if (WIDTH != 0 and HEIGHT != 0) {
 
 		SIZE size = { 0 };
 		SYSTEMTIME st = { 0 };
-		INT XS = 0, YS = 0, XCELL = (Rectangle.right - Rectangle.left) / Proportion, YCELL = (Rectangle.bottom - Rectangle.top) / Proportion;
+		INT XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
 
 		COLORREF PreviousColor = GetTextColor(hdc);
 		SetTextColor(hdc, SymbolColor);
 
-		GetTextExtentPointA(hdc, &Symbol, 1, &size); // Size Symbol In Pixels
+		GetTextExtentPointA(hdc, &Symbol, 1, &size); // Symbol Size In Pixels
 
 		GetSystemTime(&st); // Gets System Time
 		srand(st.wMilliseconds); // Random Sead
 
 		for (UINT I = 0; I < Proportion * Proportion; I++) {
 
-			INT STARX = rand() % XCELL + XS; // XS - (XS + XCELL)
-			INT STARY = rand() % YCELL + YS; // YS - (YS + YCELL)
+			INT SYMBOLX = rand() % XCELL; // Random Number From 0 To (XCELL - 1)
+			INT SYMBOLY = rand() % YCELL; // Random Number From 0 To (YCELL - 1)
 
-			TextOutA(hdc, Rectangle.left + STARX - size.cx / 2, Rectangle.top + STARY - size.cy / 2, &Symbol, 1);
+			TextOutA(hdc, COORD_X + SYMBOLX - size.cx / 2, COORD_Y + SYMBOLY - size.cy / 2, &Symbol, 1);
 
-			///////////////////////////
-			//// -->               ////
-			//// +---+---+---+---+ ////
-			//// | 0 | 1 | 2 | 3 | ////
-			//// +---+---+---+---+ ////
-			///////////////////////////
+			//XS = XS + XCELL;
 
-			XS = XS + XCELL;
-
-			/////////////////
-			//// +---+ | ////
-			//// | 0 | | ////
-			//// +---+ V ////
-			//// | 1 |   ////
-			//// +---+   ////
-			//// | 2 |   ////
-			//// +---+   ////
-			//// | 3 |   ////
-			//// +---+   ////
-			/////////////////
-
-			if (XS == XCELL * Proportion) {
-				XS = 0;
-				YS = YS + YCELL;
-			}
+			//if (XS == XCELL * Proportion) {
+				//XS = 0;
+				//YS = YS + YCELL;
+			//}
 
 		}
 
@@ -133,7 +114,7 @@ VOID Animation::onCreate(HWND hAnimation, LPARAM lParam) {
 		(window->style & WS_THICKFRAME) == NULL and (window->style & WS_DLGFRAME) == NULL and
 		(window->style & WS_OVERLAPPED) == NULL and (window->style & WS_SYSMENU) == NULL) {
 
-		AnimationStyle *Style = new AnimationStyle{ AnimationSymbolColor, 4, '+' }; // Default Initialization
+		AnimationStyle *Style = new AnimationStyle{ WHITE_COLOR, 4, '+' }; // Default Initialization
 
 		// Move Style Data To Heap Memory Structure | if "DropFilesStyle" Structure is Passed To lpParam
 		if (window->lpCreateParams != NULL) {
@@ -190,8 +171,7 @@ VOID Animation::onPaint(HWND hAnimation) {
 
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
-	SetDCBrushColor(MemoryDC, AnimationBackgroundColor);
-	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(DC_BRUSH));
+	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(BLACK_BRUSH));
 	SelectObject(MemoryDC, StarFont);
 
 	LPAnimationStyle Style = (LPAnimationStyle)GetWindowLongPtr(hAnimation, GWLP_USERDATA);
@@ -209,7 +189,7 @@ VOID Animation::onPaint(HWND hAnimation) {
 	WCHAR WindowTitle[MAX_ANIMATION_CHAR_STRING] = { 0 };
 	GetWindowText(hAnimation, WindowTitle, ARRAYSIZE(WindowTitle));
 
-	drawFrame(MemoryDC, Dimensions, Style->SymbolColor, Style->Symbol, Style->Proportion);
+	drawFrame(MemoryDC, Dimensions.left, Dimensions.top, Dimensions.right, Dimensions.bottom, Style->Symbol, Style->Proportion, Style->SymbolColor);
 
 	// Text Shadow
 	SetTextColor(MemoryDC, DarkerColor(Style->SymbolColor, 0x20)); // 0x20 / 32
@@ -257,7 +237,6 @@ LRESULT CALLBACK Animation::AnimationProcedure(HWND hAnimation, UINT Msg, WPARAM
 		KillTimer(hAnimation, AnimationTimer);
 		LPAnimationStyle Style = (LPAnimationStyle)GetWindowLongPtr(hAnimation, GWLP_USERDATA);
 		delete[] Style;
-		SetWindowLongPtr(hAnimation, GWLP_USERDATA, NULL);
 		return 0;
 	}
 	}

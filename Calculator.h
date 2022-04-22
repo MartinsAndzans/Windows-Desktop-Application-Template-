@@ -17,9 +17,8 @@
 
 #define MIN_CALCULATOR_CHAR_STRING 2
 #define MAX_CALCULATOR_CHAR_STRING 256
-#define HInstance() GetModuleHandle(NULL)
 
-#define CalculatorBackgroundColor RGB(255, 255, 255)
+#define HInstance() GetModuleHandle(NULL)
 
 #pragma region CalculatorControlsID
 #define ID_CL_CLOSE 10011

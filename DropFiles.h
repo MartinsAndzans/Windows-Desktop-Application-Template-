@@ -9,8 +9,8 @@
 #define MAX_DROP_FILES_CHAR_STRING 256
 #define HInstance() GetModuleHandle(NULL)
 
-#define DropFilesBackroundColor RGB(255, 255, 255)
-#define DropFilesForegroundColor RGB(0, 0, 0)
+#define WHITE_COLOR RGB(255, 255, 255)
+#define BLACK_COLOR RGB(0, 0, 0)
 
 class DropFiles {
 

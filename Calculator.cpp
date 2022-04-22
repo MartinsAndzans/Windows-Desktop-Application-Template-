@@ -273,8 +273,7 @@ VOID Calculator::onPaint(HWND hCalculator) {
 
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
-	SetDCBrushColor(MemoryDC, CalculatorBackgroundColor);
-	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(DC_BRUSH));
+	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(WHITE_BRUSH));
 	SelectObject(MemoryDC, CalculatorFont);
 
 	SIZE size = { 0 };
@@ -681,7 +680,6 @@ LRESULT CALLBACK Calculator::CalculatorProcedure(HWND hCalculator, UINT Msg, WPA
 	{
 		LpMathOutputs Outputs = (LpMathOutputs)GetWindowLongPtr(hCalculator, GWLP_USERDATA);
 		delete[] Outputs;
-		SetWindowLongPtr(hCalculator, GWLP_USERDATA, NULL);
 		return 0;
 	}
 	}
