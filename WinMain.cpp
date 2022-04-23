@@ -20,7 +20,7 @@ int wmain(int ArrgumentCount, wchar_t *Arrguments[]) {
 	Console::setConsoleTitle("Debug Console");
 	#else
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
-	Console::setConsoleTitle("Don't Close");
+	Console::setConsoleTitle("Console");
 	#endif
 
 	PRINT(0x0A, "Debug Console Initilaized Correctly . . .");

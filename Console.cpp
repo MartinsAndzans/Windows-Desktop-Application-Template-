@@ -37,6 +37,19 @@ VOID Console::drawRectangleInConsole(CONST SHORT Width, CONST SHORT Height, CONS
 
 }
 
+VOID Console::drawTriangleInConsole(CONST SHORT Width, CONST SHORT Height, CONST CHAR Symbol, CONST WORD Color) {
+
+	SetConsoleTextAttribute(hOut, FOREGROUND_INTENSITY | Color);
+
+	for (SHORT H = 1; H < Height; H++) {
+		for (SHORT W = 1; W < Width; W++) {
+
+		}
+		std::cout << std::endl;
+	}
+
+}
+
 BOOL Console::setCursorPosition(SHORT COORD_X, SHORT COORD_Y, BOOL MOVE_CURSOR, BOOL FLUSH_BUFFER, BOOL CLS) {
 
 	COORD Coordinates = { COORD_X, COORD_Y };

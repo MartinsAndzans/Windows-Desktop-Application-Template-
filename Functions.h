@@ -1,3 +1,4 @@
+
 #pragma once
 
 #ifndef _FUNCTIONS_
@@ -19,72 +20,45 @@ class Functions {
 public:
 
 	/// <summary>
-	/// Converts Integer To StringValue
+	/// Converts Integer To Char Array
 	/// <para>1234 % 10 = 4 | 1234 / 10 = 123 || 123 % 10 = 3 | 123 / 10 = 12 || 12 % 10 = 2 | 12 / 10 = 1 || 1 % 10 = 1 | 1 / 10 = 0</para>
 	/// </summary>
 	/// <param name="Value">- Integer Type [int64_t] Value To Be Converted</param>
-	/// <returns>Converted Value</returns>
-	static std::string _itos(int64_t Value) {
+	/// <param name="Buffer">Char Buffer</param>
+	/// <param name="BufferSize">Buffer Size</param>
+	/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
+	static BOOL _itoa(int64_t Value, CHAR *Buffer, SIZE_T BufferSize) {
 
 		BOOL Minus = FALSE;
-		CONST SHORT ASCI_VALUE_ZERO = 48; // * Char Value 0 | 48 *
+		CONST SHORT ASCI_VALUE_ZERO = 48; // * Char Value 0 / 48 *
 
-		std::string StringValue = "";
+		std::string StringValue{};
 
-		if (Value == INT64_MIN) return "OVERFLOW"; // OVERFLOW
-
-		if (Value * -1 > 0) { // -Value * -1 = (Value > 0) | Value * -1 = (-Value <= 0)
-			Minus = TRUE;
-			Value = Value * -1;
+		if (Value == INT64_MIN) {
+			OutputDebugString(L"\'[Functions::_itoa] - \"OVERFLOW\"\'\r\n");
+			return FALSE;
 		}
+
+		if (Value * -1 > 0) Minus = TRUE, Value *= -1; // -Value * -1 = (Value > 0) | Value * -1 = (-Value <= 0)
 
 		do {
 
-			CHAR Char = Value % 10 + ASCI_VALUE_ZERO; // Get Last Number - Char Value 0 | 48 - 9 | 57
+			CHAR Char = Value % 10 + ASCI_VALUE_ZERO; // Get Last Number - Char Value 0 / 48 - 9 / 57
 			Value = Value / 10;  // Remove Last Value Number
-			std::string Temp = StringValue; // Save Previous String Value
-			StringValue = Char + Temp; // Add "Char" and Saved Value
+			StringValue.insert(0, 1, Char);
 
 		} while (Value != 0);
+		
+		if (Minus) StringValue.insert(0, "-");
 
-		if (Minus == TRUE) {
-			std::string Temp = StringValue; // Save Previous String Value
-			StringValue = StringValue + "-" + Temp; // Add "-" and Saved Value
+		if (BufferSize >= strlen(StringValue.c_str()) + 1) {
+			strcpy_s(Buffer, BufferSize, StringValue.c_str());
+		} else {
+			OutputDebugString(L"\'[Functions::_itoa] - Buffer To Small\'\r\n");
+			return FALSE;
 		}
 
-		return StringValue;
-
-	}
-
-	/// <summary>
-	/// Converts Double To StringValue
-	/// </summary>
-	/// <param name="Value">- Double Type Value To Be Converted</param>
-	/// <param name="Precision">- Decimal Precision</param>
-	/// <returns>Converted Value</returns>
-	static std::string _ftos(DOUBLE Value, UINT Precision) {
-
-		CONST SHORT ASCII_VALUE_ZERO = 48; // * Char Value 0 | 48 *
-
-		std::string StringValue = "";
-
-		if ((StringValue = _itos((int64_t)Value)) == "OVERFLOW") return "OVERFLOW"; // Convert Integer Portion of Value - |1234|.1234
-		Value = Value - (int64_t)Value; // Clear Integer Portion of Value - |0|.1234
-
-		StringValue = StringValue + "."; // Add Dot
-
-		if (Value * -1 > 0) Value = Value * -1; // -Value * -1 = Value or Value * -1 = -Value
-
-		for (UINT I = 0; I < Precision; I++) {
-			Value = Value / 0.1; // 0.1234 / 0.1 = 1.234 <-
-			if ((int64_t)Value == 0) StringValue = StringValue + (char)ASCII_VALUE_ZERO; // Char Value To Symbol
-		}
-
-		Value = round(Value);
-
-		if ((StringValue = StringValue + _itos((int64_t)Value)) == "OVERFLOW") return "OVERFLOW";  // Convert Decimal Portion of Value - 1234.|1234|
-
-		return StringValue;
+		return TRUE;
 
 	}
 
@@ -95,7 +69,7 @@ public:
 	/// <returns>Encrypted Text</returns>
 	static std::string EncryptText(CONST std::string &Text) {
 
-		std::string EncryptedText = "";
+		std::string EncryptedText{};
 
 		for (CHAR Character : Text) {
 			SHORT ASCII_VALUE = Character;
@@ -120,7 +94,8 @@ public:
 				CHAR Character = std::stoi(EncryptedText);
 				DecryptedText += Character;
 				EncryptedText.replace(0, EncryptedText.find('|') + 1, "");
-			} else {
+			}
+			else {
 				return DecryptedText;
 			}
 
@@ -231,7 +206,7 @@ public:
 					CloseClipboard();
 					return FALSE;
 				}
-				VOID *buffer = LocalLock(CopyData);
+				VOID* buffer = LocalLock(CopyData);
 				if (buffer == NULL) {
 					LocalFree(CopyData);
 					CloseClipboard();
@@ -269,7 +244,7 @@ public:
 				CloseClipboard();
 				return "-2";
 			}
-			VOID *buffer = LocalLock(ClipboardData);
+			VOID* buffer = LocalLock(ClipboardData);
 			if (buffer == NULL) {
 				LocalFree(ClipboardData);
 				CloseClipboard();
@@ -304,7 +279,7 @@ public:
 				CloseClipboard();
 				return L"-2";
 			}
-			VOID *buffer = LocalLock(ClipboardData);
+			VOID* buffer = LocalLock(ClipboardData);
 			if (buffer == NULL) {
 				LocalFree(ClipboardData);
 				CloseClipboard();
@@ -321,7 +296,7 @@ public:
 
 	}
 
-	template<typename Numbers> 
+	template<typename Numbers>
 	static Numbers SortArray(Numbers Array[], UINT Length) {
 
 		INT A[] = { 1, 5, 4, 7, 8 };
@@ -343,7 +318,7 @@ public:
 	/// <param name="AdditionalErroMessage">- Additional Error Message</param>
 	static VOID ShowError(HWND ParentWindow = HWND_DESKTOP, std::string AdditionalErrorMessage = " - Error") {
 
-		std::string ErrorMessage = "ERROR " + _itos(GetLastError()) + AdditionalErrorMessage;
+		std::string ErrorMessage = "ERROR " + std::to_string(GetLastError()) + AdditionalErrorMessage;
 		MessageBoxA(ParentWindow, ErrorMessage.c_str(), "ERROR", MB_OK | MB_ICONERROR);
 
 	}
@@ -355,7 +330,7 @@ public:
 	/// <param name="FilePath">- File Path With ".bmp" Extension</param>
 	/// <param name="BitmapSize">- Bitmap Size In Pixels</param>
 	/// <returns>If Succeeded returns TRUE, but If not returns FALSE</returns>
-	static BOOL SaveBitmapToFile(HBITMAP Bitmap, CONST CHAR *FilePath, SIZE &BitmapSize) {
+	static BOOL SaveBitmapToFile(HBITMAP Bitmap, CONST CHAR* FilePath, SIZE& BitmapSize) {
 
 		std::ofstream image;
 
@@ -384,7 +359,7 @@ public:
 
 		std::unique_ptr<COLORREF> BitmapBytes(new COLORREF[BitmapSizeCXxCY]{});
 
-		#pragma region GetBitmapColorBytes
+#pragma region GetBitmapColorBytes
 		HDC ScreenDC = GetDC(HWND_DESKTOP); // ScreenDC
 		HDC MemoryDC = CreateCompatibleDC(ScreenDC); // MemoryDC From ScreenDC
 
@@ -395,7 +370,7 @@ public:
 
 		ReleaseDC(HWND_DESKTOP, ScreenDC);
 		DeleteDC(MemoryDC);
-		#pragma endregion
+#pragma endregion
 
 		image.open(FilePath, std::ios::binary); // Open File
 
@@ -429,7 +404,7 @@ public:
 	/// <param name="FilePath">- Music File Path "*.wav" | "*.wma" | "*.mp3" or Video Formats not Supported Yet or</param>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
-	static MCIERROR Open(CONST WCHAR *Alias, CONST WCHAR *FilePath) {
+	static MCIERROR Open(CONST WCHAR* Alias, CONST WCHAR* FilePath) {
 
 		MCI_OPEN_PARMS open = { 0 };
 		open.lpstrAlias = Alias;
@@ -454,7 +429,7 @@ public:
 	/// <param name="StatusCode">- [EXAMPLE] - MCI_STATUS_[]</param>
 	/// <param name="AdditionalFlags">- Additional Flags</param>
 	/// <returns>If Succeeded returns Requested Status Information, but If not returns [MAXDWORD]</returns>
-	static MCISTATUS GetPlaybackStatus(CONST WCHAR *Alias, MCISTATUS StatusCode) {
+	static MCISTATUS GetPlaybackStatus(CONST WCHAR* Alias, MCISTATUS StatusCode) {
 
 		MCI_STATUS_PARMS status = { 0 };
 		status.dwItem = StatusCode; // Status Code
@@ -476,14 +451,14 @@ public:
 	/// <param name="PlayFrom">Playback Starting Position</param>
 	/// <param name="Notify">- Notify Callback Window or Not</param>
 	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
-	static MCIERROR Play(HWND CallbackWindow, CONST WCHAR *Alias, BOOL Notify = FALSE) {
+	static MCIERROR Play(HWND CallbackWindow, CONST WCHAR* Alias, BOOL Notify = FALSE) {
 
 		MCI_PLAY_PARMS play = { 0 };
 		play.dwCallback = (DWORD_PTR)CallbackWindow;
 		play.dwFrom = 0;
 
 		if (Notify) return mciSendCommand(mciGetDeviceID(Alias), MCI_PLAY, MCI_NOTIFY | MCI_FROM, (DWORD_PTR)&play);
-			return mciSendCommand(mciGetDeviceID(Alias), MCI_PLAY, MCI_FROM, (DWORD_PTR)&play);
+		return mciSendCommand(mciGetDeviceID(Alias), MCI_PLAY, MCI_FROM, (DWORD_PTR)&play);
 
 	}
 
@@ -495,14 +470,14 @@ public:
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <param name="SeekTo">- How Much Move Playback Current Position</param>
 	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
-	static MCIERROR Seek(CONST WCHAR *Alias, DWORD SeekTo) {
+	static MCIERROR Seek(CONST WCHAR* Alias, DWORD SeekTo) {
 
 		MCI_SEEK_PARMS seek = { 0 };
 		seek.dwTo = SeekTo;
 
 		if (SeekTo == MCI_SEEK_TO_START) return mciSendCommand(mciGetDeviceID(Alias), MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_START, NULL); // Seek To Beginning of Playback
-			if (SeekTo == MCI_SEEK_TO_END) return mciSendCommand(mciGetDeviceID(Alias), MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_END, NULL); // Seek To End of Playback
-				return mciSendCommand(mciGetDeviceID(Alias), MCI_SEEK, MCI_WAIT | MCI_TO, (DWORD_PTR)&seek); // Seek To Specified Point of Playback
+		if (SeekTo == MCI_SEEK_TO_END) return mciSendCommand(mciGetDeviceID(Alias), MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_END, NULL); // Seek To End of Playback
+		return mciSendCommand(mciGetDeviceID(Alias), MCI_SEEK, MCI_WAIT | MCI_TO, (DWORD_PTR)&seek); // Seek To Specified Point of Playback
 
 	}
 
@@ -511,7 +486,7 @@ public:
 	/// </summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
-	static MCIERROR Pause(CONST WCHAR *Alias) {
+	static MCIERROR Pause(CONST WCHAR* Alias) {
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_PAUSE, MCI_WAIT, NULL);
 	}
 
@@ -520,7 +495,7 @@ public:
 	/// </summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
-	static MCIERROR Resume(CONST WCHAR *Alias) {
+	static MCIERROR Resume(CONST WCHAR* Alias) {
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_RESUME, MCI_WAIT, NULL);
 	}
 
@@ -529,7 +504,7 @@ public:
 	/// </summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
-	static MCIERROR Stop(CONST WCHAR *Alias) {
+	static MCIERROR Stop(CONST WCHAR* Alias) {
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_STOP, MCI_WAIT, NULL);
 	}
 
@@ -538,7 +513,7 @@ public:
 	/// </summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
-	static MCIERROR Close(CONST WCHAR *Alias) {
+	static MCIERROR Close(CONST WCHAR* Alias) {
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_CLOSE, MCI_WAIT, NULL);
 	}
 

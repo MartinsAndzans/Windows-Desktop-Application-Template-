@@ -7,9 +7,8 @@ HDC MainWindow::MainWindowDC = { 0 };
 HDC MainWindow::MemoryDC = { 0 };
 HBITMAP MainWindow::MainBitmap = { 0 };
 
-HBRUSH MainWindow::MainWindowBackgroundBrush = CreateSolidBrush(MainWindowBackgroundColor);
-
 HFONT MainWindow::MainFont = { 0 };
+HBRUSH MainWindow::MainWindowBackgroundBrush = CreateSolidBrush(MainWindowBackgroundColor);
 
 HWND MainWindow::hMainWindow = { 0 };
 RECT MainWindow::MainWindowDimensions = { 0, 0, MainWindowWidth, MainWindowHeight };
@@ -194,6 +193,9 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"SUPER CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 160, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)ID_CALCULATOR, HInstance(), NULL);
 	#pragma endregion
 
+	CHAR BUFFER[2] = { 0 };
+	Functions::_itoa(56, BUFFER, ARRAYSIZE(BUFFER));
+
 }
 
 VOID MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
@@ -206,7 +208,7 @@ VOID MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	SetWindowPos(hDebugTool1, NULL, MainWindowDimensions.right - 160, 0, 160, 25, SWP_SHOWWINDOW);
 	SetWindowPos(hDebugTool2, NULL, MainWindowDimensions.right - 240, 30, 240, 25, SWP_SHOWWINDOW);
 
-	std::string SMainWindowDimensions = "Width = " + Functions::_itos(MainWindowDimensions.right) + " Height = " + Functions::_itos(MainWindowDimensions.bottom);
+	std::string SMainWindowDimensions = "Width = " + std::to_string(MainWindowDimensions.right) + " Height = " + std::to_string(MainWindowDimensions.bottom);
 	SetWindowTextA(hDebugTool2, SMainWindowDimensions.c_str());
 	#endif
 	#pragma endregion
@@ -222,7 +224,7 @@ VOID MainWindow::onMouseMove(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 	#pragma region DebugTool1
 	#ifdef APP_DEBUG
-	std::string SMousePosition = "X = " + Functions::_itos(mousePosition.x) + " Y = " + Functions::_itos(mousePosition.y);
+	std::string SMousePosition = "X = " + std::to_string(mousePosition.x) + " Y = " + std::to_string(mousePosition.y);
 	SetWindowTextA(hDebugTool1, SMousePosition.c_str());
 	#endif
 	#pragma endregion
@@ -262,7 +264,8 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 
 	SelectObject(MemoryDC, MainBitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
-	FillRect(MemoryDC, &MainWindowDimensions, MainWindowBackgroundBrush);
+	SetDCBrushColor(MemoryDC, MainWindowBackgroundColor);
+	FillRect(MemoryDC, &MainWindowDimensions, (HBRUSH)GetStockObject(DC_BRUSH));
 
 	SelectObject(MemoryDC, MainFont);
 
@@ -296,9 +299,9 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	case ID_COLOR_PICKER:
 	{
 
-		PRINT(0x0B, "R: " << Functions::_itos(GetRValue((COLORREF)lParam)) <<
-			"\tG: " << Functions::_itos(GetGValue((COLORREF)lParam)) <<
-			"\tB: " << Functions::_itos(GetBValue((COLORREF)lParam)));
+		PRINT(0x0B, "R: " << std::to_string(GetRValue((COLORREF)lParam)) <<
+			"\tG: " << std::to_string(GetGValue((COLORREF)lParam)) <<
+			"\tB: " << std::to_string(GetBValue((COLORREF)lParam)));
 
 		break;
 

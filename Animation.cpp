@@ -108,7 +108,7 @@ VOID Animation::onCreate(HWND hAnimation, LPARAM lParam) {
 
 		AnimationStyle *Style = new AnimationStyle{ WHITE_COLOR, 4, '+' }; // Default Initialization
 
-		// Move Style Data To Heap Memory Structure | if "DropFilesStyle" Structure is Passed To lpParam
+		// Move Style Data To Heap Memory Structure | If "AnimationStyle" Structure is Passed To lpParam
 		if (window->lpCreateParams != NULL) {
 			if (((LPAnimationStyle)window->lpCreateParams)->SymbolColor != NULL) Style->SymbolColor = ((LPAnimationStyle)window->lpCreateParams)->SymbolColor;
 			if (((LPAnimationStyle)window->lpCreateParams)->Proportion != 0) Style->Proportion = ((LPAnimationStyle)window->lpCreateParams)->Proportion;
@@ -133,7 +133,6 @@ VOID Animation::onWindowPosChanging(HWND hAnimation, LPARAM lParam) {
 	LPWINDOWPOS window = LPWINDOWPOS(lParam);
 
 	if (window->cx != 0 and window->cy != 0) {
-		KillTimer(hAnimation, AnimationTimer);
 		SetTimer(hAnimation, AnimationTimer, SEC / 10, (TIMERPROC)NULL);
 	}
 	else {
@@ -179,7 +178,7 @@ VOID Animation::onPaint(HWND hAnimation) {
 	GetWindowText(hAnimation, WindowTitle, ARRAYSIZE(WindowTitle));
 
 	drawAnimationFrame(MemoryDC, Dimensions.left, Dimensions.top, Dimensions.right, Dimensions.bottom, Style->Symbol, Style->Proportion, Style->SymbolColor);
-
+	
 	// Text Shadow
 	SetTextColor(MemoryDC, DarkerColor(Style->SymbolColor, 0x20)); // 0x20 / 32
 	TextOut(MemoryDC, Dimensions.left + 4, Dimensions.top + 4, WindowTitle, lstrlenW(WindowTitle));

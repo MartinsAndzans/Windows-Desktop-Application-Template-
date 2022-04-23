@@ -62,25 +62,25 @@ VOID DropFiles::CreateDropFilesFont() {
 
 }
 
-VOID DropFiles::drawDashedRectangle(HDC hdc, RECT &Rectangle, SIZE_T Width, COLORREF Color) {
+VOID DropFiles::drawDashedRectangle(HDC hdc, RECT &Rectangle, UINT Width, COLORREF Color) {
 
 	HPEN Pen = CreatePen(PS_DASH, 1, Color);
 	HPEN PreviousPen = (HPEN)SelectObject(hdc, Pen);
 
-	for (INT Counter = 0; Counter < Width; Counter++) {
+	for (UINT W = 0; W < Width; W++) {
 
 		// TOP
-		MoveToEx(hdc, Rectangle.left, Rectangle.top + Counter, NULL);
-		LineTo(hdc, Rectangle.right, Rectangle.top + Counter);
+		MoveToEx(hdc, Rectangle.left, Rectangle.top + W, NULL);
+		LineTo(hdc, Rectangle.right, Rectangle.top + W);
 		// BOTTOM
-		MoveToEx(hdc, Rectangle.left, Rectangle.bottom - Counter, NULL);
-		LineTo(hdc, Rectangle.right, Rectangle.bottom - Counter);
+		MoveToEx(hdc, Rectangle.left, Rectangle.bottom - W, NULL);
+		LineTo(hdc, Rectangle.right, Rectangle.bottom - W);
 		// LEFT
-		MoveToEx(hdc, Rectangle.left + Counter, Rectangle.top, NULL);
-		LineTo(hdc, Rectangle.left + Counter, Rectangle.bottom);
+		MoveToEx(hdc, Rectangle.left + W, Rectangle.top, NULL);
+		LineTo(hdc, Rectangle.left + W, Rectangle.bottom);
 		// RIGHT
-		MoveToEx(hdc, Rectangle.right - Counter, Rectangle.top, NULL);
-		LineTo(hdc, Rectangle.right - Counter, Rectangle.bottom);
+		MoveToEx(hdc, Rectangle.right - W, Rectangle.top, NULL);
+		LineTo(hdc, Rectangle.right - W, Rectangle.bottom);
 
 	}
 
@@ -113,14 +113,14 @@ VOID DropFiles::drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIG
 
 	for (INT Y = COORD_Y; Y <= COORD_Y + HEIGHT; Y++) {
 
-		if (Y > COORD_Y + YCELL * 2) {
-			for (INT X = (COORD_X + XCELL / 2) + OFFSET; X <= (COORD_X + XCELL * 2 + XCELL / 2) - OFFSET; X++) // +----+
-				SetPixel(hdc, X, Y, Color);                                                                    //  \  /  x 1
-			OFFSET++;                                                                                          //   \/
+		if (Y < COORD_Y + YCELL * 2) {                                   // --|##|--
+			for (INT X = COORD_X + XCELL; X <= COORD_X + XCELL * 2; X++) // --|##|-- x2
+				SetPixel(hdc, X, Y, Color);                              // --|##|--
 		} else {
-			for (INT X = COORD_X + XCELL; X <= COORD_X + XCELL * 2; X++) // |====|
-				SetPixel(hdc, X, Y, Color);                              // |====| x 2
-		}                                                                // |====|
+			for (INT X = COORD_X + OFFSET; X <= COORD_X + WIDTH - OFFSET; X++) // ##|##|##
+				SetPixel(hdc, X, Y, Color);                                    // -#|##|#- x1
+			OFFSET++;                                                          // --|##|--
+		}
 
 	}
 
@@ -140,7 +140,7 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 		DropFilesStyle *Style = new DropFilesStyle{ WHITE_COLOR, BLACK_COLOR }; // Default Initialization
 
-		// Move Style Data To Heap Memory Structure | if "DropFilesStyle" Structure is Passed To lpParam
+		// Move Style Data To Heap Memory Structure | If "DropFilesStyle" Structure is Passed To lpParam
 		if (window->lpCreateParams != NULL) {
 			if (((LPDropFilesStyle)window->lpCreateParams)->BackgroundColor != NULL) Style->BackgroundColor = ((LPDropFilesStyle)window->lpCreateParams)->BackgroundColor;
 			if (((LPDropFilesStyle)window->lpCreateParams)->ForegroundColor != NULL) Style->ForegroundColor = ((LPDropFilesStyle)window->lpCreateParams)->ForegroundColor;

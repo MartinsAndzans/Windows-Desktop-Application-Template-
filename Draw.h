@@ -53,25 +53,25 @@ public:
 	/// <param name="Rectangle">- Rectangle</param>
 	/// <param name="Width">- Width</param>
 	/// <param name="Color">- Color</param>
-	static VOID drawDashedRectangle(HDC hdc, RECT &Rectangle, SIZE_T Width, COLORREF Color) {
+	static VOID drawDashedRectangle(HDC hdc, RECT &Rectangle, UINT Width, COLORREF Color) {
 
 		HPEN Pen = CreatePen(PS_DASH, 1, Color);
 		HPEN PreviousPen = (HPEN)SelectObject(hdc, Pen);
 
-		for (INT Counter = 0; Counter < Width; Counter++) {
+		for (UINT W = 0; W < Width; W++) {
 
 			// TOP
-			MoveToEx(hdc, Rectangle.left, Rectangle.top + Counter, NULL);
-			LineTo(hdc, Rectangle.right, Rectangle.top + Counter);
+			MoveToEx(hdc, Rectangle.left, Rectangle.top + W, NULL);
+			LineTo(hdc, Rectangle.right, Rectangle.top + W);
 			// BOTTOM
-			MoveToEx(hdc, Rectangle.left, Rectangle.bottom - Counter, NULL);
-			LineTo(hdc, Rectangle.right, Rectangle.bottom - Counter);
+			MoveToEx(hdc, Rectangle.left, Rectangle.bottom - W, NULL);
+			LineTo(hdc, Rectangle.right, Rectangle.bottom - W);
 			// LEFT
-			MoveToEx(hdc, Rectangle.left + Counter, Rectangle.top, NULL);
-			LineTo(hdc, Rectangle.left + Counter, Rectangle.bottom);
+			MoveToEx(hdc, Rectangle.left + W, Rectangle.top, NULL);
+			LineTo(hdc, Rectangle.left + W, Rectangle.bottom);
 			// RIGHT
-			MoveToEx(hdc, Rectangle.right - Counter, Rectangle.top, NULL);
-			LineTo(hdc, Rectangle.right - Counter, Rectangle.bottom);
+			MoveToEx(hdc, Rectangle.right - W, Rectangle.top, NULL);
+			LineTo(hdc, Rectangle.right - W, Rectangle.bottom);
 
 		}
 
@@ -177,14 +177,10 @@ public:
 		INT OFFSET = 0;
 
 		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGTH; Y++) {
-			for (INT X = COORD_X + WIDTH / 2 - OFFSET; X <= COORD_X + WIDTH / 2 + OFFSET; X++) {
+			for (INT X = COORD_X + WIDTH / 2 - OFFSET; X <= COORD_X + WIDTH / 2 + OFFSET; X++)
 				SetPixel(hdc, X, Y, Color);
-			}
-			if (Y < COORD_Y + HEIGTH / 2) {
-				OFFSET++;
-			} else {
-				OFFSET--;
-			}
+			if (Y < COORD_Y + HEIGTH / 2) OFFSET++;
+			else OFFSET--;
 		}
 
 	}
@@ -198,21 +194,21 @@ public:
 	/// <param name="WIDTH">- Width</param>
 	/// <param name="HEIGHT">- Height</param>
 	/// <param name="Color">- Color</param>
-	static VOID drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 40, INT HEIGHT = 40, COLORREF Color = BLACK_COLOR) {
+	static VOID drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, COLORREF Color = BLACK_COLOR) {
 
 		CONST SHORT Proportion = 3;
 		INT OFFSET = 0, XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
 
 		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGHT; Y++) {
 
-			if (Y > COORD_Y + YCELL * 2) {
-				for (INT X = (COORD_X + XCELL / 2) + OFFSET; X <= (COORD_X + XCELL * 2 + XCELL / 2) - OFFSET; X++) // +----+
-					SetPixel(hdc, X, Y, Color);                                                                    //  \  /  x 1
-				OFFSET++;                                                                                          //   \/
+			if (Y < COORD_Y + YCELL * 2) {                                   // --|##|--
+				for (INT X = COORD_X + XCELL; X <= COORD_X + XCELL * 2; X++) // --|##|-- x2
+					SetPixel(hdc, X, Y, Color);                              // --|##|--
 			} else {
-				for (INT X = COORD_X + XCELL; X <= COORD_X + XCELL * 2; X++) // |====|
-					SetPixel(hdc, X, Y, Color);                              // |====| x 2
-			}                                                                // |====|
+				for (INT X = COORD_X + OFFSET; X <= COORD_X + WIDTH - OFFSET; X++) // ##|##|##
+					SetPixel(hdc, X, Y, Color);                                    // -#|##|#- x1
+				OFFSET++;                                                          // --|##|--
+			}
 
 		}
 
