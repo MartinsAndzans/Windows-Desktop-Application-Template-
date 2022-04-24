@@ -146,6 +146,7 @@ VOID Animation::onTimer(HWND hAnimation, WPARAM wParam, LPARAM lParam) {
 	if (wParam == AnimationTimer) {
 		RedrawWindow(hAnimation, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 	}
+
 }
 
 VOID Animation::onPaint(HWND hAnimation) {
