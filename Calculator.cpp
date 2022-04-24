@@ -95,15 +95,10 @@ std::string Calculator::RoundDoubleString(std::string DoubleString) {
 				DoubleString.pop_back();
 				return DoubleString;
 			}
-
 			DoubleString.pop_back();
-
 		}
-
 		return DoubleString;
-
 	}
-
 	return DoubleString;
 
 }

@@ -34,7 +34,7 @@ private:
 	#pragma endregion
 
 	#pragma region Functions
-	static VOID CreateStarFont();
+	static VOID CreateAnimationFont();
 	static VOID drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, CONST CHAR Symbol = '+', UINT Proportion = 4, COLORREF SymbolColor = WHITE_COLOR);
 	#pragma endregion
 

@@ -18,7 +18,7 @@ RECT Animation::Dimensions = { 0 };
 /// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
 BOOL Animation::InitAnimation() {
 	
-	CreateStarFont();
+	CreateAnimationFont();
 
 	WNDCLASSEX AnimationEx = { 0 };
 
@@ -45,7 +45,7 @@ BOOL Animation::InitAnimation() {
 #pragma endregion
 
 #pragma region Funtions
-VOID Animation::CreateStarFont() {
+VOID Animation::CreateAnimationFont() {
 
 	StarFont = CreateFont(20, 0, 0, 0,
 		FW_BOLD,

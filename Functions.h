@@ -27,7 +27,7 @@ public:
 	/// <param name="Buffer">Char Buffer</param>
 	/// <param name="BufferSize">Buffer Size</param>
 	/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
-	static BOOL _itoa(int64_t Value, CHAR *Buffer, SIZE_T BufferSize) {
+	static BOOL _itoa(int64_t Value, LPSTR Buffer, SIZE_T BufferSize) {
 
 		BOOL Minus = FALSE;
 		CONST SHORT ASCI_VALUE_ZERO = 48; // * Char Value 0 / 48 *
@@ -35,7 +35,7 @@ public:
 		std::string StringValue{};
 
 		if (Value == INT64_MIN) {
-			OutputDebugString(L"\'[Functions::_itoa] - \"OVERFLOW\"\'\r\n");
+			OutputDebugString(L"\'[Functions::_itoa] - Value \"OVERFLOW\"\'\r\n");
 			return FALSE;
 		}
 
@@ -44,7 +44,7 @@ public:
 		do {
 
 			CHAR Char = Value % 10 + ASCI_VALUE_ZERO; // Get Last Number - Char Value 0 / 48 - 9 / 57
-			Value = Value / 10;  // Remove Last Value Number
+			Value = Value / 10;  // Remove Last Number
 			StringValue.insert(0, 1, Char);
 
 		} while (Value != 0);
@@ -87,18 +87,16 @@ public:
 	/// <returns>Decrypted Text</returns>
 	static std::string DecryptText(std::string EncryptedText) {
 
-		std::string DecryptedText = "";
+		std::string DecryptedText{};
 
 		while (EncryptedText.length() != 0) {
 			if (EncryptedText.back() == '|') {
 				CHAR Character = std::stoi(EncryptedText);
 				DecryptedText += Character;
 				EncryptedText.replace(0, EncryptedText.find('|') + 1, "");
-			}
-			else {
+			} else {
 				return DecryptedText;
 			}
-
 		}
 
 		return DecryptedText;
@@ -139,17 +137,11 @@ public:
 					DoubleString.pop_back();
 					return DoubleString;
 				}
-
 				DoubleString.pop_back();
-
 			}
-
 			return DoubleString;
-
 		}
-
 		return DoubleString;
-
 	}
 
 	/// <summary>
@@ -161,7 +153,6 @@ public:
 	static BOOL CopyTextToClipboard(HWND Hwnd, std::string Text) {
 
 		if (Text.length() != 0) {
-
 			if (OpenClipboard(Hwnd)) {
 				EmptyClipboard();
 				HLOCAL CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(CHAR) * Text.length() + 1);
@@ -169,7 +160,7 @@ public:
 					CloseClipboard();
 					return FALSE;
 				}
-				VOID* buffer = LocalLock(CopyData);
+				VOID *buffer = LocalLock(CopyData);
 				if (buffer == NULL) {
 					LocalFree(CopyData);
 					CloseClipboard();
@@ -182,7 +173,6 @@ public:
 				CloseClipboard();
 				return TRUE;
 			}
-
 		}
 
 		return FALSE;
@@ -198,7 +188,6 @@ public:
 	static BOOL CopyTextToClipboard(HWND Hwnd, std::wstring WText) {
 
 		if (WText.length() != 0) {
-
 			if (OpenClipboard(Hwnd)) {
 				EmptyClipboard();
 				HLOCAL CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(WCHAR) * WText.length() + 1);
@@ -206,7 +195,7 @@ public:
 					CloseClipboard();
 					return FALSE;
 				}
-				VOID* buffer = LocalLock(CopyData);
+				VOID *buffer = LocalLock(CopyData);
 				if (buffer == NULL) {
 					LocalFree(CopyData);
 					CloseClipboard();
@@ -219,7 +208,6 @@ public:
 				CloseClipboard();
 				return TRUE;
 			}
-
 		}
 
 		return FALSE;
@@ -238,13 +226,13 @@ public:
 	static std::string GetClipboardText(HWND Hwnd) {
 
 		if (OpenClipboard(Hwnd)) {
-			std::string Text = "";
+			std::string Text{};
 			HLOCAL ClipboardData = GetClipboardData(CF_TEXT);
 			if (ClipboardData == NULL) {
 				CloseClipboard();
 				return "-2";
 			}
-			VOID* buffer = LocalLock(ClipboardData);
+			VOID *buffer = LocalLock(ClipboardData);
 			if (buffer == NULL) {
 				LocalFree(ClipboardData);
 				CloseClipboard();
@@ -273,13 +261,13 @@ public:
 	static std::wstring GetClipboardWText(HWND Hwnd) {
 
 		if (OpenClipboard(Hwnd)) {
-			std::wstring WText = L"";
+			std::wstring WText{};
 			HLOCAL ClipboardData = GetClipboardData(CF_UNICODETEXT);
 			if (ClipboardData == NULL) {
 				CloseClipboard();
 				return L"-2";
 			}
-			VOID* buffer = LocalLock(ClipboardData);
+			VOID *buffer = LocalLock(ClipboardData);
 			if (buffer == NULL) {
 				LocalFree(ClipboardData);
 				CloseClipboard();
@@ -293,21 +281,6 @@ public:
 		}
 
 		return L"-1";
-
-	}
-
-	template<typename Numbers>
-	static Numbers SortArray(Numbers Array[], UINT Length) {
-
-		INT A[] = { 1, 5, 4, 7, 8 };
-
-		for (UINT I = 0; I < Length; I++) {
-
-
-
-		}
-
-		return Array;
 
 	}
 
@@ -330,7 +303,7 @@ public:
 	/// <param name="FilePath">- File Path With ".bmp" Extension</param>
 	/// <param name="BitmapSize">- Bitmap Size In Pixels</param>
 	/// <returns>If Succeeded returns TRUE, but If not returns FALSE</returns>
-	static BOOL SaveBitmapToFile(HBITMAP Bitmap, CONST CHAR* FilePath, SIZE& BitmapSize) {
+	static BOOL SaveBitmapToFile(HBITMAP Bitmap, CONST CHAR* FilePath, SIZE &BitmapSize) {
 
 		std::ofstream image;
 
@@ -359,7 +332,7 @@ public:
 
 		std::unique_ptr<COLORREF> BitmapBytes(new COLORREF[BitmapSizeCXxCY]{});
 
-#pragma region GetBitmapColorBytes
+		#pragma region GetBitmapColorBytes
 		HDC ScreenDC = GetDC(HWND_DESKTOP); // ScreenDC
 		HDC MemoryDC = CreateCompatibleDC(ScreenDC); // MemoryDC From ScreenDC
 
@@ -370,7 +343,7 @@ public:
 
 		ReleaseDC(HWND_DESKTOP, ScreenDC);
 		DeleteDC(MemoryDC);
-#pragma endregion
+		#pragma endregion
 
 		image.open(FilePath, std::ios::binary); // Open File
 
@@ -401,64 +374,65 @@ public:
 	/// <summary>
 	/// > This Function Opens MCIDevice
 	/// </summary>
-	/// <param name="FilePath">- Music File Path "*.wav" | "*.wma" | "*.mp3" or Video Formats not Supported Yet or</param>
+	/// <param name="FilePath">- Music File Path "*.wav" / "*.wma" / "*.mp3" || Video Formats not Supported Yet ||</param>
 	/// <param name="Alias">- Alias for MCIDevice</param>
-	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
-	static MCIERROR Open(CONST WCHAR* Alias, CONST WCHAR* FilePath) {
+	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
+	static MCIERROR Open(LPCWSTR Alias, LPCWSTR FilePath) {
 
 		MCI_OPEN_PARMS open = { 0 };
 		open.lpstrAlias = Alias;
-		open.lpstrDeviceType = NULL;
 		open.lpstrElementName = FilePath;
-		open.wDeviceID = NULL;
 
 		return mciSendCommand(NULL, MCI_OPEN, MCI_WAIT | MCI_OPEN_ELEMENT | MCI_OPEN_ALIAS, (DWORD_PTR)&open);
 
 	}
 
 	/// <summary>
-	/// > This Function Gets Playback Status
+	/// > This Function Obtains Playback Status
 	/// <para>> MCI_STATUS_POSITION - Obtains Current Playback Position</para>
 	/// <para>> MCI_STATUS_LENGTH - Obtains Total Media Length</para>
 	/// <para>> MCI_STATUS_MODE - Obtains Current Mode of The Device</para>
-	/// <para>>> [MODE EXAMPLE] - MCI_MODE_[]</para>
 	/// <para>> MCI_STATUS_TIME_FORMAT - Obtains Current Time Format of The Device</para>
-	/// <para>>> [TIME FORMAT EXAMPLE] = MCI_FORMAT_[]</para>
 	/// </summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
-	/// <param name="StatusCode">- [EXAMPLE] - MCI_STATUS_[]</param>
+	/// <param name="StatusCode">- Status Code</param>
 	/// <param name="AdditionalFlags">- Additional Flags</param>
-	/// <returns>If Succeeded returns Requested Status Information, but If not returns [MAXDWORD]</returns>
-	static MCISTATUS GetPlaybackStatus(CONST WCHAR* Alias, MCISTATUS StatusCode) {
+	/// <returns>If Succeeded Returns Requested Status Information, but If not Returns MCIERROR Error Code</returns>
+	static MCISTATUS GetPlaybackStatus(LPCWSTR Alias, MCISTATUS StatusCode) {
 
 		MCI_STATUS_PARMS status = { 0 };
 		status.dwItem = StatusCode; // Status Code
 		status.dwReturn = NULL; // return
 
-		if (mciSendCommand(mciGetDeviceID(Alias), MCI_STATUS, MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)&status) != 0)
-			return MAXDWORD;
+		MCIERROR Error = mciSendCommand(mciGetDeviceID(Alias), MCI_STATUS, MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)&status);
 
-		return (DWORD)status.dwReturn;
+		if (Error != 0) {
+			return Error;
+		} else {
+			return (DWORD)status.dwReturn;
+		}
 
 	}
 
 	/// <summary>
 	/// > This Function Plays Music From The Beginning
-	/// <para>> If Notify is TRUE - MCI Sends To Callback Window [MM_MCINOTIFY] Message - [LOWORD]lParam = MCIDeviceID</para>
+	/// <para>> If Notify is TRUE 'MCI Sends To Callback Window [MM_MCINOTIFY] Message "LOWORD(lParam) - MCIDeviceID"'</para>
 	/// </summary>
 	/// <param name="CallbackWindow">- Callback Window</param>
 	/// <param name="Alias">- Alias for MCIDevice</param>
-	/// <param name="PlayFrom">Playback Starting Position</param>
-	/// <param name="Notify">- Notify Callback Window or Not</param>
+	/// <param name="Notify">- MCI_NOTIFY</param>
 	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
-	static MCIERROR Play(HWND CallbackWindow, CONST WCHAR* Alias, BOOL Notify = FALSE) {
+	static MCIERROR Play(HWND CallbackWindow, LPCWSTR Alias, BOOL Notify = FALSE) {
 
 		MCI_PLAY_PARMS play = { 0 };
 		play.dwCallback = (DWORD_PTR)CallbackWindow;
 		play.dwFrom = 0;
 
-		if (Notify) return mciSendCommand(mciGetDeviceID(Alias), MCI_PLAY, MCI_NOTIFY | MCI_FROM, (DWORD_PTR)&play);
-		return mciSendCommand(mciGetDeviceID(Alias), MCI_PLAY, MCI_FROM, (DWORD_PTR)&play);
+		if (Notify) {
+			return mciSendCommand(mciGetDeviceID(Alias), MCI_PLAY, MCI_NOTIFY | MCI_FROM, (DWORD_PTR)&play);
+		} else {
+			return mciSendCommand(mciGetDeviceID(Alias), MCI_PLAY, MCI_FROM, (DWORD_PTR)&play);
+		}
 
 	}
 
@@ -470,50 +444,46 @@ public:
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <param name="SeekTo">- How Much Move Playback Current Position</param>
 	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
-	static MCIERROR Seek(CONST WCHAR* Alias, DWORD SeekTo) {
+	static MCIERROR Seek(LPCWSTR Alias, DWORD SeekTo) {
 
 		MCI_SEEK_PARMS seek = { 0 };
 		seek.dwTo = SeekTo;
 
-		if (SeekTo == MCI_SEEK_TO_START) return mciSendCommand(mciGetDeviceID(Alias), MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_START, NULL); // Seek To Beginning of Playback
-		if (SeekTo == MCI_SEEK_TO_END) return mciSendCommand(mciGetDeviceID(Alias), MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_END, NULL); // Seek To End of Playback
-		return mciSendCommand(mciGetDeviceID(Alias), MCI_SEEK, MCI_WAIT | MCI_TO, (DWORD_PTR)&seek); // Seek To Specified Point of Playback
+		if (SeekTo == MCI_SEEK_TO_START) {
+			return mciSendCommand(mciGetDeviceID(Alias), MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_START, NULL);
+		} else if (SeekTo == MCI_SEEK_TO_END) {
+			return mciSendCommand(mciGetDeviceID(Alias), MCI_SEEK, MCI_WAIT | MCI_SEEK_TO_END, NULL);
+		} else {
+			return mciSendCommand(mciGetDeviceID(Alias), MCI_SEEK, MCI_WAIT | MCI_TO, (DWORD_PTR)&seek);
+		}
 
 	}
 
-	/// <summary>
-	/// > This Function Pauses Playbeck
-	/// </summary>
+	/// <summary>> This Function Pauses Playbeck</summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
-	static MCIERROR Pause(CONST WCHAR* Alias) {
+	static MCIERROR Pause(LPCWSTR Alias) {
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_PAUSE, MCI_WAIT, NULL);
 	}
 
-	/// <summary>
-	/// > This Function Resumes Playbeck
-	/// </summary>
+	/// <summary>> This Function Resumes Playbeck</summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
-	static MCIERROR Resume(CONST WCHAR* Alias) {
+	static MCIERROR Resume(LPCWSTR Alias) {
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_RESUME, MCI_WAIT, NULL);
 	}
 
-	/// <summary>
-	/// > This Function Stops Playbeck
-	/// </summary>
+	/// <summary>> This Function Stops Playbeck</summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
-	static MCIERROR Stop(CONST WCHAR* Alias) {
+	static MCIERROR Stop(LPCWSTR Alias) {
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_STOP, MCI_WAIT, NULL);
 	}
 
-	/// <summary>
-	/// > This Function Closes MCIDevice
-	/// </summary>
+	/// <summary>> This Function Closes MCIDevice</summary>
 	/// <param name="Alias">- Alias for MCIDevice</param>
 	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
-	static MCIERROR Close(CONST WCHAR* Alias) {
+	static MCIERROR Close(LPCWSTR Alias) {
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_CLOSE, MCI_WAIT, NULL);
 	}
 

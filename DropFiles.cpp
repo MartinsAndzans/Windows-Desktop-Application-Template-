@@ -117,9 +117,9 @@ VOID DropFiles::drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIG
 			for (INT X = COORD_X + XCELL; X <= COORD_X + XCELL * 2; X++) // --|##|-- x2
 				SetPixel(hdc, X, Y, Color);                              // --|##|--
 		} else {
-			for (INT X = COORD_X + OFFSET; X <= COORD_X + WIDTH - OFFSET; X++) // ##|##|##
-				SetPixel(hdc, X, Y, Color);                                    // -#|##|#- x1
-			OFFSET++;                                                          // --|##|--
+			for (INT X = COORD_X + XCELL / 2 + OFFSET; X <= COORD_X + XCELL * 2.5f - OFFSET; X++) // ##|##|##
+				SetPixel(hdc, X, Y, Color);                                                       // -#|##|#- x1
+			OFFSET++;                                                                             // --|##|--
 		}
 
 	}
