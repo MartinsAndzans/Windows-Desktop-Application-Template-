@@ -265,10 +265,6 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 	GetTextExtentPointA(MainWindowDC, Text, ARRAYSIZE(Text), &size);
 	TextOutA(MemoryDC, MainWindowDimensions.right / 2 - size.cx / 2, MainWindowDimensions.bottom / 2 - size.cy / 2, Text, ARRAYSIZE(Text) - 1);
 
-	Draw::drawTriangle(MemoryDC, MainWindowDimensions.right / 2 - 100 / 2, MainWindowDimensions.bottom / 2 - 200,
-		MainWindowDimensions.right / 2 + 100 / 2, MainWindowDimensions.bottom / 2 - 200,
-		MainWindowDimensions.right / 2, MainWindowDimensions.bottom / 2 - 100);
-
 	BitBlt(MainWindowDC, 0, 0, MainWindowDimensions.right, MainWindowDimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
 	DeleteDC(MemoryDC);

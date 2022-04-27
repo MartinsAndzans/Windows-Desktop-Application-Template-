@@ -52,7 +52,7 @@ BOOL ColorPicker::InitColorPicker() {
 #pragma region Functions
 VOID ColorPicker::drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF CrossColor) {
 
-	if (WIDTH % 2 != NULL and HEIGHT % 2 != NULL) {
+	if (WIDTH % 2 != 0 and HEIGHT % 2 != 0) {
 
 		CONST SHORT Proportion = 3;
 		INT XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
@@ -205,9 +205,7 @@ VOID ColorPicker::onCreate(HWND hColorPicker, LPARAM lParam) {
 
 	LPCREATESTRUCT window = LPCREATESTRUCT(lParam);
 
-	if (window->hwndParent != NULL and (window->style & WS_CHILD) != NULL and
-		(window->style & WS_THICKFRAME) == NULL and (window->style & WS_DLGFRAME) == NULL and
-		(window->style & WS_OVERLAPPED) == NULL and (window->style & WS_SYSMENU) == NULL) {
+	if (window->hwndParent != NULL and (window->style & WS_CHILD) != NULL) {
 
 		if (lstrcmpW(window->lpszName, L"SMALL") == 0 and window->cx != 0 and window->cy != 0)
 			SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.cx, DimensionsSmall.cy, SWP_SHOWWINDOW);

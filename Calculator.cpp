@@ -88,9 +88,7 @@ SIZE_T Calculator::FindChar(LPSTR Text, CONST CHAR Char, SIZE_T TextLength) {
 std::string Calculator::RoundDoubleString(std::string DoubleString) {
 
 	if (DoubleString.find('.') != std::string::npos) {
-
 		while (DoubleString.back() == '0' or DoubleString.back() == '.') {
-
 			if (DoubleString.back() == '.') {
 				DoubleString.pop_back();
 				return DoubleString;
@@ -205,9 +203,7 @@ VOID Calculator::onCreate(HWND hCalculator, LPARAM lParam) {
 
 	LPCREATESTRUCT window = (LPCREATESTRUCT)lParam;
 
-	if (window->hwndParent != NULL and (window->style & WS_CHILD) != NULL and
-		(window->style & WS_THICKFRAME) == NULL and (window->style & WS_DLGFRAME) == NULL and
-		(window->style & WS_OVERLAPPED) == NULL and (window->style & WS_SYSMENU) == NULL) {
+	if (window->hwndParent != NULL and (window->style & WS_CHILD) != NULL) {
 
 		CreateCalculatorControls(hCalculator);
 

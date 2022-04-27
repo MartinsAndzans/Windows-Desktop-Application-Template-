@@ -68,12 +68,12 @@ public:
 	/// </summary>
 	/// <param name="Text">- Text To Be Encrypted</param>
 	/// <returns>Encrypted Text</returns>
-	static std::string EncryptText(CONST std::string &Text) {
+	static std::string EncryptText(CONST std::string &TEXT) {
 
 		std::string EncryptedText{};
 
-		for (CHAR Character : Text) {
-			SHORT ASCII_VALUE = Character;
+		for (CHAR CHARACTER : TEXT) {
+			SHORT ASCII_VALUE = CHARACTER;
 			EncryptedText += std::to_string(ASCII_VALUE) + "|";
 		}
 
@@ -111,7 +111,7 @@ public:
 	/// <param name="Char">- Character To Find</param>
 	/// <param name="TextLength">- Text Length Without [null character] - [\0]</param>
 	/// <returns>If Character Has Been Found returns Character Position, but If not -1</returns>
-	static SIZE_T FindChar(LPSTR Text, CONST CHAR Char, SIZE_T TextLength) {
+	static SIZE_T FindChar(LPCSTR Text, CONST CHAR Char, SIZE_T TextLength) {
 
 		for (SIZE_T I = 0; I < TextLength; I++) {
 			if (Text[I] == Char) {
@@ -131,9 +131,7 @@ public:
 	static std::string RoundDoubleString(std::string DoubleString) {
 
 		if (DoubleString.find('.') != std::string::npos) {
-
 			while (DoubleString.back() == '0' or DoubleString.back() == '.') {
-
 				if (DoubleString.back() == '.') {
 					DoubleString.pop_back();
 					return DoubleString;
@@ -143,6 +141,7 @@ public:
 			return DoubleString;
 		}
 		return DoubleString;
+
 	}
 
 	/// <summary>
@@ -167,7 +166,7 @@ public:
 					CloseClipboard();
 					return FALSE;
 				}
-				memcpy(buffer, (void*)Text.c_str(), sizeof(CHAR) * Text.length() + 1);
+				memcpy(buffer, (VOID*)Text.c_str(), sizeof(CHAR) * Text.length() + 1);
 				LocalUnlock(CopyData);
 				SetClipboardData(CF_TEXT, CopyData);
 				LocalFree(CopyData);
@@ -202,7 +201,7 @@ public:
 					CloseClipboard();
 					return FALSE;
 				}
-				memcpy(buffer, (void*)WText.c_str(), sizeof(WCHAR) * WText.length() + 1);
+				memcpy(buffer, (VOID*)WText.c_str(), sizeof(WCHAR) * WText.length() + 1);
 				LocalUnlock(CopyData);
 				SetClipboardData(CF_UNICODETEXT, CopyData);
 				LocalFree(CopyData);
@@ -239,7 +238,7 @@ public:
 				CloseClipboard();
 				return "-2";
 			}
-			Text = (char*)buffer;
+			Text = (CHAR*)buffer;
 			LocalUnlock(ClipboardData);
 			LocalFree(ClipboardData);
 			CloseClipboard();
@@ -274,7 +273,7 @@ public:
 				CloseClipboard();
 				return L"-2";
 			}
-			WText = (wchar_t*)buffer;
+			WText = (WCHAR*)buffer;
 			LocalUnlock(ClipboardData);
 			LocalFree(ClipboardData);
 			CloseClipboard();

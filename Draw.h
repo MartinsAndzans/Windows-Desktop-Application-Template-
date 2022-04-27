@@ -164,22 +164,6 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Draws Romb
-	/// </summary>
-	/// <param name="hdc">- Device Context</param>
-	/// <param name="COORD_X">- X Coordinate</param>
-	/// <param name="COORD_Y">- Y Coordinate</param>
-	/// <param name="WIDTH">- Width</param>
-	/// <param name="HEIGTH">- Height</param>
-	/// <param name="Color">- Romb Color</param>
-	static VOID drawRomb(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 60, INT HEIGTH = 60, COLORREF Color = BLACK_COLOR) {
-
-		drawTriangle(hdc, COORD_X, COORD_Y, WIDTH, HEIGTH / 2, 1, Color);
-		drawTriangle(hdc, COORD_X, COORD_Y + WIDTH / 2, WIDTH, HEIGTH / 2, 2, Color);
-
-	}
-
-	/// <summary>
 	/// This Function Draws Triangle
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
