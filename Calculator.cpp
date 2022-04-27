@@ -189,9 +189,9 @@ VOID Calculator::CreateCalculatorControls(HWND hCalculator) {
 			std::string ErrorMessage = "ERROR " + std::to_string(GetLastError()) + " - Child Window not Created!";
 			MessageBoxA(hCalculator, ErrorMessage.c_str(), "ERROR", MB_OK | MB_ICONERROR);
 			PostMessage(GetParent(hCalculator), WM_COMMAND, MAKEWPARAM(GetWindowLong(hCalculator, GWL_ID), hCalculator), DestroyWindow(hCalculator));
-		};
-
-		SetFont(hwnd, CalculatorFont);
+		} else {
+			SetFont(hwnd, CalculatorFont);
+		}
 
 	}
 

@@ -108,21 +108,35 @@ VOID DropFiles::FillRectOpacity50(HDC hdc, RECT &Rectangle, COLORREF Color) {
 
 VOID DropFiles::drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF Color) {
 
-	CONST USHORT Proportion = 3;
-	INT OFFSET = 0, STEP = WIDTH / HEIGHT, XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
+	CONST SHORT Proportion = 3;
+	INT XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
 
-	for (INT Y = COORD_Y; Y <= COORD_Y + HEIGHT; Y++) {
+	HPEN Pen = CreatePen(PS_SOLID, 1, Color);
+	HBRUSH Brush = CreateSolidBrush(Color);
 
-		if (Y < COORD_Y + YCELL * 2) {                                   // --|##|--
-			for (INT X = COORD_X + XCELL; X <= COORD_X + XCELL * 2; X++) // --|##|-- x2
-				SetPixel(hdc, X, Y, Color);                              // --|##|--
-		} else {
-			for (INT X = COORD_X + OFFSET; X <= COORD_X + WIDTH - OFFSET; X++) // ##|##|##
-				SetPixel(hdc, X, Y, Color);                                    // -#|##|#- x1
-			OFFSET += STEP;                                                    // --|##|--
-		}
+	HPEN PrevPen = (HPEN)SelectObject(hdc, Pen);
+	HBRUSH PrevBrush = (HBRUSH)SelectObject(hdc, Brush);
 
-	}
+	SetPolyFillMode(hdc, WINDING);
+
+	POINT First = { COORD_X + XCELL, COORD_Y }; // --+----
+	POINT Second = { COORD_X + XCELL * 2, COORD_Y }; // ----+--
+	POINT Third = { COORD_X + XCELL, COORD_Y + YCELL * 2 }; // --+----
+	POINT Fourth = { COORD_X + XCELL * 2, COORD_Y + YCELL * 2 }; // ----+--
+
+	POINT Fifth = { COORD_X, COORD_Y + YCELL * 2 }; // +------
+	POINT Sixth = { COORD_X + WIDTH, COORD_Y + YCELL * 2 }; //------+
+	POINT Seventh = { COORD_X + WIDTH / 2, COORD_Y + HEIGHT }; // ---+---
+
+	POINT Vertices[] = { Third, First, Second, Fourth, Sixth, Seventh, Fifth };
+
+	Polygon(hdc, Vertices, ARRAYSIZE(Vertices));
+
+	SelectObject(hdc, PrevPen);
+	SelectObject(hdc, PrevBrush);
+
+	DeleteObject(Pen);
+	DeleteObject(Brush);
 
 }
 #pragma endregion
@@ -136,7 +150,7 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 		DragAcceptFiles(hDropFiles, TRUE);
 
-		DropFilesStyle *Style = new DropFilesStyle{ WHITE_COLOR, BLACK_COLOR }; // Default Initialization
+		DropFilesStyle *Style = new DropFilesStyle{ WHITE_COLOR, BLACK_COLOR }; // Default Value Initialization
 
 		// Move Style Data To Heap Memory Structure | If "DropFilesStyle" Structure is Passed To lpParam
 		if (window->lpCreateParams != nullptr) {

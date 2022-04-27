@@ -24,12 +24,6 @@ class Draw {
 
 public:
 
-	typedef struct TrianglePoints {
-		POINT FirstPoint;
-		POINT SecondPoint;
-		POINT ThirdPoint;
-	}TPoints, *LPTrianglePoints, *LPTPoints;
-
 	/// <summary>
 	/// This Function Draws Rectangle
 	/// </summary>
@@ -180,14 +174,8 @@ public:
 	/// <param name="Color">- Romb Color</param>
 	static VOID drawRomb(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 60, INT HEIGTH = 60, COLORREF Color = BLACK_COLOR) {
 
-		INT OFFSET = 0;
-
-		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGTH; Y++) {
-			for (INT X = COORD_X + WIDTH / 2 - OFFSET; X <= COORD_X + WIDTH / 2 + OFFSET; X++)
-				SetPixel(hdc, X, Y, Color);
-			if (Y < COORD_Y + HEIGTH / 2) OFFSET++;
-			else OFFSET--;
-		}
+		drawTriangle(hdc, COORD_X, COORD_Y, WIDTH, HEIGTH / 2, 1, Color);
+		drawTriangle(hdc, COORD_X, COORD_Y + WIDTH / 2, WIDTH, HEIGTH / 2, 2, Color);
 
 	}
 
@@ -195,27 +183,48 @@ public:
 	/// This Function Draws Triangle
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
-	/// <param name="COORD_X">- X Coordinate</param>
-	/// <param name="COORD_Y">- Y Coordinate</param>
-	/// <param name="WIDTH">- Width</param>
-	/// <param name="HEIGHT">- Height</param>
-	/// <param name="TriangleDirection">- 1: Up | 2: Down | 3: Left | 4: Right</param>
+	/// <param name="X1">- X1 Coordinate</param>
+	/// <param name="Y1">- Y1 Coordinate</param>
+	/// <param name="X2">- Y2 Coordinate</param>
+	/// <param name="Y2">- Y2 Coordinate</param>
+	/// <param name="X3">- X3 Coordinate</param>
+	/// <param name="Y3">- Y3 Coordinate</param>
 	/// <param name="Color">- Color</param>
-	static VOID drawTriangle(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, USHORT TriangleDirection = 1, COLORREF Color = RED_COLOR) {
+	static VOID drawTriangle(HDC hdc, INT X1, INT Y1, INT X2, INT Y2, INT X3, INT Y3, COLORREF Color = BLACK_COLOR) {
 
-		COLORREF PrevColor = SetDCPenColor(hdc, Color);
+		HPEN Pen = CreatePen(PS_SOLID, 1, Color);
+		HBRUSH Brush = CreateSolidBrush(Color);
 
-		for (INT I = COORD_X; I < COORD_X + WIDTH; I++) {
-			MoveToEx(hdc, COORD_X + WIDTH / 2, COORD_Y, NULL);
-			LineTo(hdc, I, COORD_Y + HEIGHT);
-		}
+		HPEN PrevPen = (HPEN)SelectObject(hdc, Pen);
+		HBRUSH PrevBrush = (HBRUSH)SelectObject(hdc, Brush);
 
-		SetDCPenColor(hdc, PrevColor);
+		SetPolyFillMode(hdc, WINDING);
+
+		POINT First = { X1, Y1 };
+		POINT Second = { X2, Y2 };
+		POINT Third = { X3, Y3 };
+
+		POINT Vertices[] = { First, Second, Third };
+
+		Polygon(hdc, Vertices, ARRAYSIZE(Vertices));
+
+		SelectObject(hdc, PrevPen);
+		SelectObject(hdc, PrevBrush);
+
+		DeleteObject(Pen);
+		DeleteObject(Brush);
 
 	}
 
 	/// <summary>
 	/// This Function Draws Arrow
+	/// <para>..+--+..</para>
+	/// <para>..|..|..</para>
+	/// <para>..|..|..</para>
+	/// <para>+-+--+-+</para>
+	/// <para>.\..../.</para>
+	/// <para>..\../..</para>
+	/// <para>...\/...</para>
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
 	/// <param name="COORD_X">- X Coordinate</param>
@@ -225,21 +234,35 @@ public:
 	/// <param name="Color">- Color</param>
 	static VOID drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, COLORREF Color = BLACK_COLOR) {
 
-		CONST USHORT Proportion = 3;
-		INT OFFSET = 0, XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
+		CONST SHORT Proportion = 3;
+		INT XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
 
-		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGHT; Y++) {
+		HPEN Pen = CreatePen(PS_SOLID, 1, Color);
+		HBRUSH Brush = CreateSolidBrush(Color);
 
-			if (Y < COORD_Y + YCELL * 2) {                                   // --|##|--
-				for (INT X = COORD_X + XCELL; X <= COORD_X + XCELL * 2; X++) // --|##|-- x2
-					SetPixel(hdc, X, Y, Color);                              // --|##|--
-			} else {
-				for (INT X = COORD_X + XCELL / 2 + OFFSET; X <= COORD_X + XCELL * 2.5f - OFFSET; X++) // ##|##|##
-					SetPixel(hdc, X, Y, Color);                                                       // -#|##|#- x1
-				OFFSET++;                                                                             // --|##|--
-			}
+		HPEN PrevPen = (HPEN)SelectObject(hdc, Pen);
+		HBRUSH PrevBrush = (HBRUSH)SelectObject(hdc, Brush);
 
-		}
+		SetPolyFillMode(hdc, WINDING);
+
+		POINT First = { COORD_X + XCELL, COORD_Y }; // --+----
+		POINT Second = { COORD_X + XCELL * 2, COORD_Y }; // ----+--
+		POINT Third = { COORD_X + XCELL, COORD_Y + YCELL * 2 }; // --+----
+		POINT Fourth = { COORD_X + XCELL * 2, COORD_Y + YCELL * 2 }; // ----+--
+
+		POINT Fifth = { COORD_X, COORD_Y + YCELL * 2 }; // +------
+		POINT Sixth = { COORD_X + WIDTH, COORD_Y + YCELL * 2 }; //------+
+		POINT Seventh = { COORD_X + WIDTH / 2, COORD_Y + HEIGHT }; // ---+---
+
+		POINT Vertices[] = { Third, First, Second, Fourth, Sixth, Seventh, Fifth };
+
+		Polygon(hdc, Vertices, ARRAYSIZE(Vertices));
+
+		SelectObject(hdc, PrevPen);
+		SelectObject(hdc, PrevBrush);
+
+		DeleteObject(Pen);
+		DeleteObject(Brush);
 
 	}
 
