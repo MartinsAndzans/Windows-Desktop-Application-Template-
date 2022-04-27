@@ -61,7 +61,7 @@ VOID Animation::CreateAnimationFont() {
 
 }
 
-VOID Animation::drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, CONST CHAR Symbol, UINT Proportion, COLORREF SymbolColor) {
+VOID Animation::drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, CONST CHAR Symbol, USHORT Proportion, COLORREF SymbolColor) {
 
 	if (WIDTH != 0 and HEIGHT != 0) {
 
@@ -102,27 +102,25 @@ VOID Animation::onCreate(HWND hAnimation, LPARAM lParam) {
 
 	LPCREATESTRUCT window = LPCREATESTRUCT(lParam);
 
-	if (window->hwndParent != NULL and (window->style & WS_CHILD) != NULL and
-		(window->style & WS_THICKFRAME) == NULL and (window->style & WS_DLGFRAME) == NULL and
-		(window->style & WS_OVERLAPPED) == NULL and (window->style & WS_SYSMENU) == NULL) {
+	if (window->hwndParent != NULL and (window->style & WS_CHILD) != NULL) {
 
-		AnimationStyle *Style = new AnimationStyle{ WHITE_COLOR, 4, '+' }; // Default Initialization
+		AnimationStyle *Style = new AnimationStyle{WHITE_COLOR, 4, '+'}; // Default Value Initilization
 
 		// Move Style Data To Heap Memory Structure | If "AnimationStyle" Structure is Passed To lpParam
-		if (window->lpCreateParams != NULL) {
+		if (window->lpCreateParams != nullptr) {
 			if (((LPAnimationStyle)window->lpCreateParams)->SymbolColor != NULL) Style->SymbolColor = ((LPAnimationStyle)window->lpCreateParams)->SymbolColor;
 			if (((LPAnimationStyle)window->lpCreateParams)->Proportion != 0) Style->Proportion = ((LPAnimationStyle)window->lpCreateParams)->Proportion;
 			if (((LPAnimationStyle)window->lpCreateParams)->Symbol > 32) Style->Symbol = ((LPAnimationStyle)window->lpCreateParams)->Symbol;
 		}
-		////
 
-		SetWindowLongPtr(hAnimation, GWLP_USERDATA, (LONG_PTR)Style);
+		SetWindowLongPtr(hAnimation, GWLP_USERDATA, (LONG_PTR)Style); // Save Pointer To Window User Data
 
 		if (window->cx != 0 and window->cy != 0) {
 			SetTimer(hAnimation, AnimationTimer, SEC / 10, (TIMERPROC)NULL);
 		}
 
 	} else {
+		OutputDebugStringA("\'ERROR \'Animation\' - \"hwndParent\" Must Be Non Zero Value\r\n\'");
 		DestroyWindow(hAnimation);
 	}
 
@@ -134,19 +132,14 @@ VOID Animation::onWindowPosChanging(HWND hAnimation, LPARAM lParam) {
 
 	if (window->cx != 0 and window->cy != 0) {
 		SetTimer(hAnimation, AnimationTimer, SEC / 10, (TIMERPROC)NULL);
-	}
-	else {
+	} else {
 		KillTimer(hAnimation, AnimationTimer);
 	}
 
 }
 
 VOID Animation::onTimer(HWND hAnimation, WPARAM wParam, LPARAM lParam) {
-
-	if (wParam == AnimationTimer) {
-		RedrawWindow(hAnimation, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
-	}
-
+	if (wParam == AnimationTimer) RedrawWindow(hAnimation, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 }
 
 VOID Animation::onPaint(HWND hAnimation) {

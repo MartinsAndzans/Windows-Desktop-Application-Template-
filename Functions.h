@@ -13,6 +13,7 @@
 #include <Windows.h>
 #include <ciso646>
 #include <string>
+#include <fstream>
 #include <math.h>
 
 class Functions {
@@ -402,7 +403,7 @@ public:
 
 		MCI_STATUS_PARMS status = { 0 };
 		status.dwItem = StatusCode; // Status Code
-		status.dwReturn = NULL; // return
+		status.dwReturn = NULL; // Return
 
 		MCIERROR Error = mciSendCommand(mciGetDeviceID(Alias), MCI_STATUS, MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)&status);
 

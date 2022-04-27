@@ -1,7 +1,7 @@
 #include "InitMainWindow.h"
 
 #pragma region InitMainWindowStaticMembers
-PAINTSTRUCT MainWindow::MainPS = { 0 };
+PAINTSTRUCT MainWindow::ps = { 0 };
 HDC MainWindow::MainWindowDC = { 0 };
 
 HDC MainWindow::MemoryDC = { 0 };
@@ -22,9 +22,7 @@ POINT MainWindow::mousePosition = { 0 };
 #pragma endregion
 
 #pragma region InitMainWindow
-BOOL MainWindow::InitMainWindowClass(std::wstring ClassName) {
-
-	SetLastError(0);
+BOOL MainWindow::InitMainWindowClass(LPCWSTR ClassName) {
 
 	WNDCLASSEX mainwcex = { 0 };
 
@@ -37,7 +35,7 @@ BOOL MainWindow::InitMainWindowClass(std::wstring ClassName) {
 	mainwcex.hIcon = LoadIcon(HInstance(), MAKEINTRESOURCEW(IDI_MAINWINDOWICON));
 	mainwcex.hInstance = HInstance();
 	mainwcex.lpfnWndProc = MainWindowProcedure;
-	mainwcex.lpszClassName = ClassName.c_str();
+	mainwcex.lpszClassName = ClassName;
 	mainwcex.lpszMenuName = NULL;
 	mainwcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_GLOBALCLASS;
 
@@ -50,16 +48,14 @@ BOOL MainWindow::InitMainWindowClass(std::wstring ClassName) {
 
 }
 
-BOOL MainWindow::CreateMainWindow(std::wstring ClassName, std::wstring WindowTitle) {
-
-	SetLastError(0);
+BOOL MainWindow::CreateMainWindow(LPCWSTR ClassName, LPCWSTR WindowTitle) {
 
 	INT ScreenWidth = GetSystemMetrics(SM_CXSCREEN);
 	INT ScreenHeight = GetSystemMetrics(SM_CYSCREEN);
 
 	hMainWindow = CreateWindowEx(NULL,
-		ClassName.c_str(),
-		WindowTitle.c_str(),
+		ClassName,
+		WindowTitle,
 		WS_OVERLAPPEDWINDOW,
 		ScreenWidth / 2 - MainWindowDimensions.right / 2,
 		ScreenHeight / 2 - MainWindowDimensions.bottom / 2,
@@ -88,8 +84,7 @@ static BOOL operator==(POINT &Left, POINT &Right) {
 
 	if (Left.x == Right.x && Left.y == Right.y) {
 		return TRUE;
-	}
-	else {
+	} else {
 		return FALSE;
 	}
 
@@ -100,8 +95,7 @@ static BOOL operator==(POINT &mousePosition, RECT &Rectangle) {
 	if (mousePosition.x >= Rectangle.left && mousePosition.x <= Rectangle.right &&
 		mousePosition.y >= Rectangle.top && mousePosition.y <= Rectangle.bottom) {
 		return TRUE;
-	}
-	else {
+	} else {
 		return FALSE;
 	}
 
@@ -127,8 +121,6 @@ VOID MainWindow::CreateFonts() {
 
 #ifdef APP_DEBUG
 VOID MainWindow::CreateDebugTools() {
-
-	SetLastError(0);
 
 	std::vector <HWND> DebugTools = { hDebugTool1, hDebugTool2 };
 	std::vector <std::wstring> Captions = { L"X = 0 Y = 0", L"Width = 0 Height = 0" };
@@ -254,7 +246,7 @@ VOID MainWindow::onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 VOID MainWindow::onPaint(HWND hMainWindow) {
 
-	MainWindowDC = BeginPaint(hMainWindow, &MainPS);
+	MainWindowDC = BeginPaint(hMainWindow, &ps);
 
 	MemoryDC = CreateCompatibleDC(MainWindowDC);
 	MainBitmap = CreateCompatibleBitmap(MainWindowDC, MainWindowDimensions.right, MainWindowDimensions.bottom);
@@ -271,14 +263,16 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 	SIZE size = { 0 };
 	CHAR Text[] = "Hello World!";
 	GetTextExtentPointA(MainWindowDC, Text, ARRAYSIZE(Text), &size);
-	TextOutA(MemoryDC, MainWindowDimensions.right / 2 - size.cx / 2, MainWindowDimensions.bottom / 2 - size.cy / 2, Text, ARRAYSIZE(Text) - 1);;
+	TextOutA(MemoryDC, MainWindowDimensions.right / 2 - size.cx / 2, MainWindowDimensions.bottom / 2 - size.cy / 2, Text, ARRAYSIZE(Text) - 1);
+
+	Draw::drawTriangle(MemoryDC, MainWindowDimensions.right / 2 - 100 / 2, MainWindowDimensions.bottom / 2 - 200);
 
 	BitBlt(MainWindowDC, 0, 0, MainWindowDimensions.right, MainWindowDimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
 	DeleteDC(MemoryDC);
 	DeleteObject(MainBitmap);
 
-	EndPaint(hMainWindow, &MainPS);
+	EndPaint(hMainWindow, &ps);
 
 }
 
@@ -296,9 +290,10 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	case ID_COLOR_PICKER:
 	{
 
-		PRINT(0x0B, "R: " << std::to_string(GetRValue((COLORREF)lParam)) <<
-			"\tG: " << std::to_string(GetGValue((COLORREF)lParam)) <<
-			"\tB: " << std::to_string(GetBValue((COLORREF)lParam)));
+		std::string Color = "R: " + std::to_string(GetRValue((COLORREF)lParam)) +
+			"\tG: " + std::to_string(GetGValue((COLORREF)lParam)) +
+			"\tB: " + std::to_string(GetBValue((COLORREF)lParam));
+		PRINT(0x0B, Color.c_str());
 
 		break;
 
@@ -306,11 +301,11 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	case ID_DROP_FILES:
 	{
 
-		WCHAR Buffer[MAX_CHAR_STRING] = { 0 };
-		UINT FileCount = DragQueryFile((HDROP)lParam, 0xFFFFFFFF, Buffer, ARRAYSIZE(Buffer));
+		CHAR Buffer[MAX_CHAR_STRING] = { 0 };
+		UINT FileCount = DragQueryFileA((HDROP)lParam, 0xFFFFFFFF, Buffer, ARRAYSIZE(Buffer));
 		for (UINT File = 0; File < FileCount; File++) {
-			DragQueryFile((HDROP)lParam, File, Buffer, ARRAYSIZE(Buffer));
-			PRINTW(0x09, Buffer);
+			DragQueryFileA((HDROP)lParam, File, Buffer, ARRAYSIZE(Buffer));
+			PRINT(0x09, Buffer);
 		}
 
 		DragFinish((HDROP)lParam);

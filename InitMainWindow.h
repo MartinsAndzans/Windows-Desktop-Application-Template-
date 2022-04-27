@@ -22,7 +22,7 @@ class MainWindow {
 private:
 
 	#pragma region MainWindowStaticMembers
-	static PAINTSTRUCT MainPS;
+	static PAINTSTRUCT ps;
 	static HDC MainWindowDC;
 
 	static HDC MemoryDC;
@@ -79,8 +79,8 @@ public:
 public:
 
 	#pragma region InitMainWindow
-	static BOOL InitMainWindowClass(std::wstring ClassName);
-	static BOOL CreateMainWindow(std::wstring ClassName, std::wstring WindowTitle);
+	static BOOL InitMainWindowClass(LPCWSTR ClassName);
+	static BOOL CreateMainWindow(LPCWSTR ClassName, LPCWSTR WindowTitle);
 	#pragma endregion
 
 };

@@ -57,14 +57,9 @@
 #pragma region DebugLog
 #ifdef APP_DEBUG
 // Color Example 0x0A -- Black Background and Grean Foreground
-#define PRINT(color, text) Console::setConsoleTextColor(color),\
-std::cout << text << std::endl
-// Color Example 0x0A -- Black Background and Grean Foreground
-#define PRINTW(color, text) Console::setConsoleTextColor(color),\
-std::wcout << text << std::endl
+#define PRINT(color, text) Console::Print(text, color)
 #else
 #define PRINT(color, text)
-#define PRINTW(color, text)
 #endif
 #pragma endregion
 
@@ -80,7 +75,7 @@ std::wcout << text << std::endl
 #pragma endregion
 
 #pragma region CheckBoxMacros
-#define CheckBox_GetCheckboxState(hwnd) SendMessage(hwnd, BM_GETCHECK, NULL, NULL) // Return Value is Checkbox State
+#define CheckBox_GetCheck(hwnd) SendMessage(hwnd, BM_GETCHECK, NULL, NULL) // Return Value is Checkbox State
 #define CheckBox_Check(hwnd) SendMessage(hwnd, BM_SETCHECK, (WPARAM)BST_CHECKED, NULL)
 #define CheckBox_UnCheck(hwnd) SendMessage(hwnd, BM_SETCHECK, (WPARAM)BST_UNCHECKED, NULL)
 #pragma endregion
@@ -90,10 +85,10 @@ std::wcout << text << std::endl
 #define ListBox_DeleteString(hwnd, index) SendMessage(hwnd, LB_DELETESTRING, (WPARAM)index, NULL)
 #define ListBox_SetItemData(hwnd, index, value) SendMessage(hwnd, LB_SETITEMDATA, (WPARAM)index, (LPARAM)value)
 #define ListBox_GetItemData(hwnd, index) SendMessage(hwnd, LB_GETITEMDATA, (WPARAM)index, NULL) // Return Value is Value Associated With that Item
-#define ListBox_SetSelectedItemIndex(hwnd, index) SendMessage(hwnd, LB_SETCURSEL, (WPARAM)index, NULL)
+#define ListBox_SelectItem(hwnd, index) SendMessage(hwnd, LB_SETCURSEL, (WPARAM)index, NULL)
 #define ListBox_GetSelectedItemIndex(hwnd) SendMessage(hwnd, LB_GETCURSEL, NULL, NULL)  // Return Value is Selected Item Index
 #define ListBox_FindString(hwnd, string) SendMessage(hwnd, LB_FINDSTRING, (WPARAM)-1, (LPARAM)string)  // Return Value is String Index
-#define ListBox_SetTopListBoxItem(hwnd, index) SendMessage(hwnd, LB_SETTOPINDEX, (WPARAM)index, NULL)
+#define ListBox_SetTopItem(hwnd, index) SendMessage(hwnd, LB_SETTOPINDEX, (WPARAM)index, NULL)
 #pragma endregion
 #pragma endregion
 

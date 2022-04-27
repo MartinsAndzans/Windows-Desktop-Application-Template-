@@ -5,6 +5,7 @@
 
 #include <Windows.h>
 #include <ciso646>
+#include <string>
 
 #define SEC 1000
 
@@ -35,7 +36,7 @@ private:
 
 	#pragma region Functions
 	static VOID CreateAnimationFont();
-	static VOID drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, CONST CHAR Symbol = '+', UINT Proportion = 4, COLORREF SymbolColor = WHITE_COLOR);
+	static VOID drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, CONST CHAR Symbol = '+', USHORT Proportion = 4, COLORREF SymbolColor = WHITE_COLOR);
 	#pragma endregion
 
 	#pragma region Events
@@ -53,7 +54,7 @@ public:
 
 	typedef struct AnimationStyle {
 		COLORREF SymbolColor;
-		SHORT Proportion;
+		USHORT Proportion;
 		CHAR Symbol;
 	}AStyle, *LPAStyle, *LPAnimationStyle;
 

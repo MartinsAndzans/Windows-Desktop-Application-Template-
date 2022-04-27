@@ -108,8 +108,8 @@ VOID DropFiles::FillRectOpacity50(HDC hdc, RECT &Rectangle, COLORREF Color) {
 
 VOID DropFiles::drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF Color) {
 
-	CONST SHORT Proportion = 3;
-	INT OFFSET = 0, XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
+	CONST USHORT Proportion = 3;
+	INT OFFSET = 0, STEP = WIDTH / HEIGHT, XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
 
 	for (INT Y = COORD_Y; Y <= COORD_Y + HEIGHT; Y++) {
 
@@ -117,9 +117,9 @@ VOID DropFiles::drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIG
 			for (INT X = COORD_X + XCELL; X <= COORD_X + XCELL * 2; X++) // --|##|-- x2
 				SetPixel(hdc, X, Y, Color);                              // --|##|--
 		} else {
-			for (INT X = COORD_X + XCELL / 2 + OFFSET; X <= COORD_X + XCELL * 2.5f - OFFSET; X++) // ##|##|##
-				SetPixel(hdc, X, Y, Color);                                                       // -#|##|#- x1
-			OFFSET++;                                                                             // --|##|--
+			for (INT X = COORD_X + OFFSET; X <= COORD_X + WIDTH - OFFSET; X++) // ##|##|##
+				SetPixel(hdc, X, Y, Color);                                    // -#|##|#- x1
+			OFFSET += STEP;                                                    // --|##|--
 		}
 
 	}
@@ -132,16 +132,14 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 	LPCREATESTRUCT window = (LPCREATESTRUCT)lParam;
 
-	if (window->hwndParent != NULL and (window->style & WS_CHILD) != NULL and
-		(window->style & WS_THICKFRAME) == NULL and (window->style & WS_DLGFRAME) == NULL and
-		(window->style & WS_OVERLAPPED) == NULL and (window->style & WS_SYSMENU) == NULL) {
+	if (window->hwndParent != NULL and (window->style & WS_CHILD) != NULL) {
 
 		DragAcceptFiles(hDropFiles, TRUE);
 
 		DropFilesStyle *Style = new DropFilesStyle{ WHITE_COLOR, BLACK_COLOR }; // Default Initialization
 
 		// Move Style Data To Heap Memory Structure | If "DropFilesStyle" Structure is Passed To lpParam
-		if (window->lpCreateParams != NULL) {
+		if (window->lpCreateParams != nullptr) {
 			if (((LPDropFilesStyle)window->lpCreateParams)->BackgroundColor != NULL) Style->BackgroundColor = ((LPDropFilesStyle)window->lpCreateParams)->BackgroundColor;
 			if (((LPDropFilesStyle)window->lpCreateParams)->ForegroundColor != NULL) Style->ForegroundColor = ((LPDropFilesStyle)window->lpCreateParams)->ForegroundColor;
 		}

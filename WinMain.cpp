@@ -43,10 +43,11 @@ VOID BroadcastMessages() {
 
 	while (TRUE) {
 
-		if (MainWindow::ExtraProcessing)
+		if (MainWindow::ExtraProcessing) {
 			PeekMessage(&MainWindow::Msg, NULL, 0, 0, PM_REMOVE);
-		else
+		} else {
 			GetMessage(&MainWindow::Msg, NULL, 0, 0);
+		}
 
 		if (MainWindow::Msg.message == WM_QUIT)
 			break;

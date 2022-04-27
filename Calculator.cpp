@@ -103,7 +103,7 @@ std::string Calculator::RoundDoubleString(std::string DoubleString) {
 
 }
 
-BOOL Calculator::CreateCalculatorControls(HWND hCalculator) {
+VOID Calculator::CreateCalculatorControls(HWND hCalculator) {
 
 	SetLastError(0);
 
@@ -185,12 +185,15 @@ BOOL Calculator::CreateCalculatorControls(HWND hCalculator) {
 
 		}
 
-		if (hwnd == NULL) return FALSE;
+		if (hwnd == NULL) {
+			std::string ErrorMessage = "ERROR " + std::to_string(GetLastError()) + " - Child Window not Created!";
+			MessageBoxA(hCalculator, ErrorMessage.c_str(), "ERROR", MB_OK | MB_ICONERROR);
+			PostMessage(GetParent(hCalculator), WM_COMMAND, MAKEWPARAM(GetWindowLong(hCalculator, GWL_ID), hCalculator), DestroyWindow(hCalculator));
+		};
+
 		SetFont(hwnd, CalculatorFont);
 
 	}
-
-	return TRUE;
 
 }
 
@@ -206,11 +209,7 @@ VOID Calculator::onCreate(HWND hCalculator, LPARAM lParam) {
 		(window->style & WS_THICKFRAME) == NULL and (window->style & WS_DLGFRAME) == NULL and
 		(window->style & WS_OVERLAPPED) == NULL and (window->style & WS_SYSMENU) == NULL) {
 
-		if (!CreateCalculatorControls(hCalculator)) {
-			std::string ErrorMessage = "ERROR " + std::to_string(GetLastError()) + " - Out of Memory!";
-			MessageBoxA(hCalculator, ErrorMessage.c_str(), "ERROR", MB_OK | MB_ICONERROR);
-			PostMessage(GetParent(hCalculator), WM_COMMAND, MAKEWPARAM(window->hMenu, hCalculator), DestroyWindow(hCalculator));
-		}
+		CreateCalculatorControls(hCalculator);
 
 		if (window->cx != 0 and window->cy != 0) {
 			SetWindowPos(hCalculator, NULL, window->x, window->y, CalculatorDimensions.cx, CalculatorDimensions.cy, SWP_SHOWWINDOW);

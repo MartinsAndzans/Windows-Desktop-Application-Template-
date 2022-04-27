@@ -24,6 +24,12 @@ class Draw {
 
 public:
 
+	typedef struct TrianglePoints {
+		POINT FirstPoint;
+		POINT SecondPoint;
+		POINT ThirdPoint;
+	}TPoints, *LPTrianglePoints, *LPTPoints;
+
 	/// <summary>
 	/// This Function Draws Rectangle
 	/// </summary>
@@ -186,6 +192,29 @@ public:
 	}
 
 	/// <summary>
+	/// This Function Draws Triangle
+	/// </summary>
+	/// <param name="hdc">- Device Context</param>
+	/// <param name="COORD_X">- X Coordinate</param>
+	/// <param name="COORD_Y">- Y Coordinate</param>
+	/// <param name="WIDTH">- Width</param>
+	/// <param name="HEIGHT">- Height</param>
+	/// <param name="TriangleDirection">- 1: Up | 2: Down | 3: Left | 4: Right</param>
+	/// <param name="Color">- Color</param>
+	static VOID drawTriangle(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, USHORT TriangleDirection = 1, COLORREF Color = RED_COLOR) {
+
+		COLORREF PrevColor = SetDCPenColor(hdc, Color);
+
+		for (INT I = COORD_X; I < COORD_X + WIDTH; I++) {
+			MoveToEx(hdc, COORD_X + WIDTH / 2, COORD_Y, NULL);
+			LineTo(hdc, I, COORD_Y + HEIGHT);
+		}
+
+		SetDCPenColor(hdc, PrevColor);
+
+	}
+
+	/// <summary>
 	/// This Function Draws Arrow
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
@@ -196,7 +225,7 @@ public:
 	/// <param name="Color">- Color</param>
 	static VOID drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, COLORREF Color = BLACK_COLOR) {
 
-		CONST SHORT Proportion = 3;
+		CONST USHORT Proportion = 3;
 		INT OFFSET = 0, XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
 
 		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGHT; Y++) {
@@ -385,7 +414,7 @@ public:
 	/// <param name="CrossColor">- Cross Color</param>
 	static VOID drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 23, INT HEIGHT = 23, COLORREF CrossColor = BLACK_COLOR) {
 
-		if (WIDTH % 2 != NULL and HEIGHT % 2 != NULL) {
+		if (WIDTH % 2 != 0 and HEIGHT % 2 != 0) {
 
 			CONST SHORT Proportion = 3;
 			INT XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
