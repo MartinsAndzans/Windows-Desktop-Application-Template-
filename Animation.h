@@ -30,7 +30,7 @@ private:
 	static HDC MemoryDC;
 	static HBITMAP Bitmap;
 
-	static HFONT StarFont;
+	static HFONT AnimationFont;
 	static RECT Dimensions;
 	#pragma endregion
 

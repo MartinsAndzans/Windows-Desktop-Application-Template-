@@ -7,7 +7,7 @@ PAINTSTRUCT Animation::ps = { 0 };
 HDC Animation::MemoryDC = { 0 };
 HBITMAP Animation::Bitmap = { 0 };
 
-HFONT Animation::StarFont = { 0 };
+HFONT Animation::AnimationFont = { 0 };
 RECT Animation::Dimensions = { 0 };
 #pragma endregion
 
@@ -47,7 +47,7 @@ BOOL Animation::InitAnimation() {
 #pragma region Funtions
 VOID Animation::CreateAnimationFont() {
 
-	StarFont = CreateFont(20, 0, 0, 0,
+	AnimationFont = CreateFont(20, 0, 0, 0,
 		FW_BOLD,
 		false,
 		false,
@@ -154,7 +154,7 @@ VOID Animation::onPaint(HWND hAnimation) {
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
 	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(BLACK_BRUSH));
-	SelectObject(MemoryDC, StarFont);
+	SelectObject(MemoryDC, AnimationFont);
 
 	LPAnimationStyle Style = (LPAnimationStyle)GetWindowLongPtr(hAnimation, GWLP_USERDATA);
 	
