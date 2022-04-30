@@ -16,15 +16,15 @@ RECT MainWindow::MainWindowDimensions = { 0, 0, MainWindowWidth, MainWindowHeigh
 #ifdef APP_DEBUG
 HWND MainWindow::hDebugTool1 = { 0 };
 HWND MainWindow::hDebugTool2 = { 0 };
-#endif
+#endif // APP_DEBUG
 
 POINT MainWindow::mousePosition = { 0 };
 #pragma endregion
 
 #pragma region InitMainWindow
-BOOL MainWindow::InitMainWindowClass(LPCWSTR ClassName) {
+BOOL MainWindow::InitMainWindowClass(LPCSTR ClassName) {
 
-	WNDCLASSEX mainwcex = { 0 };
+	WNDCLASSEXA mainwcex = { 0 };
 
 	mainwcex.cbClsExtra = 0;
 	mainwcex.cbWndExtra = 0;
@@ -39,7 +39,7 @@ BOOL MainWindow::InitMainWindowClass(LPCWSTR ClassName) {
 	mainwcex.lpszMenuName = NULL;
 	mainwcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_GLOBALCLASS;
 
-	if (!RegisterClassEx(&mainwcex)) {
+	if (!RegisterClassExA(&mainwcex)) {
 		Functions::ShowError(HWND_DESKTOP, " - Main Window Class not Created!");
 		return FALSE;
 	}
@@ -48,12 +48,12 @@ BOOL MainWindow::InitMainWindowClass(LPCWSTR ClassName) {
 
 }
 
-BOOL MainWindow::CreateMainWindow(LPCWSTR ClassName, LPCWSTR WindowTitle) {
+BOOL MainWindow::CreateMainWindow(LPCSTR ClassName, LPCSTR WindowTitle) {
 
 	INT ScreenWidth = GetSystemMetrics(SM_CXSCREEN);
 	INT ScreenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-	hMainWindow = CreateWindowEx(NULL,
+	if (!(hMainWindow = CreateWindowExA(NULL,
 		ClassName,
 		WindowTitle,
 		WS_OVERLAPPEDWINDOW,
@@ -64,9 +64,7 @@ BOOL MainWindow::CreateMainWindow(LPCWSTR ClassName, LPCWSTR WindowTitle) {
 		HWND_DESKTOP,
 		NULL,
 		HInstance(),
-		NULL);
-
-	if (hMainWindow == NULL) {
+		NULL))) {
 		Functions::ShowError(HWND_DESKTOP, " - Main Window not Created!");
 		return FALSE;
 	}
@@ -80,9 +78,9 @@ BOOL MainWindow::CreateMainWindow(LPCWSTR ClassName, LPCWSTR WindowTitle) {
 #pragma endregion
 
 #pragma region OverloadedOperators
-static BOOL operator==(POINT &Left, POINT &Right) {
+BOOL operator==(POINT &Left, POINT &Right) {
 
-	if (Left.x == Right.x && Left.y == Right.y) {
+	if (Left.x == Right.x and Left.y == Right.y) {
 		return TRUE;
 	} else {
 		return FALSE;
@@ -90,10 +88,10 @@ static BOOL operator==(POINT &Left, POINT &Right) {
 
 }
 
-static BOOL operator==(POINT &mousePosition, RECT &Rectangle) {
+BOOL operator==(POINT &Position, RECT &Rectangle) {
 
-	if (mousePosition.x >= Rectangle.left && mousePosition.x <= Rectangle.right &&
-		mousePosition.y >= Rectangle.top && mousePosition.y <= Rectangle.bottom) {
+	if (Position.x >= Rectangle.left and Position.x <= Rectangle.right and
+		Position.y >= Rectangle.top and Position.y <= Rectangle.bottom) {
 		return TRUE;
 	} else {
 		return FALSE;
@@ -107,9 +105,9 @@ VOID MainWindow::CreateFonts() {
 
 	MainFont = CreateFont(20, 0, 0, 0,
 		FW_BOLD,
-		false,
-		false,
-		false,
+		FALSE,
+		FALSE,
+		FALSE,
 		ANSI_FIXED_FONT,
 		OUT_DEFAULT_PRECIS,
 		CLIP_DEFAULT_PRECIS,
@@ -148,7 +146,7 @@ VOID MainWindow::CreateDebugTools() {
 	hDebugTool1 = DebugTools[0], hDebugTool2 = DebugTools[1];
 
 }
-#endif
+#endif // APP_DEBUG
 #pragma endregion
 
 #pragma region Events
@@ -167,17 +165,17 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	#ifdef APP_DEBUG
 	CreateDebugTools();
-	#endif
+	#endif // APP_DEBUG
 
 	#pragma region Examples
 	Animation::AnimationStyle as = { 0 };
-	as.SymbolColor = ORANGE_COLOR;
+	as.SymbolColor = Colors::OrangeColor;
 	as.Proportion = 4;
 	as.Symbol = '+';
 
 	DropFiles::DropFilesStyle dfs = { 0 };
-	dfs.BackgroundColor = ORANGE_COLOR;
-	dfs.ForegroundColor = BLUE_COLOR;
+	dfs.BackgroundColor = Colors::OrangeColor;
+	dfs.ForegroundColor = Colors::BlueColor;
 
 	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION", L"ANIMATION", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 10, 140, 140, hMainWindow, (HMENU)ID_ANIMATION_STARS, HInstance(), &as);
 	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"Drop File/s Here", WS_CHILD | WS_BORDER | WS_VISIBLE, 270, 120, 240, 140, hMainWindow, (HMENU)ID_DROP_FILES, HInstance(), &dfs);
@@ -192,14 +190,14 @@ VOID MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	MainWindowDimensions.right = LOWORD(lParam);
 	MainWindowDimensions.bottom = HIWORD(lParam);
 
-	#pragma region DebugTool2
 	#ifdef APP_DEBUG
 	SetWindowPos(hDebugTool1, NULL, MainWindowDimensions.right - 160, 0, 160, 25, SWP_SHOWWINDOW);
 	SetWindowPos(hDebugTool2, NULL, MainWindowDimensions.right - 240, 30, 240, 25, SWP_SHOWWINDOW);
 
+	#pragma region DebugTool2
 	std::string SMainWindowDimensions = "Width = " + std::to_string(MainWindowDimensions.right) + " Height = " + std::to_string(MainWindowDimensions.bottom);
 	SetWindowTextA(hDebugTool2, SMainWindowDimensions.c_str());
-	#endif
+	#endif // APP_DEBUG
 	#pragma endregion
 
 	RedrawWindow(hMainWindow, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
@@ -215,7 +213,7 @@ VOID MainWindow::onMouseMove(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	#ifdef APP_DEBUG
 	std::string SMousePosition = "X = " + std::to_string(mousePosition.x) + " Y = " + std::to_string(mousePosition.y);
 	SetWindowTextA(hDebugTool1, SMousePosition.c_str());
-	#endif
+	#endif // APP_DEBUG
 	#pragma endregion
 
 }
@@ -230,10 +228,10 @@ VOID MainWindow::onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 		SIZE size = { 0 };
 		WCHAR StaticText[MAX_CHAR_STRING] = { 0 };
-		SetDCBrushColor(item->hDC, DARK_GREEN_COLOR);
+		SetDCBrushColor(item->hDC, Colors::DarkGreenColor);
 		FillRect(item->hDC, &item->rcItem, (HBRUSH)GetStockObject(DC_BRUSH));
 		SetBkMode(item->hDC, TRANSPARENT);
-		SetTextColor(item->hDC, WHITE_COLOR);
+		SetTextColor(item->hDC, Colors::WhiteColor);
 		INT TextLength = GetWindowText(item->hwndItem, StaticText, ARRAYSIZE(StaticText));
 		GetTextExtentPoint(item->hDC, StaticText, TextLength, &size);
 		TextOut(item->hDC, item->rcItem.right / 2 - size.cx / 2, item->rcItem.bottom / 2 - size.cy / 2, StaticText, TextLength);
@@ -274,12 +272,6 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 
 }
 
-VOID MainWindow::onMCINotify(HWND hMainWindow, LPARAM lParam) {
-
-
-
-}
-
 VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 	#define DEFAULT_ID 0xFFFF
@@ -317,16 +309,13 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 VOID MainWindow::onKeyDown(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
-	#define VK_DEFAULT 0xFFFFFFFF
 
-	switch (wParam) {
-	case VK_DEFAULT:
-	{
 
-		break;
+}
 
-	}
-	}
+VOID MainWindow::onMCINotify(HWND hMainWindow, LPARAM lParam) {
+
+
 
 }
 #pragma endregion
@@ -369,11 +358,6 @@ LRESULT CALLBACK MainWindow::MainWindowProcedure(HWND hMainWindow, UINT Msg, WPA
 		onPaint(hMainWindow);
 		return 0;
 	}
-	case MM_MCINOTIFY:
-	{
-		onMCINotify(hMainWindow, lParam);
-		return 0;
-	}
 	case WM_COMMAND:
 	{
 		onCommand(hMainWindow, wParam, lParam);
@@ -382,6 +366,11 @@ LRESULT CALLBACK MainWindow::MainWindowProcedure(HWND hMainWindow, UINT Msg, WPA
 	case WM_KEYDOWN:
 	{
 		onKeyDown(hMainWindow, wParam, lParam);
+		return 0;
+	}
+	case MM_MCINOTIFY:
+	{
+		onMCINotify(hMainWindow, lParam);
 		return 0;
 	}
 	case WM_CLOSE:

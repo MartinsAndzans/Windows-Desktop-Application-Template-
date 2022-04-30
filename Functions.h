@@ -1,6 +1,3 @@
-
-#pragma once
-
 #ifndef _FUNCTIONS_
 #define _FUNCTIONS_
 
@@ -10,8 +7,8 @@
 *                                               *
 ************************************************/
 
-#include <Windows.h>
 #include <ciso646>
+#include <Windows.h>
 #include <string>
 #include <fstream>
 #include <math.h>
@@ -489,4 +486,4 @@ public:
 
 };
 
-#endif
+#endif // _FUNCTIONS_

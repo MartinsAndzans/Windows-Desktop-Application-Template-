@@ -104,7 +104,7 @@ VOID Animation::onCreate(HWND hAnimation, LPARAM lParam) {
 
 	if (window->hwndParent != NULL and (window->style & WS_CHILD) != NULL) {
 
-		AnimationStyle *Style = new AnimationStyle{WHITE_COLOR, 4, '+'}; // Default Value Initilization
+		AnimationStyle *Style = new AnimationStyle{ RGB(255, 255, 255), 4, '+'}; // Default Value Initilization
 
 		// Move Style Data To Heap Memory Structure | If "AnimationStyle" Structure is Passed To lpParam
 		if (window->lpCreateParams != nullptr) {

@@ -109,7 +109,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ShowProgress>NotSet</ShowProgress>
       <UACUIAccess>false</UACUIAccess>
-      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d2d1.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
@@ -154,7 +154,7 @@
       </Version>
       <ShowProgress>NotSet</ShowProgress>
       <UACUIAccess>false</UACUIAccess>
-      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d2d1.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
@@ -188,7 +188,6 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Calculator.cpp" />
     <ClCompile Include="ColorPicker.cpp" />
-    <ClCompile Include="Console.cpp" />
     <ClCompile Include="DropFiles.cpp" />
     <ClCompile Include="InitMainWindow.cpp" />
     <ClCompile Include="WinMain.cpp" />

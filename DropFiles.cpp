@@ -150,7 +150,7 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 		DragAcceptFiles(hDropFiles, TRUE);
 
-		DropFilesStyle *Style = new DropFilesStyle{ WHITE_COLOR, BLACK_COLOR }; // Default Value Initialization
+		DropFilesStyle *Style = new DropFilesStyle{ RGB(255, 255, 255), RGB(0, 0, 0) }; // Default Value Initialization
 
 		// Move Style Data To Heap Memory Structure | If "DropFilesStyle" Structure is Passed To lpParam
 		if (window->lpCreateParams != nullptr) {

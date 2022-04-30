@@ -42,7 +42,7 @@ BEGIN
         BLOCK "080904b0"
         BEGIN
             VALUE "CompanyName", "Default Company"
-            VALUE "FileDescription", "Windows Desktop Aplication [TEMPLATE]"
+            VALUE "FileDescription", "Windows Desktop Aplication -TEMPLATE-"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "Windows Desktop Aplication.exe"
             VALUE "LegalCopyright", "Copyright Martins Andzans (C) 2022"

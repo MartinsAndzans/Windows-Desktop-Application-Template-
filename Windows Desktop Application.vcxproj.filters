@@ -60,10 +60,6 @@
       <UniqueIdentifier>{c3d6474a-aaee-4b2c-9570-3de4d223dbcc}</UniqueIdentifier>
       <Extensions>rc;rc2;rct;resx</Extensions>
     </Filter>
-    <Filter Include="Functions\Console">
-      <UniqueIdentifier>{c11e141a-da67-41c6-9c9e-6d9557cd9e21}</UniqueIdentifier>
-      <Extensions>h;cpp</Extensions>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp">
@@ -83,9 +79,6 @@
     </ClCompile>
     <ClCompile Include="DropFiles.cpp">
       <Filter>Custom Controls\Drop Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Console.cpp">
-      <Filter>Functions\Console</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -113,10 +106,10 @@
     <ClInclude Include="resource.h">
       <Filter>Resource Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Console.h">
-      <Filter>Functions\Console</Filter>
-    </ClInclude>
     <ClInclude Include="Functions.h">
+      <Filter>Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="Console.h">
       <Filter>Functions</Filter>
     </ClInclude>
   </ItemGroup>

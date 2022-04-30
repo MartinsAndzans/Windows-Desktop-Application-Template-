@@ -1,23 +1,18 @@
-#pragma once
-
 #ifndef _ANIMATION_
 #define _ANIMATION_
 
-#include <Windows.h>
 #include <ciso646>
+#include <Windows.h>
 #include <string>
 
 #define SEC 1000
 
 #define AnimationTimer 1001
 
-#define LighterColor(SourceColor, LighterTo) RGB(GetRValue(SourceColor) + LighterTo, GetGValue(SourceColor) + LighterTo, GetBValue(SourceColor) + LighterTo) // returns LighterColor
 #define DarkerColor(SourceColor, DarkerTo) RGB(GetRValue(SourceColor) - DarkerTo, GetGValue(SourceColor) - DarkerTo, GetBValue(SourceColor) - DarkerTo) // returns DarkerColor
 
 #define MAX_ANIMATION_CHAR_STRING 256
 #define HInstance() GetModuleHandle(NULL)
-
-#define WHITE_COLOR RGB(255, 255, 255)
 
 class Animation {
 
@@ -36,7 +31,7 @@ private:
 
 	#pragma region Functions
 	static VOID CreateAnimationFont();
-	static VOID drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, CONST CHAR Symbol = '+', USHORT Proportion = 4, COLORREF SymbolColor = WHITE_COLOR);
+	static VOID drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, CONST CHAR Symbol = '+', USHORT Proportion = 4, COLORREF SymbolColor = RGB(255, 255, 255));
 	#pragma endregion
 
 	#pragma region Events
@@ -64,4 +59,4 @@ public:
 
 };
 
-#endif
+#endif // _ANIMATION_
