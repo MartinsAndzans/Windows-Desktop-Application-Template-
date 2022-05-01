@@ -22,9 +22,9 @@ POINT MainWindow::mousePosition = { 0 };
 #pragma endregion
 
 #pragma region InitMainWindow
-BOOL MainWindow::InitMainWindowClass(LPCSTR ClassName) {
+BOOL MainWindow::InitMainWindowClass(LPCWSTR ClassName) {
 
-	WNDCLASSEXA mainwcex = { 0 };
+	WNDCLASSEX mainwcex = { 0 };
 
 	mainwcex.cbClsExtra = 0;
 	mainwcex.cbWndExtra = 0;
@@ -39,7 +39,7 @@ BOOL MainWindow::InitMainWindowClass(LPCSTR ClassName) {
 	mainwcex.lpszMenuName = NULL;
 	mainwcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_GLOBALCLASS;
 
-	if (!RegisterClassExA(&mainwcex)) {
+	if (!RegisterClassEx(&mainwcex)) {
 		Functions::ShowError(HWND_DESKTOP, " - Main Window Class not Created!");
 		return FALSE;
 	}
@@ -48,12 +48,12 @@ BOOL MainWindow::InitMainWindowClass(LPCSTR ClassName) {
 
 }
 
-BOOL MainWindow::CreateMainWindow(LPCSTR ClassName, LPCSTR WindowTitle) {
+BOOL MainWindow::CreateMainWindow(LPCWSTR ClassName, LPCWSTR WindowTitle) {
 
 	INT ScreenWidth = GetSystemMetrics(SM_CXSCREEN);
 	INT ScreenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-	if (!(hMainWindow = CreateWindowExA(NULL,
+	if (!(hMainWindow = CreateWindowEx(NULL,
 		ClassName,
 		WindowTitle,
 		WS_OVERLAPPEDWINDOW,
@@ -180,7 +180,7 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION", L"ANIMATION", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 10, 140, 140, hMainWindow, (HMENU)ID_ANIMATION_STARS, HInstance(), &as);
 	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"Drop File/s Here", WS_CHILD | WS_BORDER | WS_VISIBLE, 270, 120, 240, 140, hMainWindow, (HMENU)ID_DROP_FILES, HInstance(), &dfs);
 	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 160, 10, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)ID_COLOR_PICKER, HInstance(), NULL);
-	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"SUPER CALCULATOR", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 160, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)ID_CALCULATOR, HInstance(), NULL);
+	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 160, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)ID_CALCULATOR, HInstance(), NULL);
 	#pragma endregion
 
 }

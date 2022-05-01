@@ -60,7 +60,6 @@ VOID Animation::CreateAnimationFont() {
 		L"Segoe UI");
 
 }
-
 VOID Animation::drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, CONST CHAR Symbol, USHORT Proportion, COLORREF SymbolColor) {
 
 	if (WIDTH != 0 and HEIGHT != 0) {

@@ -61,7 +61,6 @@ VOID DropFiles::CreateDropFilesFont() {
 		L"Segoe UI");
 
 }
-
 VOID DropFiles::drawDashedRectangle(HDC hdc, RECT &Rectangle, UINT Width, COLORREF Color) {
 
 	HPEN Pen = CreatePen(PS_DASH, 1, Color);
@@ -88,7 +87,6 @@ VOID DropFiles::drawDashedRectangle(HDC hdc, RECT &Rectangle, UINT Width, COLORR
 	DeleteObject(Pen);
 
 }
-
 VOID DropFiles::FillRectOpacity50(HDC hdc, RECT &Rectangle, COLORREF Color) {
 
 	BOOL DRAWPIXEL; // TRUE = |X| - FALSE = | |
@@ -105,19 +103,18 @@ VOID DropFiles::FillRectOpacity50(HDC hdc, RECT &Rectangle, COLORREF Color) {
 	}
 
 }
-
 VOID DropFiles::drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF Color) {
 
 	CONST SHORT Proportion = 3;
 	INT XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
 
-	HPEN Pen = CreatePen(PS_SOLID, 1, Color);
-	HBRUSH Brush = CreateSolidBrush(Color);
+	SetDCPenColor(hdc, Color);
+	SetDCBrushColor(hdc, Color);
 
-	HPEN PrevPen = (HPEN)SelectObject(hdc, Pen);
-	HBRUSH PrevBrush = (HBRUSH)SelectObject(hdc, Brush);
+	HPEN PrevPen = (HPEN)SelectObject(hdc, (HPEN)GetStockObject(DC_PEN));
+	HBRUSH PrevBrush = (HBRUSH)SelectObject(hdc, (HBRUSH)GetStockObject(DC_BRUSH));
 
-	SetPolyFillMode(hdc, WINDING);
+	SetPolyFillMode(hdc, ALTERNATE);
 
 	POINT First = { COORD_X + XCELL, COORD_Y }; // --+----
 	POINT Second = { COORD_X + XCELL * 2, COORD_Y }; // ----+--
@@ -134,9 +131,6 @@ VOID DropFiles::drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIG
 
 	SelectObject(hdc, PrevPen);
 	SelectObject(hdc, PrevBrush);
-
-	DeleteObject(Pen);
-	DeleteObject(Brush);
 
 }
 #pragma endregion
@@ -159,7 +153,7 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 		}
 		////
 
-		SetWindowLongPtr(hDropFiles, GWLP_USERDATA, (LONG_PTR)Style);
+		SetWindowLongPtr(hDropFiles, GWLP_USERDATA, (LONG_PTR)Style); // Save Pointer To Window User Data
 
 	} else {
 		DestroyWindow(hDropFiles);

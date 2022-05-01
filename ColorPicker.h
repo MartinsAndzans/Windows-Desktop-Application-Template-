@@ -1,13 +1,11 @@
-#pragma once
-
 #ifndef _COLOR_PICKER_
 #define _COLOR_PICKER_
 
-#include <Windows.h>
 #include <ciso646>
+#include <Windows.h>
 
 #define GWL_USERDATA -21
-#define CP_SHOW 10001 // SMALL = 420 - 40 | LARGE = 420 - 100
+#define CP_SHOW 1001 // SMALL = 420 - 40 | LARGE = 420 - 100
 
 #define MAX_COLOR_PICKER_CHAR_STRING 40
 #define HInstance() GetModuleHandle(NULL)
@@ -57,4 +55,4 @@ public:
 
 };
 
-#endif
+#endif // _COLOR_PICKER_

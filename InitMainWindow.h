@@ -87,8 +87,8 @@ public:
 public:
 
 	#pragma region InitMainWindow
-	static BOOL InitMainWindowClass(LPCSTR ClassName);
-	static BOOL CreateMainWindow(LPCSTR ClassName, LPCSTR WindowTitle);
+	static BOOL InitMainWindowClass(LPCWSTR ClassName);
+	static BOOL CreateMainWindow(LPCWSTR ClassName, LPCWSTR WindowTitle);
 	#pragma endregion
 
 };

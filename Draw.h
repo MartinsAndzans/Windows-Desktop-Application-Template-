@@ -57,7 +57,7 @@ public:
 	/// <param name="Rectangle">- Rectangle</param>
 	/// <param name="Width">- Width</param>
 	/// <param name="Color">- Color</param>
-	static VOID drawDashedRectangle(HDC hdc, RECT &Rectangle, UINT Width, COLORREF Color) {
+	static VOID drawDashedRectangle(HDC hdc, RECT &Rectangle, UINT Width, COLORREF Color = Colors::BlackColor) {
 
 		HPEN Pen = CreatePen(PS_DASH, 1, Color);
 		HPEN PreviousPen = (HPEN)SelectObject(hdc, Pen);
@@ -121,16 +121,16 @@ public:
 		COLORREF RectangleColor = Colors::BlueColor, COLORREF BorderColor = Colors::BlackColor) {
 
 		// Border
-		for (SHORT Counter = 0; Counter < BorderWidth; Counter++) {
-			// Left and Right
-			for (INT Y = COORD_Y; Y <= COORD_Y + HEIGTH; Y++) {
-				SetPixel(hdc, COORD_X + Counter, Y, BorderColor);
-				SetPixel(hdc, COORD_X + WIDTH - Counter, Y, BorderColor);
-			}
+		for (SHORT W = 0; W < BorderWidth; W++) {
 			// Up and Down
 			for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
-				SetPixel(hdc, X, COORD_Y + Counter, BorderColor);
-				SetPixel(hdc, X, COORD_Y + HEIGTH - Counter, BorderColor);
+				SetPixel(hdc, X, COORD_Y + W, BorderColor);
+				SetPixel(hdc, X, COORD_Y + HEIGTH - W, BorderColor);
+			}
+			// Left and Right
+			for (INT Y = COORD_Y; Y <= COORD_Y + HEIGTH; Y++) {
+				SetPixel(hdc, COORD_X + W, Y, BorderColor);
+				SetPixel(hdc, COORD_X + WIDTH - W, Y, BorderColor);
 			}
 		}
 
@@ -186,7 +186,7 @@ public:
 		HPEN PrevPen = (HPEN)SelectObject(hdc, (HPEN)GetStockObject(DC_PEN));
 		HBRUSH PrevBrush = (HBRUSH)SelectObject(hdc, (HBRUSH)GetStockObject(DC_BRUSH));
 
-		SetPolyFillMode(hdc, WINDING);
+		SetPolyFillMode(hdc, ALTERNATE);
 
 		POINT First = { X1, Y1 };
 		POINT Second = { X2, Y2 };
@@ -228,7 +228,7 @@ public:
 		HPEN PrevPen = (HPEN)SelectObject(hdc, (HPEN)GetStockObject(DC_PEN));
 		HBRUSH PrevBrush = (HBRUSH)SelectObject(hdc, (HBRUSH)GetStockObject(DC_BRUSH));
 
-		SetPolyFillMode(hdc, WINDING);
+		SetPolyFillMode(hdc, ALTERNATE);
 
 		POINT First = { COORD_X + XCELL, COORD_Y }; // --+----
 		POINT Second = { COORD_X + XCELL * 2, COORD_Y }; // ----+--
@@ -260,19 +260,19 @@ public:
 	/// <returns>Returns Border Width</returns>
 	static SHORT drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = Colors::BlackColor) {
 
-		CONST SHORT Width = 420, Height = 40;
+		CONST SHORT WIDTH = 420, HEIGTH = 40;
 
 		// Border
-		for (SHORT Counter = 0; Counter < BorderWidth; Counter++) {
-			// Left and Right
-			for (INT Y = COORD_Y; Y <= COORD_Y + Height; Y++) {
-				SetPixel(hdc, COORD_X + Counter, Y, BorderColor);
-				SetPixel(hdc, COORD_X + Width - Counter, Y, BorderColor);
-			}
+		for (SHORT W = 0; W < BorderWidth; W++) {
 			// Up and Down
-			for (INT X = COORD_X; X <= COORD_X + Width; X++) {
-				SetPixel(hdc, X, COORD_Y + Counter, BorderColor);
-				SetPixel(hdc, X, COORD_Y + Height - Counter, BorderColor);
+			for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
+				SetPixel(hdc, X, COORD_Y + W, BorderColor);
+				SetPixel(hdc, X, COORD_Y + HEIGTH - W, BorderColor);
+			}
+			// Left and Right
+			for (INT Y = COORD_Y; Y <= COORD_Y + HEIGTH; Y++) {
+				SetPixel(hdc, COORD_X + W, Y, BorderColor);
+				SetPixel(hdc, COORD_X + WIDTH - W, Y, BorderColor);
 			}
 		}
 
@@ -281,8 +281,8 @@ public:
 		BYTE DONE = 0;
 
 		//Gradient
-		for (INT X = COORD_X + BorderWidth; X <= COORD_X + Width - BorderWidth; X++) {
-			for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + Height - BorderWidth; Y++) {
+		for (INT X = COORD_X + BorderWidth; X <= COORD_X + WIDTH - BorderWidth; X++) {
+			for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + HEIGTH - BorderWidth; Y++) {
 				SetPixel(hdc, X, Y, RGB(R, G, B));
 			}
 			if (DONE == 0) (G == 0 and B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP); // White [255 255 255] -> Red [255 0 0]
@@ -311,19 +311,19 @@ public:
 	/// <returns>Returns Border Width</returns>
 	static SHORT drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = Colors::BlackColor) {
 
-		CONST SHORT Width = 420, Height = 100;
+		CONST SHORT WIDTH = 420, HEIGTH = 100;
 
 		// Border
-		for (SHORT Counter = 0; Counter < BorderWidth; Counter++) {
-			// Left and Right
-			for (INT Y = COORD_Y; Y <= COORD_Y + Height; Y++) {
-				SetPixel(hdc, COORD_X + Counter, Y, BorderColor);
-				SetPixel(hdc, COORD_X + Width - Counter, Y, BorderColor);
-			}
+		for (SHORT W = 0; W < BorderWidth; W++) {
 			// Up and Down
-			for (INT X = COORD_X; X <= COORD_X + Width; X++) {
-				SetPixel(hdc, X, COORD_Y + Counter, BorderColor);
-				SetPixel(hdc, X, COORD_Y + Height - Counter, BorderColor);
+			for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
+				SetPixel(hdc, X, COORD_Y + W, BorderColor);
+				SetPixel(hdc, X, COORD_Y + HEIGTH - W, BorderColor);
+			}
+			// Left and Right
+			for (INT Y = COORD_Y; Y <= COORD_Y + HEIGTH; Y++) {
+				SetPixel(hdc, COORD_X + W, Y, BorderColor);
+				SetPixel(hdc, COORD_X + WIDTH - W, Y, BorderColor);
 			}
 		}
 
@@ -333,10 +333,10 @@ public:
 		BYTE DONE = 0;
 
 		//Gradient
-		for (INT X = COORD_X + BorderWidth; X <= COORD_X + Width - BorderWidth; X++) {
-			for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + Height - BorderWidth; Y++) {
+		for (INT X = COORD_X + BorderWidth; X <= COORD_X + WIDTH - BorderWidth; X++) {
+			for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + HEIGTH - BorderWidth; Y++) {
 				SetPixel(hdc, X, Y, RGB(RY, GY, BY));
-				if (Y < COORD_Y + Height / 2) {
+				if (Y < COORD_Y + HEIGTH / 2) {
 					if (RY != R) RY -= COLORSTEP; //
 					if (GY != G) GY -= COLORSTEP; // Up - Middle
 					if (BY != B) BY -= COLORSTEP; //
@@ -472,16 +472,17 @@ public:
 	typedef ID2D1Factory* LPID2D1Factory;
 	typedef ID2D1DCRenderTarget* LPID2D1DCRenderTarget;
 
-	HRESULT D2D1ErrorCode = S_OK;
+	HRESULT D2D1ErrorCode = S_OK; // DirectX2D Error Code Output
 
 	DirectX2D() {
 		D2D1ErrorCode = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &D2D1Factory);
 	}
 
-	HRESULT D2D1CreateDCRenderTarget(D2D1_RENDER_TARGET_TYPE type = D2D1_RENDER_TARGET_TYPE_HARDWARE) {
+	HRESULT D2D1CreateDCRenderTarget(HDC RenderDC, RECT RenderRect, D2D1_RENDER_TARGET_TYPE type = D2D1_RENDER_TARGET_TYPE_HARDWARE) {
 		D2D1_RENDER_TARGET_PROPERTIES D2D1RenderTargetProperties = D2D1::RenderTargetProperties(type,
 			D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
 		D2D1ErrorCode = D2D1Factory->CreateDCRenderTarget(&D2D1RenderTargetProperties, &D2D1DCRenderTarget);
+		D2D1DCRenderTarget->BindDC(RenderDC, &RenderRect);
 	}
 
 	LPID2D1DCRenderTarget GetD2D1DCRenderTarget() CONST {

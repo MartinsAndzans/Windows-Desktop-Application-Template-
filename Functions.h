@@ -11,7 +11,6 @@
 #include <Windows.h>
 #include <string>
 #include <fstream>
-#include <math.h>
 
 class Functions {
 
@@ -104,7 +103,7 @@ public:
 	/// <summary>
 	/// Finds Character Position Into String
 	/// </summary>
-	/// <param name="Text">- [CHAR] Text</param>
+	/// <param name="Text">- Text</param>
 	/// <param name="Char">- Character To Find</param>
 	/// <param name="TextLength">- Text Length Without [null character] - [\0]</param>
 	/// <returns>If Character Has Been Found returns Character Position, but If not -1</returns>
@@ -142,28 +141,29 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Copy Text into Clipboard
+	/// This Function Copy Text To Clipboard
 	/// </summary>
-	/// <param name="Hwnd">- New Clipboard Owner</param>
-	/// <param name="Text">- Text into Clipboard</param>
+	/// <param name="NewClipboardOwner">- New Clipboard Owner</param>
+	/// <param name="Text">- Text To Clipboard</param>
+	/// <param name="TextLength">- Text Length In Characters</param>
 	/// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
-	static BOOL CopyTextToClipboard(HWND Hwnd, std::string Text) {
+	static BOOL CopyTextToClipboard(HWND NewClipboardOwner, LPCSTR Text, SIZE_T TextLength) {
 
-		if (Text.length() != 0) {
-			if (OpenClipboard(Hwnd)) {
+		if (TextLength != 0) {
+			if (OpenClipboard(NewClipboardOwner)) {
 				EmptyClipboard();
-				HLOCAL CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(CHAR) * Text.length() + 1);
+				HLOCAL CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(CHAR) * (TextLength + 1));
 				if (CopyData == NULL) {
 					CloseClipboard();
 					return FALSE;
 				}
-				VOID *buffer = LocalLock(CopyData);
-				if (buffer == NULL) {
+				void *CopyDataPtr = LocalLock(CopyData);
+				if (CopyDataPtr == nullptr) {
 					LocalFree(CopyData);
 					CloseClipboard();
 					return FALSE;
 				}
-				memcpy(buffer, (VOID*)Text.c_str(), sizeof(CHAR) * Text.length() + 1);
+				memcpy(CopyDataPtr, (void*)Text, sizeof(CHAR) * (TextLength + 1));
 				LocalUnlock(CopyData);
 				SetClipboardData(CF_TEXT, CopyData);
 				LocalFree(CopyData);
@@ -179,26 +179,27 @@ public:
 	/// <summary>
 	/// This Function Copy Unicode Text into Clipboard
 	/// </summary>
-	/// <param name="Hwnd">- New Clipboard Owner</param>
-	/// <param name="WText">- WText into Clipboard</param>
+	/// <param name="NewClipboardOwner">- New Clipboard Owner</param>
+	/// <param name="UText">- Unicode Text To Clipboard</param>
+	/// <param name="UTextLength">- Unicode Text Length In Characters</param>
 	/// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
-	static BOOL CopyTextToClipboard(HWND Hwnd, std::wstring WText) {
+	static BOOL CopyTextToClipboard(HWND NewClipboardOwner, LPCWSTR UText, SIZE_T UTextLength) {
 
-		if (WText.length() != 0) {
-			if (OpenClipboard(Hwnd)) {
+		if (UTextLength != 0) {
+			if (OpenClipboard(NewClipboardOwner)) {
 				EmptyClipboard();
-				HLOCAL CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(WCHAR) * WText.length() + 1);
+				HLOCAL CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(WCHAR) * (UTextLength + 1));
 				if (CopyData == NULL) {
 					CloseClipboard();
 					return FALSE;
 				}
-				VOID *buffer = LocalLock(CopyData);
-				if (buffer == NULL) {
+				void *CopyDataPtr = LocalLock(CopyData);
+				if (CopyDataPtr == nullptr) {
 					LocalFree(CopyData);
 					CloseClipboard();
 					return FALSE;
 				}
-				memcpy(buffer, (VOID*)WText.c_str(), sizeof(WCHAR) * WText.length() + 1);
+				memcpy(CopyDataPtr, (void*)UText, sizeof(WCHAR) * (UTextLength + 1));
 				LocalUnlock(CopyData);
 				SetClipboardData(CF_UNICODETEXT, CopyData);
 				LocalFree(CopyData);
@@ -214,70 +215,62 @@ public:
 	/// <summary>
 	/// This Function Gets Text From Clipboard
 	/// </summary>
-	/// <param name="Hwnd">- New Clipboard Owner</param>
-	/// <returns>
-	/// If Function Succeeded returns Received Text, but If not Error Code:
-	/// <para>"-1" - Clipboard Is Taken by Another Program!</para>
-	/// <para>"-2" - Clipboard Is Empty!</para>
-	/// </returns>
-	static std::string GetClipboardText(HWND Hwnd) {
+	/// <param name="NewClipboardOwner">- New Clipboard Owner</param>
+	/// <param name="Buffer">- Text From Clipboard</param>
+	/// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
+	static BOOL GetTextFromClipboard(HWND NewClipboardOwner, std::string &Buffer) {
 
-		if (OpenClipboard(Hwnd)) {
-			std::string Text{};
+		if (OpenClipboard(NewClipboardOwner)) {
 			HLOCAL ClipboardData = GetClipboardData(CF_TEXT);
 			if (ClipboardData == NULL) {
 				CloseClipboard();
-				return "-2";
+				return FALSE;
 			}
-			VOID *buffer = LocalLock(ClipboardData);
-			if (buffer == NULL) {
+			void *ClipboardDataPtr = LocalLock(ClipboardData);
+			if (ClipboardDataPtr == nullptr) {
 				LocalFree(ClipboardData);
 				CloseClipboard();
-				return "-2";
+				return FALSE;
 			}
-			Text = (CHAR*)buffer;
+			Buffer += (char*)ClipboardDataPtr;
 			LocalUnlock(ClipboardData);
 			LocalFree(ClipboardData);
 			CloseClipboard();
-			return Text;
+			return TRUE;
 		}
 
-		return "-1";
+		return FALSE;
 
 	}
 
 	/// <summary>
-	/// This Function Gets WText From Clipboard
+	/// This Function Gets Unicode Text From Clipboard
 	/// </summary>
-	/// <param name="Hwnd">- New Clipboard Owner</param>
-	/// <returns>
-	/// If Function Succeeded returns Received WText, but If not Error Code:
-	/// <para>"-1" - Clipboard Is Taken by Another Program!</para>
-	/// <para>"-2" - Clipboard Is Empty!</para>
-	/// </returns>
-	static std::wstring GetClipboardWText(HWND Hwnd) {
+	/// <param name="NewClipboardOwner">- New Clipboard Owner</param>
+	/// <param name="Buffer">- Unicode Text From Clipboard</param>
+	/// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
+	static BOOL GetTextFromClipboard(HWND NewClipboardOwner, std::wstring &Buffer) {
 
-		if (OpenClipboard(Hwnd)) {
-			std::wstring WText{};
+		if (OpenClipboard(NewClipboardOwner)) {
 			HLOCAL ClipboardData = GetClipboardData(CF_UNICODETEXT);
 			if (ClipboardData == NULL) {
 				CloseClipboard();
-				return L"-2";
+				return FALSE;
 			}
-			VOID *buffer = LocalLock(ClipboardData);
-			if (buffer == NULL) {
+			void *ClipboardDataPtr = LocalLock(ClipboardData);
+			if (ClipboardDataPtr == nullptr) {
 				LocalFree(ClipboardData);
 				CloseClipboard();
-				return L"-2";
+				return FALSE;
 			}
-			WText = (WCHAR*)buffer;
+			Buffer += (wchar_t*)ClipboardDataPtr;
 			LocalUnlock(ClipboardData);
 			LocalFree(ClipboardData);
 			CloseClipboard();
-			return WText;
+			return TRUE;
 		}
 
-		return L"-1";
+		return FALSE;
 
 	}
 
@@ -366,6 +359,7 @@ class Sound {
 
 public:
 
+	typedef DWORD MCISTATUSCODE; // * MCISTATUSCODE [DWORD] is a 32-bit unsigned integer *
 	typedef DWORD MCISTATUS; // * MCISTATUS [DWORD] is a 32-bit unsigned integer *
 
 	/// <summary>
@@ -395,7 +389,7 @@ public:
 	/// <param name="StatusCode">- Status Code</param>
 	/// <param name="AdditionalFlags">- Additional Flags</param>
 	/// <returns>If Succeeded Returns Requested Status Information, but If not Returns MCIERROR Error Code</returns>
-	static MCISTATUS GetPlaybackStatus(LPCWSTR Alias, MCISTATUS StatusCode) {
+	static MCISTATUS GetPlaybackStatus(LPCWSTR Alias, MCISTATUSCODE StatusCode) {
 
 		MCI_STATUS_PARMS status = { 0 };
 		status.dwItem = StatusCode; // Status Code
@@ -406,7 +400,7 @@ public:
 		if (Error != 0) {
 			return Error;
 		} else {
-			return (DWORD)status.dwReturn;
+			return static_cast<MCISTATUS>(status.dwReturn);
 		}
 
 	}
@@ -453,7 +447,7 @@ public:
 		} else {
 			return mciSendCommand(mciGetDeviceID(Alias), MCI_SEEK, MCI_WAIT | MCI_TO, (DWORD_PTR)&seek);
 		}
-
+		
 	}
 
 	/// <summary>> This Function Pauses Playbeck</summary>

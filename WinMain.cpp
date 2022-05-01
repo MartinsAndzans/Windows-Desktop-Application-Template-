@@ -13,7 +13,7 @@ WCHAR MainWindow::ApplicationDirectory[MAX_CHAR_STRING] = { 0 };
 
 VOID BroadcastMessages();
 
-int wmain(int ArrgumentCount, wchar_t *Arrguments[]) {
+int wmain(INT ArrgumentCount, LPWSTR Arrguments[]) {
 
 	#ifdef APP_DEBUG
 	ShowWindow(GetConsoleWindow(), SW_SHOW);
@@ -21,7 +21,7 @@ int wmain(int ArrgumentCount, wchar_t *Arrguments[]) {
 	#else
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
 	Console::setConsoleTitle("Console");
-	#endif
+	#endif // APP_DEBUG
 
 	PRINT(0x0A, "Debug Console Initilaized Correctly . . .");
 

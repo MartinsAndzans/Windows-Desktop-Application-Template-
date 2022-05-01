@@ -6,6 +6,7 @@
 #include <Windows.h> // Win32Api
 #include <string>
 #include <fstream>
+#include <math.h>
 #include <vector>
 
 #include "Functions.h"
@@ -26,13 +27,16 @@
 #define MAX_CHAR_STRING 256
 #define HInstance() GetModuleHandle(NULL)
 #define MainWindowBackgroundColor RGB(15, 160, 255)
+#pragma endregion
+
+#pragma region ColorArithmetic
 #define LighterColor(SourceColor, LighterTo) RGB(GetRValue(SourceColor) + LighterTo, GetGValue(SourceColor) + LighterTo, GetBValue(SourceColor) + LighterTo) // Returns LighterColor
 #define DarkerColor(SourceColor, DarkerTo) RGB(GetRValue(SourceColor) - DarkerTo, GetGValue(SourceColor) - DarkerTo, GetBValue(SourceColor) - DarkerTo) // Returns DarkerColor
 #pragma endregion
 
 #pragma region MainWindow|Class|Title
-#define MAIN_WINDOW_CLASS "MAIN WINDOW CLASS"
-#define MAIN_WINDOW_TITLE "Window [TEMPLATE]"
+#define MAIN_WINDOW_CLASS L"MAIN WINDOW CLASS"
+#define MAIN_WINDOW_TITLE L"Window -TEMPLATE-"
 #pragma endregion
 
 #pragma region MainWindowDimensions
@@ -42,12 +46,12 @@
 
 #pragma region DebugLog
 #ifdef APP_DEBUG
-// Color Example 0x0A -- Black Background and Grean Foreground
-#define PRINT(color, text) Console::Print(text, color)
+#define PRINT(color, text) Console::Print(text, color) // Color Example 0x0A -- Black Background Color and Grean Foreground Color
 #else
 #define PRINT(color, text)
-#endif
+#endif // APP_DEBUG
 #pragma endregion
+
 #pragma endregion
 
 #pragma region SetMacros
