@@ -263,6 +263,7 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 
 	if (GetAsyncKeyState(VK_LBUTTON) and mousePosition.x >= Dimensions.left and mousePosition.x <= Dimensions.right and
 		mousePosition.y >= Dimensions.top and mousePosition.y <= Dimensions.bottom) {
+
 		COLORREF Color = GetPixel(MemoryDC, mousePosition.x, mousePosition.y);
 		drawCross(MemoryDC, mousePosition.x - 23 / 2, mousePosition.y - 23 / 2);
 		SetWindowLong(hColorPicker, GWL_USERDATA, MAKELONG(mousePosition.x, mousePosition.y));
@@ -277,6 +278,7 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 		//////////////////////////////////////////////////////
 
 		PostMessage(GetParent(hColorPicker), WM_COMMAND, MAKEWPARAM(GetWindowLong(hColorPicker, GWL_ID), hColorPicker), Color);
+
 	} else {
 		LONG PreviousPoint = GetWindowLong(hColorPicker, GWL_USERDATA);
 		if (PreviousPoint != NULL) {

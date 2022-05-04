@@ -9,7 +9,6 @@
 
 #include <ciso646>
 #include <Windows.h>
-#include <d2d1.h>
 
 class Draw {
 
@@ -35,74 +34,15 @@ public:
 	/// <param name="Rectangle">- Rectangle</param>
 	static VOID drawRectangle(HDC hdc, RECT &Rectangle) {
 
-		// TOP
-		MoveToEx(hdc, Rectangle.left, Rectangle.top, NULL);
-		LineTo(hdc, Rectangle.right, Rectangle.top);
-		// BOTTOM
-		MoveToEx(hdc, Rectangle.left, Rectangle.bottom, NULL);
-		LineTo(hdc, Rectangle.right, Rectangle.bottom);
-		// LEFT
-		MoveToEx(hdc, Rectangle.left, Rectangle.top, NULL);
-		LineTo(hdc, Rectangle.left, Rectangle.bottom);
-		// RIGHT
-		MoveToEx(hdc, Rectangle.right, Rectangle.top, NULL);
-		LineTo(hdc, Rectangle.right, Rectangle.bottom);
+		POINT RectangleVertices[] = {
+			{ Rectangle.left, Rectangle.top }, // First Point
+			{ Rectangle.right, Rectangle.top }, // Second Point
+			{ Rectangle.right, Rectangle.bottom }, // Third Point
+			{ Rectangle.left, Rectangle.bottom }, // Fourth Point
+			{ Rectangle.left, Rectangle.top } // Fifth Point
+		};
 
-	}
-
-	/// <summary>
-	/// This Function Draws Dashed Rectangle
-	/// </summary>
-	/// <param name="hdc">- Device Context</param>
-	/// <param name="Rectangle">- Rectangle</param>
-	/// <param name="Width">- Width</param>
-	/// <param name="Color">- Color</param>
-	static VOID drawDashedRectangle(HDC hdc, RECT &Rectangle, UINT Width, COLORREF Color = Colors::BlackColor) {
-
-		HPEN Pen = CreatePen(PS_DASH, 1, Color);
-		HPEN PreviousPen = (HPEN)SelectObject(hdc, Pen);
-
-		for (UINT W = 0; W < Width; W++) {
-
-			// TOP
-			MoveToEx(hdc, Rectangle.left, Rectangle.top + W, NULL);
-			LineTo(hdc, Rectangle.right, Rectangle.top + W);
-			// BOTTOM
-			MoveToEx(hdc, Rectangle.left, Rectangle.bottom - W, NULL);
-			LineTo(hdc, Rectangle.right, Rectangle.bottom - W);
-			// LEFT
-			MoveToEx(hdc, Rectangle.left + W, Rectangle.top, NULL);
-			LineTo(hdc, Rectangle.left + W, Rectangle.bottom);
-			// RIGHT
-			MoveToEx(hdc, Rectangle.right - W, Rectangle.top, NULL);
-			LineTo(hdc, Rectangle.right - W, Rectangle.bottom);
-
-		}
-
-		SelectObject(hdc, PreviousPen);
-		DeleteObject(Pen);
-
-	}
-
-	/// <summary>
-	/// This Function Draws Bitmap From File
-	/// </summary>
-	/// <param name="DestinationDC">- Device Context</param>
-	/// <param name="DestinationRectangle">- Where Draw Bitmap</param>
-	/// <param name="FilePath">- File Path - Supported Image Formats : "*.bmp; *.ico; *.cur"</param>
-	/// <param name="BitmapType">- IMAGE_BITMAP || IMAGE_ICON || IMAGE_CURSOR</param>
-	/// <param name="DrawMethod">- Draw Method - [EXAMPLE - SRCCOPY]</param>
-	/// <returns>If Succeeded returns TRUE, but If not returns FALSE</returns>
-	static VOID drawBitmapFromFile(HDC DestinationDC, RECT &DestinationRectangle, LPCWSTR FilePath, UINT BitmapType = IMAGE_BITMAP, DWORD DrawMethod = SRCCOPY) {
-
-		HDC BitmapDC = CreateCompatibleDC(DestinationDC);
-		HBITMAP Bitmap = (HBITMAP)LoadImage(NULL, FilePath, BitmapType, 0, 0, LR_LOADFROMFILE | LR_VGACOLOR);
-
-		SelectObject(BitmapDC, Bitmap);
-		BitBlt(DestinationDC, DestinationRectangle.left, DestinationRectangle.top, DestinationRectangle.right, DestinationRectangle.bottom, BitmapDC, 0, 0, DrawMethod);
-
-		DeleteDC(BitmapDC);
-		DeleteObject(Bitmap);
+		Polyline(hdc, RectangleVertices, ARRAYSIZE(RectangleVertices));
 
 	}
 
@@ -144,8 +84,7 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Fills Rectangle [50/50 Pixels] - [50% Opacity]
-	/// <para>|X| |X| |X|</para>
+	/// This Function Fill Rectangle [50/50 Pixels] - [50% Opacity]
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
 	/// <param name="Rectangle">- Rectangle</param>
@@ -168,6 +107,35 @@ public:
 	}
 
 	/// <summary>
+	/// This Function Draws Bitmap From File
+	/// </summary>
+	/// <param name="hdc">- Device Context</param>
+	/// <param name="Rectangle">- Where Draw Bitmap</param>
+	/// <param name="FilePath">- File Path -/Supported Image Formats : "*.bmp; *.ico; *.cur"/-</param>
+	/// <param name="BitmapType">- Bitmap Type</param>
+	/// <param name="DrawMethod">- Draw Method</param>
+	/// <returns>If Succeeded Returns TRUE, but If not Returns FALSE</returns>
+	static BOOL drawBitmapFromFile(HDC hdc, RECT &Rectangle, LPCWSTR FilePath, UINT BitmapType = IMAGE_BITMAP, DWORD DrawMethod = SRCCOPY) {
+
+		HDC BitmapDC = CreateCompatibleDC(hdc);
+		HBITMAP Bitmap = (HBITMAP)LoadImage(NULL, FilePath, BitmapType, 0, 0, LR_LOADFROMFILE | LR_VGACOLOR);
+		if (Bitmap == NULL) {
+			OutputDebugString(L"\'[Draw::drawBitmapFromFile] - \"Image File not Found!\"\'\r\n");
+			DeleteDC(BitmapDC);
+			return FALSE;
+		}
+
+		SelectObject(BitmapDC, Bitmap);
+		BitBlt(hdc, Rectangle.left, Rectangle.top, Rectangle.right, Rectangle.bottom, BitmapDC, 0, 0, DrawMethod);
+
+		DeleteDC(BitmapDC);
+		DeleteObject(Bitmap);
+
+		return TRUE;
+
+	}
+
+	/// <summary>
 	/// This Function Draws Triangle
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
@@ -178,26 +146,26 @@ public:
 	/// <param name="X3">- X3 Coordinate</param>
 	/// <param name="Y3">- Y3 Coordinate</param>
 	/// <param name="Color">- Color</param>
-	static VOID drawTriangle(HDC hdc, INT X1, INT Y1, INT X2, INT Y2, INT X3, INT Y3, COLORREF Color = Colors::BlueColor) {
+	static VOID FillTriangle(HDC hdc, INT X1, INT Y1, INT X2, INT Y2, INT X3, INT Y3, COLORREF Color = Colors::BlueColor) {
 
 		SetDCPenColor(hdc, Color);
 		SetDCBrushColor(hdc, Color);
 
-		HPEN PrevPen = (HPEN)SelectObject(hdc, (HPEN)GetStockObject(DC_PEN));
-		HBRUSH PrevBrush = (HBRUSH)SelectObject(hdc, (HBRUSH)GetStockObject(DC_BRUSH));
+		HPEN PreviousPen = (HPEN)SelectObject(hdc, (HPEN)GetStockObject(DC_PEN));
+		HBRUSH PreviousBrush = (HBRUSH)SelectObject(hdc, (HBRUSH)GetStockObject(DC_BRUSH));
 
 		SetPolyFillMode(hdc, ALTERNATE);
 
-		POINT First = { X1, Y1 };
-		POINT Second = { X2, Y2 };
-		POINT Third = { X3, Y3 };
+		POINT TriangleVertices[] = {
+			{ X1, Y1 },
+			{ X2, Y2 },
+			{ X3, Y3 }
+		};
 
-		POINT Vertices[] = { First, Second, Third };
+		Polygon(hdc, TriangleVertices, ARRAYSIZE(TriangleVertices));
 
-		Polygon(hdc, Vertices, ARRAYSIZE(Vertices));
-
-		SelectObject(hdc, PrevPen);
-		SelectObject(hdc, PrevBrush);
+		SelectObject(hdc, PreviousPen);
+		SelectObject(hdc, PreviousBrush);
 
 	}
 
@@ -217,7 +185,7 @@ public:
 	/// <param name="WIDTH">- Width</param>
 	/// <param name="HEIGHT">- Height</param>
 	/// <param name="Color">- Color</param>
-	static VOID drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, COLORREF Color = Colors::BlackColor) {
+	static VOID drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 60, INT HEIGHT = 100, COLORREF Color = Colors::BlackColor) {
 
 		CONST SHORT Proportion = 3;
 		INT XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
@@ -225,8 +193,8 @@ public:
 		SetDCPenColor(hdc, Color);
 		SetDCBrushColor(hdc, Color);
 
-		HPEN PrevPen = (HPEN)SelectObject(hdc, (HPEN)GetStockObject(DC_PEN));
-		HBRUSH PrevBrush = (HBRUSH)SelectObject(hdc, (HBRUSH)GetStockObject(DC_BRUSH));
+		HPEN PreviousPen = (HPEN)SelectObject(hdc, (HPEN)GetStockObject(DC_PEN));
+		HBRUSH PreviousBrush = (HBRUSH)SelectObject(hdc, (HBRUSH)GetStockObject(DC_BRUSH));
 
 		SetPolyFillMode(hdc, ALTERNATE);
 
@@ -239,12 +207,12 @@ public:
 		POINT Sixth = { COORD_X + WIDTH, COORD_Y + YCELL * 2 }; //------+
 		POINT Seventh = { COORD_X + WIDTH / 2, COORD_Y + HEIGHT }; // ---+---
 
-		POINT Vertices[] = { Third, First, Second, Fourth, Sixth, Seventh, Fifth };
+		POINT ArrowVertices[] = { Third, First, Second, Fourth, Sixth, Seventh, Fifth };
 
-		Polygon(hdc, Vertices, ARRAYSIZE(Vertices));
+		Polygon(hdc, ArrowVertices, ARRAYSIZE(ArrowVertices));
 
-		SelectObject(hdc, PrevPen);
-		SelectObject(hdc, PrevBrush);
+		SelectObject(hdc, PreviousPen);
+		SelectObject(hdc, PreviousBrush);
 
 	}
 
@@ -255,12 +223,12 @@ public:
 	/// <param name="hdc">- Device Context</param>
 	/// <param name="COORD_X">- X Coordinate</param>
 	/// <param name="COORD_Y">- Y Coordinate</param>
-	/// <param name="BorderWidth">- Border Width</param>
 	/// <param name="BorderColor">- Border Color</param>
 	/// <returns>Returns Border Width</returns>
-	static SHORT drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = Colors::BlackColor) {
+	static SHORT drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor = Colors::BlackColor) {
 
-		CONST SHORT WIDTH = 420, HEIGTH = 40;
+		CONST USHORT BorderWidth = 2;
+		CONST USHORT WIDTH = 420, HEIGTH = 40;
 
 		// Border
 		for (SHORT W = 0; W < BorderWidth; W++) {
@@ -375,7 +343,7 @@ public:
 	/// <param name="SymbolColor">- Symbol Color</param>
 	static VOID drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, CONST CHAR Symbol = '+', UINT Proportion = 4, COLORREF SymbolColor = Colors::WhiteColor) {
 
-		if (WIDTH != 0 and HEIGHT != 0) {
+		if (WIDTH > 0 and HEIGHT > 0) {
 
 			SIZE size = { 0 };
 			SYSTEMTIME st = { 0 };
@@ -389,8 +357,8 @@ public:
 			GetSystemTime(&st); // Gets System Time
 			srand(st.wMilliseconds); // Random Sead
 
-			for (UINT Y = 0; Y < Proportion; Y++) {
-				for (UINT X = 0; X < Proportion; X++) {
+			for (UINT X = 0; X < Proportion; X++) {
+				for (UINT Y = 0; Y < Proportion; Y++) {
 
 					INT SYMBOL_X = rand() % XCELL; // Random Number From 0 To (XCELL - 1)
 					INT SYMBOL_Y = rand() % YCELL; // Random Number From 0 To (YCELL - 1)
@@ -457,42 +425,6 @@ public:
 		}
 
 	}
-
-};
-
-class DirectX2D {
-
-private:
-
-	ID2D1Factory *D2D1Factory = nullptr;
-	ID2D1DCRenderTarget *D2D1DCRenderTarget = nullptr;
-
-public:
-
-	typedef ID2D1Factory* LPID2D1Factory;
-	typedef ID2D1DCRenderTarget* LPID2D1DCRenderTarget;
-
-	HRESULT D2D1ErrorCode = S_OK; // DirectX2D Error Code Output
-
-	DirectX2D() {
-		D2D1ErrorCode = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &D2D1Factory);
-	}
-
-	HRESULT D2D1CreateDCRenderTarget(HDC RenderDC, RECT RenderRect, D2D1_RENDER_TARGET_TYPE type = D2D1_RENDER_TARGET_TYPE_HARDWARE) {
-		D2D1_RENDER_TARGET_PROPERTIES D2D1RenderTargetProperties = D2D1::RenderTargetProperties(type,
-			D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
-		D2D1ErrorCode = D2D1Factory->CreateDCRenderTarget(&D2D1RenderTargetProperties, &D2D1DCRenderTarget);
-		D2D1DCRenderTarget->BindDC(RenderDC, &RenderRect);
-	}
-
-	LPID2D1DCRenderTarget GetD2D1DCRenderTarget() CONST {
-		return D2D1DCRenderTarget;
-	}
-
-	~DirectX2D() {
-		D2D1Factory->Release();
-	}
-
 
 };
 

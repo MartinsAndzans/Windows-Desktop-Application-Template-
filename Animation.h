@@ -6,7 +6,6 @@
 #include <string>
 
 #define SEC 1000
-
 #define AnimationTimer 1001
 
 #define DarkerColor(SourceColor, DarkerTo) RGB(GetRValue(SourceColor) - DarkerTo, GetGValue(SourceColor) - DarkerTo, GetBValue(SourceColor) - DarkerTo) // returns DarkerColor
@@ -19,19 +18,12 @@ class Animation {
 private:
 
 	#pragma region AnimationStaticMembers
-	static HDC AnimationDC;
-	static PAINTSTRUCT ps;
-
-	static HDC MemoryDC;
-	static HBITMAP Bitmap;
-
 	static HFONT AnimationFont;
-	static RECT Dimensions;
 	#pragma endregion
 
 	#pragma region Functions
 	static VOID CreateAnimationFont();
-	static VOID drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, CONST CHAR Symbol = '+', USHORT Proportion = 4, COLORREF SymbolColor = RGB(255, 255, 255));
+	static VOID drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, CONST CHAR Symbol, USHORT Proportion, COLORREF SymbolColor);
 	#pragma endregion
 
 	#pragma region Events

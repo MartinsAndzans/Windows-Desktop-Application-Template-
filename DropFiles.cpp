@@ -1,15 +1,8 @@
 #include "DropFiles.h"
 
 #pragma region CalculatorStaticMembers
-HDC DropFiles::DropFilesDC = { 0 };
-PAINTSTRUCT DropFiles::ps = { 0 };
-
-HDC DropFiles::MemoryDC = { 0 };
-HBITMAP DropFiles::Bitmap = { 0 };
-
 HFONT DropFiles::DropFilesFont = { 0 };
 BOOL DropFiles::FileDroped = FALSE;
-RECT DropFiles::Dimensions = { 0 };
 #pragma endregion
 
 #pragma region InitDropFiles
@@ -26,7 +19,7 @@ BOOL DropFiles::InitDropFiles() {
 	DropFilesEx.cbClsExtra = 0;
 	DropFilesEx.cbWndExtra = 0;
 	DropFilesEx.cbSize = sizeof(WNDCLASSEX);
-	DropFilesEx.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+	DropFilesEx.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
 	DropFilesEx.hCursor = LoadCursor(NULL, IDC_ARROW);
 	DropFilesEx.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	DropFilesEx.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
@@ -61,10 +54,7 @@ VOID DropFiles::CreateDropFilesFont() {
 		L"Segoe UI");
 
 }
-VOID DropFiles::drawDashedRectangle(HDC hdc, RECT &Rectangle, UINT Width, COLORREF Color) {
-
-	HPEN Pen = CreatePen(PS_DASH, 1, Color);
-	HPEN PreviousPen = (HPEN)SelectObject(hdc, Pen);
+VOID DropFiles::DrawBorder(HDC hdc, RECT &Rectangle, USHORT Width) {
 
 	for (UINT W = 0; W < Width; W++) {
 
@@ -82,9 +72,6 @@ VOID DropFiles::drawDashedRectangle(HDC hdc, RECT &Rectangle, UINT Width, COLORR
 		LineTo(hdc, Rectangle.right - W, Rectangle.bottom);
 
 	}
-
-	SelectObject(hdc, PreviousPen);
-	DeleteObject(Pen);
 
 }
 VOID DropFiles::FillRectOpacity50(HDC hdc, RECT &Rectangle, COLORREF Color) {
@@ -111,8 +98,8 @@ VOID DropFiles::drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIG
 	SetDCPenColor(hdc, Color);
 	SetDCBrushColor(hdc, Color);
 
-	HPEN PrevPen = (HPEN)SelectObject(hdc, (HPEN)GetStockObject(DC_PEN));
-	HBRUSH PrevBrush = (HBRUSH)SelectObject(hdc, (HBRUSH)GetStockObject(DC_BRUSH));
+	HPEN PreviousPen = (HPEN)SelectObject(hdc, (HPEN)GetStockObject(DC_PEN));
+	HBRUSH PreviousBrush = (HBRUSH)SelectObject(hdc, (HBRUSH)GetStockObject(DC_BRUSH));
 
 	SetPolyFillMode(hdc, ALTERNATE);
 
@@ -125,12 +112,12 @@ VOID DropFiles::drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIG
 	POINT Sixth = { COORD_X + WIDTH, COORD_Y + YCELL * 2 }; //------+
 	POINT Seventh = { COORD_X + WIDTH / 2, COORD_Y + HEIGHT }; // ---+---
 
-	POINT Vertices[] = { Third, First, Second, Fourth, Sixth, Seventh, Fifth };
+	POINT ArrowVertices[] = { Third, First, Second, Fourth, Sixth, Seventh, Fifth };
 
-	Polygon(hdc, Vertices, ARRAYSIZE(Vertices));
+	Polygon(hdc, ArrowVertices, ARRAYSIZE(ArrowVertices));
 
-	SelectObject(hdc, PrevPen);
-	SelectObject(hdc, PrevBrush);
+	SelectObject(hdc, PreviousPen);
+	SelectObject(hdc, PreviousBrush);
 
 }
 #pragma endregion
@@ -138,24 +125,28 @@ VOID DropFiles::drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIG
 #pragma region Events
 VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
-	LPCREATESTRUCT window = (LPCREATESTRUCT)lParam;
+	LPCREATESTRUCT window = reinterpret_cast<LPCREATESTRUCT>(lParam);
 
 	if (window->hwndParent != NULL and (window->style & WS_CHILD) != NULL) {
 
 		DragAcceptFiles(hDropFiles, TRUE);
 
-		DropFilesStyle *Style = new DropFilesStyle{ RGB(255, 255, 255), RGB(0, 0, 0) }; // Default Value Initialization
+		CONST COLORREF DefaultBackgroundColor = RGB(255, 255, 255);
+		CONST COLORREF DefaultForegroundColor = RGB(0, 0, 0);
+
+		DropFilesStyle *StylePtr = new DropFilesStyle{ DefaultBackgroundColor, DefaultForegroundColor }; // Default Value Initialization
 
 		// Move Style Data To Heap Memory Structure | If "DropFilesStyle" Structure is Passed To lpParam
 		if (window->lpCreateParams != nullptr) {
-			if (((LPDropFilesStyle)window->lpCreateParams)->BackgroundColor != NULL) Style->BackgroundColor = ((LPDropFilesStyle)window->lpCreateParams)->BackgroundColor;
-			if (((LPDropFilesStyle)window->lpCreateParams)->ForegroundColor != NULL) Style->ForegroundColor = ((LPDropFilesStyle)window->lpCreateParams)->ForegroundColor;
+			StylePtr ->BackgroundColor = static_cast<LPDropFilesStyle>(window->lpCreateParams)->BackgroundColor;
+			StylePtr->ForegroundColor = static_cast<LPDropFilesStyle>(window->lpCreateParams)->ForegroundColor;
 		}
 		////
 
-		SetWindowLongPtr(hDropFiles, GWLP_USERDATA, (LONG_PTR)Style); // Save Pointer To Window User Data
+		SetWindowLongPtr(hDropFiles, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(StylePtr)); // Save Pointer To Window User Data
 
 	} else {
+		OutputDebugStringA("\'ERROR \'DropFiles\' - \"hwndParent\" Must Be Non Zero Value\r\n\'");
 		DestroyWindow(hDropFiles);
 	}
 
@@ -163,20 +154,20 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 VOID DropFiles::onPaint(HWND hDropFiles) {
 
+	PAINTSTRUCT ps = { 0 };
+	RECT Dimensions = { 0 };
+
 	GetClientRect(hDropFiles, &Dimensions);
 
-	DropFilesDC = BeginPaint(hDropFiles, &ps);
+	HDC DropFilesDC = BeginPaint(hDropFiles, &ps);
 
-	MemoryDC = CreateCompatibleDC(DropFilesDC);
-	Bitmap = CreateCompatibleBitmap(DropFilesDC, Dimensions.right, Dimensions.bottom);
+	HDC MemoryDC = CreateCompatibleDC(DropFilesDC);
+	HBITMAP Bitmap = CreateCompatibleBitmap(DropFilesDC, Dimensions.right, Dimensions.bottom);
 
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
-
-	LPDropFilesStyle Style = (LPDropFilesStyle)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
-
-	SetDCBrushColor(MemoryDC, Style->BackgroundColor);
-	SetTextColor(MemoryDC, Style->ForegroundColor);
+	
+	LPDropFilesStyle StylePtr = reinterpret_cast<LPDropFilesStyle>(GetWindowLongPtr(hDropFiles, GWLP_USERDATA));
 
 	////////////////////////////////////////////////////////////
 	//// +------------------------------------------------+ ////
@@ -187,28 +178,30 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 	//// +------------------------------------------------+ ////
 	////////////////////////////////////////////////////////////
 
-	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(DC_BRUSH));
+	SetDCBrushColor(MemoryDC, StylePtr->BackgroundColor);
+	FillRect(MemoryDC, &Dimensions, static_cast<HBRUSH>(GetStockObject(DC_BRUSH)));
 	SelectObject(MemoryDC, DropFilesFont);
 
 	// Border
-	CONST SHORT BorderPadding = 4, BorderWidth = 2;
-	RECT Border = { Dimensions.left + BorderPadding, Dimensions.top + BorderPadding, Dimensions.right - BorderPadding, Dimensions.bottom - BorderPadding };
-	drawDashedRectangle(MemoryDC, Border, BorderWidth, Style->ForegroundColor);
+	CONST USHORT BorderPadding = 4, BorderWidth = 2;
+	RECT BorderRect = { Dimensions.left + BorderPadding, Dimensions.top + BorderPadding, Dimensions.right - BorderPadding, Dimensions.bottom - BorderPadding };
+	DrawBorder(MemoryDC, BorderRect, BorderWidth);
 	////
 
 	// Text To User
 	SIZE size = { 0 };
 	WCHAR WindowTitle[MAX_DROP_FILES_CHAR_STRING] = { 0 };
-	GetWindowText(hDropFiles, WindowTitle, ARRAYSIZE(WindowTitle));
-	GetTextExtentPoint(MemoryDC, WindowTitle, lstrlenW(WindowTitle), &size);
-	TextOut(MemoryDC, Dimensions.right / 2 - size.cx / 2, Dimensions.bottom / 2 - size.cy / 2, WindowTitle, lstrlenW(WindowTitle));
+	INT TextLength = GetWindowText(hDropFiles, WindowTitle, ARRAYSIZE(WindowTitle));
+	GetTextExtentPoint(MemoryDC, WindowTitle, TextLength, &size);
+	SetTextColor(MemoryDC, StylePtr->ForegroundColor);
+	TextOut(MemoryDC, Dimensions.right / 2 - size.cx / 2, Dimensions.bottom / 2 - size.cy / 2, WindowTitle, TextLength);
 	////
 
 	if (FileDroped) {
-		CONST SHORT ArrowPadding = 20;
+		CONST USHORT ArrowPadding = 20;
 		INT ArrowWidth = Dimensions.right / 3, ArrowHeight = Dimensions.bottom - ArrowPadding * 2;
-		FillRectOpacity50(MemoryDC, Dimensions, Style->ForegroundColor);
-		drawArrow(MemoryDC, Dimensions.right / 2 - ArrowWidth / 2, Dimensions.bottom / 2 - ArrowHeight / 2, ArrowWidth, ArrowHeight, Style->ForegroundColor);
+		FillRectOpacity50(MemoryDC, Dimensions, StylePtr->ForegroundColor);
+		drawArrow(MemoryDC, Dimensions.right / 2 - ArrowWidth / 2, Dimensions.bottom / 2 - ArrowHeight / 2, ArrowWidth, ArrowHeight, StylePtr->ForegroundColor);
 	}
 
 	BitBlt(DropFilesDC, 0, 0, Dimensions.right, Dimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
@@ -265,8 +258,8 @@ LRESULT CALLBACK DropFiles::DropFilesProcedure(HWND hDropFiles, UINT Msg, WPARAM
 	}
 	case WM_DESTROY:
 	{
-		LPDropFilesStyle Style = (LPDropFilesStyle)GetWindowLongPtr(hDropFiles, GWLP_USERDATA);
-		delete[] Style;
+		LPDropFilesStyle StylePtr = reinterpret_cast<LPDropFilesStyle>(GetWindowLongPtr(hDropFiles, GWLP_USERDATA));
+		delete[] StylePtr;
 		return 0;
 	}
 	}

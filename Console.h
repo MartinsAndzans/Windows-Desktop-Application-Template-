@@ -22,7 +22,7 @@ public:
 
 	static BOOL setConsoleTextColor(WORD Color = 0x0F) {
 		HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTextAttribute(hOutput, FOREGROUND_INTENSITY | Color);
+		return SetConsoleTextAttribute(hOutput, FOREGROUND_INTENSITY | Color);
 	}
 
 	static VOID Print(LPCSTR Text, WORD Color = 0x0F) {
@@ -31,13 +31,20 @@ public:
 		std::cout << Text << std::endl;
 	}
 
-	static VOID drawRectangleInConsole(CONST SHORT Width, CONST SHORT Height, CONST CHAR Symbol = '*', CONST WORD Color = 0x0F) {
+	static CHAR Pause(LPCSTR MessageToUser = "Press any key to continue . . .", WORD Color = 0x0F) {
+		HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hOutput, FOREGROUND_INTENSITY | Color);
+		std::cout << MessageToUser << std::endl;
+		return _getch();
+	}
+
+	static VOID drawRectangleInConsole(CONST USHORT Width, CONST USHORT Height, CONST CHAR Symbol = '*', CONST WORD Color = 0x0F) {
 
 		HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 		SetConsoleTextAttribute(hOutput, FOREGROUND_INTENSITY | Color);
 
-		for (SHORT Y = 1; Y <= Height; Y++) {
-			for (SHORT X = 1; X <= Width; X++) {
+		for (USHORT Y = 1; Y <= Height; Y++) {
+			for (USHORT X = 1; X <= Width; X++) {
 				if (Y == 1 or Y == Height) {
 					std::cout << Symbol;
 				} else {

@@ -4,21 +4,25 @@
 #pragma region Headers
 #include <ciso646>
 #include <Windows.h> // Win32Api
-#include <string>
-#include <fstream>
-#include <math.h>
+#include <d2d1.h> // DirectX2D
+#include <string> // std::string
+#include <fstream> // File Read/Write
 #include <vector>
-
-#include "Functions.h"
-#include "Draw.h"
-#include "Console.h"
+#include <math.h>
 
 #include "resource.h" // Resources
 
+#include "Functions.h" // Useful Functions
+#include "Draw.h" // GDI Draw
+#include "Console.h" // Console API
+
+#pragma region CostomCotrols
 #include "ColorPicker.h"
 #include "Animation.h"
 #include "Calculator.h"
 #include "DropFiles.h"
+#pragma endregion
+
 #pragma endregion
 
 #pragma region Macros

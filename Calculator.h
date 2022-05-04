@@ -47,13 +47,11 @@ private:
 	static CONST SHORT StaticHeight;
 
 	static CONST SIZE CalculatorDimensions;
-
-	static RECT Dimensions;
 	#pragma endregion
 
 	#pragma region Functions
 	static VOID CreateCalculatorFont();
-	static SIZE_T FindChar(LPSTR Text, CONST CHAR Char, SIZE_T TextLength);
+	static SIZE_T FindChar(LPCSTR Text, CONST CHAR Char, SIZE_T TextLength);
 	static std::string RoundDoubleString(std::string DoubleString);
 	static VOID CreateCalculatorControls(HWND hCalculator);
 	#pragma endregion
@@ -61,6 +59,7 @@ private:
 	#pragma region Events
 	static VOID onCreate(HWND hCalculator, LPARAM lParam);
 	static VOID onWindowPosChanging(HWND hCalculator, LPARAM lParam);
+	static VOID onPaint(HWND hCalculator);
 	static VOID onDrawItem(HWND hCalculator, WPARAM wParam, LPARAM lParam);
 	static VOID onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam);
 	#pragma endregion

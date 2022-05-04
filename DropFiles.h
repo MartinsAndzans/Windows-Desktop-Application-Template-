@@ -12,22 +12,15 @@ class DropFiles {
 private:
 
 	#pragma region CalculatorStaticMembers
-	static HDC DropFilesDC;
-	static PAINTSTRUCT ps;
-
-	static HDC MemoryDC;
-	static HBITMAP Bitmap;
-
 	static HFONT DropFilesFont;
 	static BOOL FileDroped;
-	static RECT Dimensions;
 	#pragma endregion
 
 	#pragma region Functions
 	static VOID CreateDropFilesFont();
-	static VOID drawDashedRectangle(HDC hdc, RECT &Rectangle, UINT Width, COLORREF Color);
+	static VOID DrawBorder(HDC hdc, RECT &Rectangle, USHORT Width);
 	static VOID FillRectOpacity50(HDC hdc, RECT &Rectangle,COLORREF Color);
-	static VOID drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 20, INT HEIGHT = 20, COLORREF Color = RGB(0, 0, 0));
+	static VOID drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF Color);
 	#pragma endregion
 
 	#pragma region Events

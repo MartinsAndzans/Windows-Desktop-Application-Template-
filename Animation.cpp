@@ -1,14 +1,7 @@
 #include "Animation.h"
 
 #pragma region InitAnimationStarsStaticMembers
-HDC Animation::AnimationDC = { 0 };
-PAINTSTRUCT Animation::ps = { 0 };
-
-HDC Animation::MemoryDC = { 0 };
-HBITMAP Animation::Bitmap = { 0 };
-
 HFONT Animation::AnimationFont = { 0 };
-RECT Animation::Dimensions = { 0 };
 #pragma endregion
 
 #pragma region InitAnimationStars
@@ -25,7 +18,7 @@ BOOL Animation::InitAnimation() {
 	AnimationEx.cbClsExtra = 0;
 	AnimationEx.cbWndExtra = 0;
 	AnimationEx.cbSize = sizeof(WNDCLASSEX);
-	AnimationEx.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+	AnimationEx.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
 	AnimationEx.hCursor = LoadCursor(NULL, IDC_ARROW);
 	AnimationEx.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	AnimationEx.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
@@ -62,7 +55,7 @@ VOID Animation::CreateAnimationFont() {
 }
 VOID Animation::drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, CONST CHAR Symbol, USHORT Proportion, COLORREF SymbolColor) {
 
-	if (WIDTH != 0 and HEIGHT != 0) {
+	if (WIDTH > 0 and HEIGHT > 0) {
 
 		SIZE size = { 0 };
 		SYSTEMTIME st = { 0 };
@@ -76,8 +69,8 @@ VOID Animation::drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH,
 		GetSystemTime(&st); // Gets System Time
 		srand(st.wMilliseconds); // Random Sead
 
-		for (UINT Y = 0; Y < Proportion; Y++) {
-			for (UINT X = 0; X < Proportion; X++) {
+		for (UINT X = 0; X < Proportion; X++) {
+			for (UINT Y = 0; Y < Proportion; Y++) {
 
 				INT SYMBOL_X = rand() % XCELL; // Random Number From 0 To (XCELL - 1)
 				INT SYMBOL_Y = rand() % YCELL; // Random Number From 0 To (YCELL - 1)
@@ -99,23 +92,25 @@ VOID Animation::drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH,
 #pragma region Events
 VOID Animation::onCreate(HWND hAnimation, LPARAM lParam) {
 
-	LPCREATESTRUCT window = LPCREATESTRUCT(lParam);
+	LPCREATESTRUCT window = reinterpret_cast<LPCREATESTRUCT>(lParam);
 
 	if (window->hwndParent != NULL and (window->style & WS_CHILD) != NULL) {
 
-		AnimationStyle *Style = new AnimationStyle{ RGB(255, 255, 255), 4, '+'}; // Default Value Initilization
+		CONST COLORREF DefaultSymbolColor = RGB(255, 255, 255);
 
-		// Move Style Data To Heap Memory Structure | If "AnimationStyle" Structure is Passed To lpParam
+		AnimationStyle *StylePtr = new AnimationStyle{ DefaultSymbolColor, 4, '+'}; // Default Value Initilization
+
+		// Move Style Data To Heap Memory Structure / If "AnimationStyle" Structure is Passed To lpParam
 		if (window->lpCreateParams != nullptr) {
-			if (((LPAnimationStyle)window->lpCreateParams)->SymbolColor != NULL) Style->SymbolColor = ((LPAnimationStyle)window->lpCreateParams)->SymbolColor;
-			if (((LPAnimationStyle)window->lpCreateParams)->Proportion != 0) Style->Proportion = ((LPAnimationStyle)window->lpCreateParams)->Proportion;
-			if (((LPAnimationStyle)window->lpCreateParams)->Symbol > 32) Style->Symbol = ((LPAnimationStyle)window->lpCreateParams)->Symbol;
+			StylePtr->SymbolColor = static_cast<LPAnimationStyle>(window->lpCreateParams)->SymbolColor;
+			StylePtr->Proportion = static_cast<LPAnimationStyle>(window->lpCreateParams)->Proportion;
+			StylePtr->Symbol = static_cast<LPAnimationStyle>(window->lpCreateParams)->Symbol;
 		}
 
-		SetWindowLongPtr(hAnimation, GWLP_USERDATA, (LONG_PTR)Style); // Save Pointer To Window User Data
+		SetWindowLongPtr(hAnimation, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(StylePtr)); // Save Pointer To Window User Data
 
 		if (window->cx != 0 and window->cy != 0) {
-			SetTimer(hAnimation, AnimationTimer, SEC / 10, (TIMERPROC)NULL);
+			SetTimer(hAnimation, AnimationTimer, SEC / 10, nullptr);
 		}
 
 	} else {
@@ -127,10 +122,10 @@ VOID Animation::onCreate(HWND hAnimation, LPARAM lParam) {
 
 VOID Animation::onWindowPosChanging(HWND hAnimation, LPARAM lParam) {
 
-	LPWINDOWPOS window = LPWINDOWPOS(lParam);
+	LPWINDOWPOS window = reinterpret_cast<LPWINDOWPOS>(lParam);
 
 	if (window->cx != 0 and window->cy != 0) {
-		SetTimer(hAnimation, AnimationTimer, SEC / 10, (TIMERPROC)NULL);
+		SetTimer(hAnimation, AnimationTimer, SEC / 10, nullptr);
 	} else {
 		KillTimer(hAnimation, AnimationTimer);
 	}
@@ -143,19 +138,22 @@ VOID Animation::onTimer(HWND hAnimation, WPARAM wParam, LPARAM lParam) {
 
 VOID Animation::onPaint(HWND hAnimation) {
 
+	PAINTSTRUCT ps = { 0 };
+	RECT Dimensions = { 0 };
+
 	GetClientRect(hAnimation, &Dimensions);
 
-	AnimationDC = BeginPaint(hAnimation, &ps);
+	HDC AnimationDC = BeginPaint(hAnimation, &ps);
 
-	MemoryDC = CreateCompatibleDC(AnimationDC);
-	Bitmap = CreateCompatibleBitmap(AnimationDC, Dimensions.right, Dimensions.bottom);
+	HDC MemoryDC = CreateCompatibleDC(AnimationDC);
+	HBITMAP Bitmap = CreateCompatibleBitmap(AnimationDC, Dimensions.right, Dimensions.bottom);
 
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
-	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(BLACK_BRUSH));
+	FillRect(MemoryDC, &Dimensions, static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)));
 	SelectObject(MemoryDC, AnimationFont);
 
-	LPAnimationStyle Style = (LPAnimationStyle)GetWindowLongPtr(hAnimation, GWLP_USERDATA);
+	LPAnimationStyle StylePtr = reinterpret_cast<LPAnimationStyle>(GetWindowLongPtr(hAnimation, GWLP_USERDATA));
 	
 	//////////////////////////////////////////////////////
 	//// +------------------------------------------+ ////
@@ -168,16 +166,16 @@ VOID Animation::onPaint(HWND hAnimation) {
 	//////////////////////////////////////////////////////
 
 	WCHAR WindowTitle[MAX_ANIMATION_CHAR_STRING] = { 0 };
-	GetWindowText(hAnimation, WindowTitle, ARRAYSIZE(WindowTitle));
+	INT TextLength = GetWindowText(hAnimation, WindowTitle, ARRAYSIZE(WindowTitle));
 
-	drawAnimationFrame(MemoryDC, Dimensions.left, Dimensions.top, Dimensions.right, Dimensions.bottom, Style->Symbol, Style->Proportion, Style->SymbolColor);
+	drawAnimationFrame(MemoryDC, Dimensions.left, Dimensions.top, Dimensions.right, Dimensions.bottom, StylePtr->Symbol, StylePtr->Proportion, StylePtr->SymbolColor);
 	
 	// Text Shadow
-	SetTextColor(MemoryDC, DarkerColor(Style->SymbolColor, 0x20)); // 0x20 / 32
-	TextOut(MemoryDC, Dimensions.left + 4, Dimensions.top + 4, WindowTitle, lstrlenW(WindowTitle));
+	SetTextColor(MemoryDC, DarkerColor(StylePtr->SymbolColor, 0x20)); // 0x20 / 32
+	TextOut(MemoryDC, Dimensions.left + 4, Dimensions.top + 4, WindowTitle, TextLength);
 	// Text
-	SetTextColor(MemoryDC, Style->SymbolColor);
-	TextOut(MemoryDC, Dimensions.left + 2, Dimensions.top + 2, WindowTitle, lstrlenW(WindowTitle));
+	SetTextColor(MemoryDC, StylePtr->SymbolColor);
+	TextOut(MemoryDC, Dimensions.left + 2, Dimensions.top + 2, WindowTitle, TextLength);
 
 	BitBlt(AnimationDC, 0, 0, Dimensions.right, Dimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
@@ -216,8 +214,8 @@ LRESULT CALLBACK Animation::AnimationProcedure(HWND hAnimation, UINT Msg, WPARAM
 	case WM_DESTROY:
 	{
 		KillTimer(hAnimation, AnimationTimer);
-		LPAnimationStyle Style = (LPAnimationStyle)GetWindowLongPtr(hAnimation, GWLP_USERDATA);
-		delete[] Style;
+		LPAnimationStyle StylePtr = reinterpret_cast<LPAnimationStyle>(GetWindowLongPtr(hAnimation, GWLP_USERDATA));
+		delete[] StylePtr;
 		return 0;
 	}
 	}

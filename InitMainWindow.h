@@ -3,19 +3,21 @@
 
 #include "Headers.h"
 
-#pragma region LocalMacros
-#define ID_DEBUG_TOOL_1 -10
-#define ID_DEBUG_TOOL_2 -20
-
-#define ID_ANIMATION_STARS 01
-#define ID_DROP_FILES 02
-#define ID_COLOR_PICKER 03
-#define ID_CALCULATOR 04
-#pragma endregion
-
 class MainWindow {
 
 private:
+
+	/// <summary>
+	/// All Controls IDs
+	/// </summary>
+	enum ControlsIDs {
+		ID_DEBUG_TOOL_1 = -1,
+		ID_DEBUG_TOOL_2 = -2,
+		ID_ANIMATION_STARS = 1,
+		ID_DROP_FILES = 2,
+		ID_COLOR_PICKER = 3,
+		ID_CALCULATOR = 4
+	};
 
 	/// <summary>
 	/// * Predefined Colors *
@@ -54,9 +56,9 @@ private:
 private:
 
 	#pragma region Functions
-	static VOID CreateFonts();
+	static VOID CreateMainWindowFont();
 	#ifdef APP_DEBUG
-	static VOID CreateDebugTools();
+	static VOID CreateDebugTools(HWND ParentWindow);
 	#endif // APP_DEBUG
 	#pragma endregion
 

@@ -36,19 +36,24 @@ public:
 			return FALSE;
 		}
 
-		if (Value * -1 > 0) Minus = TRUE, Value *= -1; // -Value * -1 = (Value > 0) | Value * -1 = (-Value <= 0)
+		if (Value < 0) {
+			Minus = TRUE;
+			Value *= -1; // -Value *= -1
+		}
 
 		do {
 
-			CHAR Char = Value % 10 + ASCI_VALUE_ZERO; // Get Last Number - Char Value 0 / 48 - 9 / 57
-			Value = Value / 10;  // Remove Last Number
-			StringValue.insert(0, 1, Char);
+			CHAR Character = static_cast<CHAR>(Value % 10 + ASCI_VALUE_ZERO); // Get Last Number - Char Value 0 / 48 - 9 / 57
+			Value = Value / 10; // Remove Last Number
+			StringValue.insert(0, 1, Character); // Add Character To Begining of StringValue
 
 		} while (Value != 0);
 		
-		if (Minus) StringValue.insert(0, "-");
+		if (Minus) {
+			StringValue.insert(0, "-");
+		}
 
-		if (BufferSize >= strlen(StringValue.c_str()) + 1) {
+		if (BufferSize >= StringValue.length() + 1) {
 			strcpy_s(Buffer, BufferSize, StringValue.c_str());
 		} else {
 			OutputDebugString(L"\'[Functions::_itoa] - Buffer To Small\'\r\n");
@@ -60,17 +65,17 @@ public:
 	}
 
 	/// <summary>
-	/// Encrypt Text To ASCII Value Code
+	/// This Function Encrypt Text To ASCII Value Code
 	/// </summary>
-	/// <param name="Text">- Text To Be Encrypted</param>
+	/// <param name="TextToBeEncrypted">- Text To Be Encrypted</param>
 	/// <returns>Encrypted Text</returns>
-	static std::string EncryptText(CONST std::string &TEXT) {
+	static std::string EncryptText(const std::string &TextToBeEncrypted) {
 
 		std::string EncryptedText{};
 
-		for (CHAR CHARACTER : TEXT) {
-			SHORT ASCII_VALUE = CHARACTER;
-			EncryptedText += std::to_string(ASCII_VALUE) + "|";
+		for (CHAR CHARACTER : TextToBeEncrypted) {
+			SHORT ASCII_VALUE = static_cast<SHORT>(CHARACTER);
+			EncryptedText += std::to_string(ASCII_VALUE) + ":";
 		}
 
 		return EncryptedText;
@@ -78,7 +83,25 @@ public:
 	}
 
 	/// <summary>
-	/// Decrypted Text From ASCII Value Code
+	/// This Function Encrypt Unicode Text To ASCII Value Code
+	/// </summary>
+	/// <param name="UTextToBeEncrypted">- Unicode Text To Be Encrypted</param>
+	/// <returns>Encrypted Unicode Text</returns>
+	static std::wstring EncryptText(const std::wstring &UTextToBeEncrypted) {
+
+		std::wstring EncryptedUText{};
+
+		for (WCHAR UCHARACTER : UTextToBeEncrypted) {
+			SHORT ASCII_VALUE = static_cast<SHORT>(UCHARACTER);
+			EncryptedUText += std::to_wstring(ASCII_VALUE) + L":";
+		}
+
+		return EncryptedUText;
+
+	}
+
+	/// <summary>
+	/// This Function Decrypt Text From ASCII Value Code
 	/// </summary>
 	/// <param name="EncryptedText">- Text To Be Decrypted</param>
 	/// <returns>Decrypted Text</returns>
@@ -87,12 +110,12 @@ public:
 		std::string DecryptedText{};
 
 		while (EncryptedText.length() != 0) {
-			if (EncryptedText.back() == '|') {
-				CHAR Character = std::stoi(EncryptedText);
-				DecryptedText += Character;
-				EncryptedText.replace(0, EncryptedText.find('|') + 1, "");
+			if (EncryptedText.ends_with(':')) {
+				CHAR CHARACTER = static_cast<CHAR>(std::stoi(EncryptedText));
+				DecryptedText += CHARACTER;
+				EncryptedText.replace(0, EncryptedText.find(':') + 1, "");
 			} else {
-				return DecryptedText;
+				return "Cannot Decrypt Text because Text is Corrupted!";
 			}
 		}
 
@@ -101,41 +124,97 @@ public:
 	}
 
 	/// <summary>
-	/// Finds Character Position Into String
+	/// This Function Decrypt Unicode Text From ASCII Value Code
+	/// </summary>
+	/// <param name="UEncryptedText">- Unicode Text To Be Decrypted</param>
+	/// <returns>Decrypted Unicode Text</returns>
+	static std::wstring DecryptText(std::wstring UEncryptedText) {
+
+		std::wstring UDecryptedText{};
+
+		while (UEncryptedText.length() != 0) {
+			if (UEncryptedText.ends_with(L':')) {
+				WCHAR UCHARACTER = static_cast<WCHAR>(std::stoi(UEncryptedText));
+				UDecryptedText += UCHARACTER;
+				UEncryptedText.replace(0, UEncryptedText.find(L':') + 1, L"");
+			}
+			else {
+				return L"Cannot Decrypt Unicode Text because Unicode Text is Corrupted!";
+			}
+		}
+
+		return UDecryptedText;
+
+	}
+
+	/// <summary>
+	/// This Function Finds Character Position Into String
 	/// </summary>
 	/// <param name="Text">- Text</param>
 	/// <param name="Char">- Character To Find</param>
-	/// <param name="TextLength">- Text Length Without [null character] - [\0]</param>
-	/// <returns>If Character Has Been Found returns Character Position, but If not -1</returns>
+	/// <param name="TextLength">- Text Length In Characters</param>
+	/// <returns>
+	/// If Character has been found Function Returns Character Position,
+	/// <para>but If Character not found Function Returns MAXSIZE_T Value</para>
+	/// </returns>
 	static SIZE_T FindChar(LPCSTR Text, CONST CHAR Char, SIZE_T TextLength) {
-
+		
 		for (SIZE_T I = 0; I < TextLength; I++) {
 			if (Text[I] == Char) {
 				return I;
 			}
 		}
 
-		return -1;
+		return static_cast<SIZE_T>(-1);
 
 	}
 
 	/// <summary>
-	/// Rounds Double String
+	/// This Function Finds Unicode Character Position Into Unicode String
 	/// </summary>
-	/// <param name="Text">- Double String</param>
+	/// <param name="UText">- Unicode Text</param>
+	/// <param name="UChar">- Unicode Character To Find</param>
+	/// <param name="UTextLength">- Unicode Text Length In Characters</param>
+	/// <returns>
+	/// If Unicode Character has been found Function Returns Unicode Character Position,
+	/// <para>but If Character not found Function Returns MAXSIZE_T Value</para>
+	/// </returns>
+	static SIZE_T FindChar(LPCWSTR UText, CONST WCHAR UChar, SIZE_T UTextLength) {
+
+		for (SIZE_T I = 0; I < UTextLength; I++) {
+			if (UText[I] == UChar) {
+				return I;
+			}
+		}
+
+		return static_cast<SIZE_T>(-1);
+
+	}
+
+	/// <summary>
+	/// This Function Rounds Double String
+	/// </summary>
+	/// <param name="DoubleString">- Double String</param>
 	/// <returns>Rounded Double String</returns>
 	static std::string RoundDoubleString(std::string DoubleString) {
 
 		if (DoubleString.find('.') != std::string::npos) {
-			while (DoubleString.back() == '0' or DoubleString.back() == '.') {
-				if (DoubleString.back() == '.') {
+
+			while (DoubleString.ends_with('0') or DoubleString.ends_with('.')) {
+
+				if (DoubleString.ends_with('.')) {
 					DoubleString.pop_back();
 					return DoubleString;
 				}
+
 				DoubleString.pop_back();
+
 			}
+
 			return DoubleString;
+
 		}
+
 		return DoubleString;
 
 	}
@@ -145,14 +224,14 @@ public:
 	/// </summary>
 	/// <param name="NewClipboardOwner">- New Clipboard Owner</param>
 	/// <param name="Text">- Text To Clipboard</param>
-	/// <param name="TextLength">- Text Length In Characters</param>
-	/// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
+	/// <param name="TextLength">- Text Length In Characters Without [null character] - [\0]</param>
+	/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
 	static BOOL CopyTextToClipboard(HWND NewClipboardOwner, LPCSTR Text, SIZE_T TextLength) {
 
 		if (TextLength != 0) {
 			if (OpenClipboard(NewClipboardOwner)) {
 				EmptyClipboard();
-				HLOCAL CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(CHAR) * (TextLength + 1));
+				HLOCAL CopyData = LocalAlloc(LPTR | LMEM_VALID_FLAGS, sizeof(CHAR) * (TextLength + 1));
 				if (CopyData == NULL) {
 					CloseClipboard();
 					return FALSE;
@@ -164,8 +243,8 @@ public:
 					return FALSE;
 				}
 				memcpy(CopyDataPtr, (void*)Text, sizeof(CHAR) * (TextLength + 1));
-				LocalUnlock(CopyData);
 				SetClipboardData(CF_TEXT, CopyData);
+				LocalUnlock(CopyData);
 				LocalFree(CopyData);
 				CloseClipboard();
 				return TRUE;
@@ -177,18 +256,18 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Copy Unicode Text into Clipboard
+	/// This Function Copy Unicode Text To Clipboard
 	/// </summary>
 	/// <param name="NewClipboardOwner">- New Clipboard Owner</param>
 	/// <param name="UText">- Unicode Text To Clipboard</param>
-	/// <param name="UTextLength">- Unicode Text Length In Characters</param>
-	/// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
+	/// <param name="UTextLength">- Unicode Text Length In Characters Without [null character] - [\0]</param>
+	/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
 	static BOOL CopyTextToClipboard(HWND NewClipboardOwner, LPCWSTR UText, SIZE_T UTextLength) {
 
 		if (UTextLength != 0) {
 			if (OpenClipboard(NewClipboardOwner)) {
 				EmptyClipboard();
-				HLOCAL CopyData = LocalAlloc(LMEM_FIXED | LMEM_ZEROINIT | LMEM_VALID_FLAGS, sizeof(WCHAR) * (UTextLength + 1));
+				HLOCAL CopyData = LocalAlloc(LPTR | LMEM_VALID_FLAGS, sizeof(WCHAR) * (UTextLength + 1));
 				if (CopyData == NULL) {
 					CloseClipboard();
 					return FALSE;
@@ -200,8 +279,8 @@ public:
 					return FALSE;
 				}
 				memcpy(CopyDataPtr, (void*)UText, sizeof(WCHAR) * (UTextLength + 1));
-				LocalUnlock(CopyData);
 				SetClipboardData(CF_UNICODETEXT, CopyData);
+				LocalUnlock(CopyData);
 				LocalFree(CopyData);
 				CloseClipboard();
 				return TRUE;
@@ -217,7 +296,7 @@ public:
 	/// </summary>
 	/// <param name="NewClipboardOwner">- New Clipboard Owner</param>
 	/// <param name="Buffer">- Text From Clipboard</param>
-	/// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
+	/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
 	static BOOL GetTextFromClipboard(HWND NewClipboardOwner, std::string &Buffer) {
 
 		if (OpenClipboard(NewClipboardOwner)) {
@@ -247,9 +326,9 @@ public:
 	/// This Function Gets Unicode Text From Clipboard
 	/// </summary>
 	/// <param name="NewClipboardOwner">- New Clipboard Owner</param>
-	/// <param name="Buffer">- Unicode Text From Clipboard</param>
-	/// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
-	static BOOL GetTextFromClipboard(HWND NewClipboardOwner, std::wstring &Buffer) {
+	/// <param name="UBuffer">- Unicode Text From Clipboard</param>
+	/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
+	static BOOL GetTextFromClipboard(HWND NewClipboardOwner, std::wstring &UBuffer) {
 
 		if (OpenClipboard(NewClipboardOwner)) {
 			HLOCAL ClipboardData = GetClipboardData(CF_UNICODETEXT);
@@ -263,7 +342,7 @@ public:
 				CloseClipboard();
 				return FALSE;
 			}
-			Buffer += (wchar_t*)ClipboardDataPtr;
+			UBuffer += (wchar_t*)ClipboardDataPtr;
 			LocalUnlock(ClipboardData);
 			LocalFree(ClipboardData);
 			CloseClipboard();
@@ -279,11 +358,9 @@ public:
 	/// </summary>
 	/// <param name="ParentWindow">- Parent Window</param>
 	/// <param name="AdditionalErroMessage">- Additional Error Message</param>
-	static VOID ShowError(HWND ParentWindow = HWND_DESKTOP, std::string AdditionalErrorMessage = " - Error") {
-
+	static VOID ShowLastError(HWND ParentWindow = HWND_DESKTOP, std::string AdditionalErrorMessage = " - Error") {
 		std::string ErrorMessage = "ERROR " + std::to_string(GetLastError()) + AdditionalErrorMessage;
 		MessageBoxA(ParentWindow, ErrorMessage.c_str(), "ERROR", MB_OK | MB_ICONERROR);
-
 	}
 
 	/// <summary>
@@ -293,12 +370,12 @@ public:
 	/// <param name="FilePath">- File Path With ".bmp" Extension</param>
 	/// <param name="BitmapSize">- Bitmap Size In Pixels</param>
 	/// <returns>If Succeeded returns TRUE, but If not returns FALSE</returns>
-	static BOOL SaveBitmapToFile(HBITMAP Bitmap, CONST CHAR* FilePath, SIZE &BitmapSize) {
+	static BOOL SaveBitmapToFile(HBITMAP Bitmap, LPCSTR FilePath, SIZE &BitmapSize) {
 
 		std::ofstream image;
 
-		CONST WORD BM = 0x4D42; // ASCII "B" = 66 / 0x42 | "M" = 77 / 0x4D
-		CONST DWORD BitmapSizeCXxCY = BitmapSize.cx * BitmapSize.cy; // Bitmap Size [CX * CY]
+		CONST WORD BM = 0x4D42; // ASCII 'B' = 66 / 0x42 | 'M' = 77 / 0x4D
+		CONST DWORD BitmapSizeCXxCY = BitmapSize.cx * BitmapSize.cy; // Bitmap Size [cx * cy]
 
 		BITMAPFILEHEADER bmfheader = { 0 };
 		bmfheader.bfType = BM;
@@ -322,19 +399,13 @@ public:
 
 		std::unique_ptr<COLORREF> BitmapBytes(new COLORREF[BitmapSizeCXxCY]{});
 
-		#pragma region GetBitmapColorBytes
-		HDC ScreenDC = GetDC(HWND_DESKTOP); // ScreenDC
-		HDC MemoryDC = CreateCompatibleDC(ScreenDC); // MemoryDC From ScreenDC
-
 		BITMAPINFO bminfo = { 0 };
 		bminfo.bmiHeader = bmiheader;
 
-		GetDIBits(MemoryDC, Bitmap, 0, BitmapSize.cy, BitmapBytes.get(), &bminfo, DIB_RGB_COLORS);
-
+		HDC ScreenDC = GetDC(HWND_DESKTOP);
+		GetDIBits(ScreenDC, Bitmap, 0, BitmapSize.cy, BitmapBytes.get(), &bminfo, DIB_RGB_COLORS);
 		ReleaseDC(HWND_DESKTOP, ScreenDC);
-		DeleteDC(MemoryDC);
-		#pragma endregion
-
+		
 		image.open(FilePath, std::ios::binary); // Open File
 
 		if (image.is_open()) {
