@@ -11,7 +11,7 @@ BOOL MainWindow::ExtraProcessing = FALSE;
 WCHAR MainWindow::ApplicationDirectory[MAX_CHAR_STRING] = { 0 };
 #pragma endregion
 
-VOID BroadcastMessages();
+void BroadcastMessages();
 
 int wmain(INT ArrgumentCount, LPWSTR Arrguments[]) {
 
@@ -23,25 +23,26 @@ int wmain(INT ArrgumentCount, LPWSTR Arrguments[]) {
 	Console::setConsoleTitle("Console");
 	#endif // APP_DEBUG
 
-	PRINT(0x0A, "Debug Console Initilaized Correctly . . .");
+	Console::Print("Debug Console Initilaized Correctly . . .", 0x0A);
 
 	GetCurrentDirectory(ARRAYSIZE(MainWindow::ApplicationDirectory), MainWindow::ApplicationDirectory);
 
-	if (MainWindow::InitMainWindowClass(MAIN_WINDOW_CLASS)) {
-		if (MainWindow::CreateMainWindow(MAIN_WINDOW_CLASS, MAIN_WINDOW_TITLE)) {
+	if (MainWindow::InitMainWindowClass(MainWindowClass)) {
+		if (MainWindow::CreateMainWindow(MainWindowClass, MainWindowTitle)) {
 			BroadcastMessages();
 		}
 	}
 
-	PRINT(0x0A, "App Closed Successfully . . .");
+	Console::Print("App Closed Successfully . . .", 0x0A);
+	Console::Pause("Press any Key to continue . . .", 0x0A);
 
 	return 0;
 
 }
 
-VOID BroadcastMessages() {
+void BroadcastMessages() {
 
-	while (TRUE) {
+	while (true) {
 
 		if (MainWindow::ExtraProcessing) {
 			PeekMessage(&MainWindow::Msg, NULL, 0, 0, PM_REMOVE);

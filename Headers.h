@@ -34,28 +34,18 @@
 #pragma endregion
 
 #pragma region ColorArithmetic
-#define LighterColor(SourceColor, LighterTo) RGB(GetRValue(SourceColor) + LighterTo, GetGValue(SourceColor) + LighterTo, GetBValue(SourceColor) + LighterTo) // Returns LighterColor
+#define LighterColor(SourcwColor, LighterTo)  // Returns LighterColor
 #define DarkerColor(SourceColor, DarkerTo) RGB(GetRValue(SourceColor) - DarkerTo, GetGValue(SourceColor) - DarkerTo, GetBValue(SourceColor) - DarkerTo) // Returns DarkerColor
 #pragma endregion
 
 #pragma region MainWindow|Class|Title
-#define MAIN_WINDOW_CLASS L"MAIN WINDOW CLASS"
-#define MAIN_WINDOW_TITLE L"Window -TEMPLATE-"
+#define MainWindowClass L"MAIN WINDOW CLASS"
+#define MainWindowTitle L"Window -TEMPLATE-"
 #pragma endregion
 
 #pragma region MainWindowDimensions
 #define MainWindowWidth 1400
 #define MainWindowHeight 800
-#pragma endregion
-
-#pragma region DebugLog
-#ifdef APP_DEBUG
-#define PRINT(color, text) Console::Print(text, color) // Color Example 0x0A -- Black Background Color and Grean Foreground Color
-#else
-#define PRINT(color, text)
-#endif // APP_DEBUG
-#pragma endregion
-
 #pragma endregion
 
 #pragma region SetMacros
@@ -71,19 +61,19 @@
 
 #pragma region CheckBoxMacros
 #define CheckBox_GetCheck(hwnd) SendMessage(hwnd, BM_GETCHECK, NULL, NULL) // Return Value is Checkbox State
-#define CheckBox_Check(hwnd) SendMessage(hwnd, BM_SETCHECK, (WPARAM)BST_CHECKED, NULL)
-#define CheckBox_UnCheck(hwnd) SendMessage(hwnd, BM_SETCHECK, (WPARAM)BST_UNCHECKED, NULL)
+#define CheckBox_Check(hwnd) SendMessage(hwnd, BM_SETCHECK, static_cast<WPARAM>(BST_CHECKED), NULL)
+#define CheckBox_UnCheck(hwnd) SendMessage(hwnd, BM_SETCHECK, static_cast<WPARAM>(BST_UNCHECKED), NULL)
 #pragma endregion
 
 #pragma region ListBoxMacros
-#define ListBox_AddString(hwnd, string) SendMessage(hwnd, LB_ADDSTRING, NULL, (LPARAM)string)
-#define ListBox_DeleteString(hwnd, index) SendMessage(hwnd, LB_DELETESTRING, (WPARAM)index, NULL)
-#define ListBox_SetItemData(hwnd, index, value) SendMessage(hwnd, LB_SETITEMDATA, (WPARAM)index, (LPARAM)value)
-#define ListBox_GetItemData(hwnd, index) SendMessage(hwnd, LB_GETITEMDATA, (WPARAM)index, NULL) // Return Value is Value Associated With that Item
-#define ListBox_SelectItem(hwnd, index) SendMessage(hwnd, LB_SETCURSEL, (WPARAM)index, NULL)
-#define ListBox_GetSelectedItemIndex(hwnd) SendMessage(hwnd, LB_GETCURSEL, NULL, NULL)  // Return Value is Selected Item Index
-#define ListBox_FindString(hwnd, string) SendMessage(hwnd, LB_FINDSTRING, (WPARAM)-1, (LPARAM)string)  // Return Value is String Index
-#define ListBox_SetTopItem(hwnd, index) SendMessage(hwnd, LB_SETTOPINDEX, (WPARAM)index, NULL)
+#define ListBox_AddString(hwnd, string) SendMessage(hwnd, LB_ADDSTRING, NULL, static_cast<LPARAM>(string))
+#define ListBox_DeleteString(hwnd, index) SendMessage(hwnd, LB_DELETESTRING, static_cast<WPARAM>(index), NULL)
+#define ListBox_SetItemData(hwnd, index, value) SendMessage(hwnd, LB_SETITEMDATA, static_cast<WPARAM>(index), static_cast<LPARAM>(value))
+#define ListBox_GetItemData(hwnd, index) SendMessage(hwnd, LB_GETITEMDATA, static_cast<WPARAM>(index), NULL) // Return Value is Value Associated With that Item
+#define ListBox_SelectItem(hwnd, index) SendMessage(hwnd, LB_SETCURSEL, static_cast<WPARAM>(index), NULL)
+#define ListBox_GetSelectedItemIndex(hwnd) SendMessage(hwnd, LB_GETCURSEL, NULL, NULL) // Return Value is Selected Item Index
+#define ListBox_FindString(hwnd, string) SendMessage(hwnd, LB_FINDSTRING, static_cast<WPARAM>(-1), static_cast<LPARAM>(string)) // Return Value is String Index
+#define ListBox_SetTopItem(hwnd, index) SendMessage(hwnd, LB_SETTOPINDEX, static_cast<WPARAM>(index), NULL)
 #pragma endregion
 
 #pragma endregion

@@ -110,7 +110,7 @@ VOID Animation::onCreate(HWND hAnimation, LPARAM lParam) {
 		SetWindowLongPtr(hAnimation, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(StylePtr)); // Save Pointer To Window User Data
 
 		if (window->cx != 0 and window->cy != 0) {
-			SetTimer(hAnimation, AnimationTimer, SEC / 10, nullptr);
+			SetTimer(hAnimation, Update::AnimationTimer, Update::Second / 10, nullptr);
 		}
 
 	} else {
@@ -125,15 +125,16 @@ VOID Animation::onWindowPosChanging(HWND hAnimation, LPARAM lParam) {
 	LPWINDOWPOS window = reinterpret_cast<LPWINDOWPOS>(lParam);
 
 	if (window->cx != 0 and window->cy != 0) {
-		SetTimer(hAnimation, AnimationTimer, SEC / 10, nullptr);
+		SetTimer(hAnimation, Update::AnimationTimer, Update::Second / 10, nullptr);
 	} else {
-		KillTimer(hAnimation, AnimationTimer);
+		KillTimer(hAnimation, Update::AnimationTimer);
 	}
 
 }
 
 VOID Animation::onTimer(HWND hAnimation, WPARAM wParam, LPARAM lParam) {
-	if (wParam == AnimationTimer) RedrawWindow(hAnimation, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
+	if (wParam == Update::AnimationTimer)
+		RedrawWindow(hAnimation, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 }
 
 VOID Animation::onPaint(HWND hAnimation) {

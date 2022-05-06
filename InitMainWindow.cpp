@@ -13,10 +13,8 @@ HBRUSH MainWindow::MainWindowBackgroundBrush = CreateSolidBrush(MainWindowBackgr
 HWND MainWindow::hMainWindow = { 0 };
 RECT MainWindow::MainWindowDimensions = { 0, 0, MainWindowWidth, MainWindowHeight };
 
-#ifdef APP_DEBUG
 HWND MainWindow::hDebugTool1 = { 0 };
 HWND MainWindow::hDebugTool2 = { 0 };
-#endif // APP_DEBUG
 
 POINT MainWindow::mousePosition = { 0 };
 #pragma endregion
@@ -119,7 +117,6 @@ VOID MainWindow::CreateMainWindowFont() {
 
 }
 
-#ifdef APP_DEBUG
 VOID MainWindow::CreateDebugTools(HWND ParentWindow) {
 
 	std::vector <HWND*> DebugTools = { &hDebugTool1, &hDebugTool2 };
@@ -146,7 +143,6 @@ VOID MainWindow::CreateDebugTools(HWND ParentWindow) {
 	}
 
 }
-#endif // APP_DEBUG
 #pragma endregion
 
 #pragma region Events
@@ -159,9 +155,7 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 	Calculator::InitCalculator();
 	#pragma endregion
 
-	#ifdef APP_DEBUG
 	CreateDebugTools(hMainWindow);
-	#endif // APP_DEBUG
 
 	#pragma region Examples
 	Animation::AnimationStyle as = { 0 };
@@ -186,14 +180,12 @@ VOID MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	MainWindowDimensions.right = LOWORD(lParam);
 	MainWindowDimensions.bottom = HIWORD(lParam);
 
-	#ifdef APP_DEBUG
 	SetWindowPos(hDebugTool1, NULL, MainWindowDimensions.right - 160, 0, 160, 25, SWP_SHOWWINDOW);
 	SetWindowPos(hDebugTool2, NULL, MainWindowDimensions.right - 240, 30, 240, 25, SWP_SHOWWINDOW);
 
 	#pragma region DebugTool2
 	std::string SMainWindowDimensions = "Width = " + std::to_string(MainWindowDimensions.right) + " Height = " + std::to_string(MainWindowDimensions.bottom);
 	SetWindowTextA(hDebugTool2, SMainWindowDimensions.c_str());
-	#endif // APP_DEBUG
 	#pragma endregion
 
 	RedrawWindow(hMainWindow, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
@@ -206,10 +198,8 @@ VOID MainWindow::onMouseMove(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	ScreenToClient(hMainWindow, &mousePosition);
 
 	#pragma region DebugTool1
-	#ifdef APP_DEBUG
 	std::string SMousePosition = "X = " + std::to_string(mousePosition.x) + " Y = " + std::to_string(mousePosition.y);
 	SetWindowTextA(hDebugTool1, SMousePosition.c_str());
-	#endif // APP_DEBUG
 	#pragma endregion
 
 }
@@ -252,13 +242,13 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 
 	SelectObject(MemoryDC, MainFont);
 
-	ID2D1Factory *FactoryBase = nullptr;
-	HRESULT hrFactory = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &FactoryBase);
+	// * DirectX2D Factory *
+	ID2D1Factory *Factory = nullptr;
+	HRESULT hrFactory = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &Factory);
 	
 	if (SUCCEEDED(hrFactory)) {
 
-		ID2D1ExtendedFactory *Factory = reinterpret_cast<ID2D1ExtendedFactory*>(FactoryBase);
-
+		// * DirectX2D GDI Compatible Render Target *
 		ID2D1DCRenderTarget *RenderTarget = nullptr;
 		HRESULT hrRenderTarget = Factory->CreateRenderTarget(D2D1_RENDER_TARGET_TYPE_HARDWARE, &RenderTarget);
 		
@@ -296,6 +286,8 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 					Brush->Release();
 
 				}
+
+				GeometryGroup->Release();
 
 			}
 
@@ -339,7 +331,7 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 		std::string Color = "R: " + std::to_string(GetRValue((COLORREF)lParam)) +
 			"\tG: " + std::to_string(GetGValue((COLORREF)lParam)) +
 			"\tB: " + std::to_string(GetBValue((COLORREF)lParam));
-		PRINT(0x0B, Color.c_str());
+		Console::Print(Color.c_str(), 0x0B);
 
 		break;
 
@@ -351,7 +343,7 @@ VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 		UINT FileCount = DragQueryFileA((HDROP)lParam, 0xFFFFFFFF, Buffer, ARRAYSIZE(Buffer));
 		for (UINT File = 0; File < FileCount; File++) {
 			DragQueryFileA((HDROP)lParam, File, Buffer, ARRAYSIZE(Buffer));
-			PRINT(0x09, Buffer);
+			Console::Print(Buffer, 0x09);
 		}
 
 		DragFinish((HDROP)lParam);

@@ -5,9 +5,6 @@
 #include <Windows.h>
 #include <string>
 
-#define SEC 1000
-#define AnimationTimer 1001
-
 #define DarkerColor(SourceColor, DarkerTo) RGB(GetRValue(SourceColor) - DarkerTo, GetGValue(SourceColor) - DarkerTo, GetBValue(SourceColor) - DarkerTo) // returns DarkerColor
 
 #define MAX_ANIMATION_CHAR_STRING 256
@@ -15,6 +12,11 @@
 class Animation {
 
 private:
+
+	enum Update {
+		Second = 1000,
+		AnimationTimer = 1010
+	};
 
 	#pragma region AnimationStaticMembers
 	static HFONT AnimationFont;

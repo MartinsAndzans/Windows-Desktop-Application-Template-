@@ -8,7 +8,7 @@ class MainWindow {
 private:
 
 	/// <summary>
-	/// All Controls IDs
+	/// * All Controls IDs *
 	/// </summary>
 	enum ControlsIDs {
 		ID_DEBUG_TOOL_1 = -1,
@@ -17,6 +17,15 @@ private:
 		ID_DROP_FILES = 2,
 		ID_COLOR_PICKER = 3,
 		ID_CALCULATOR = 4
+	};
+
+	/// <summary>
+	/// * Converted Time From Milliseconds *
+	/// </summary>
+	enum Time {
+		Second = 1000, // Milliseconds
+		Minute = 1000 * 60, // Milliseconds
+		Hour = 1000 * 120 // Milliseconds
 	};
 
 	/// <summary>
@@ -45,10 +54,8 @@ private:
 	static HWND hMainWindow;
 	static RECT MainWindowDimensions;
 
-	#ifdef APP_DEBUG
 	static HWND hDebugTool1;
 	static HWND hDebugTool2;
-	#endif // APP_DEBUG
 
 	static POINT mousePosition;
 	#pragma endregion
@@ -57,9 +64,7 @@ private:
 
 	#pragma region Functions
 	static VOID CreateMainWindowFont();
-	#ifdef APP_DEBUG
 	static VOID CreateDebugTools(HWND ParentWindow);
-	#endif // APP_DEBUG
 	#pragma endregion
 
 	#pragma region Events

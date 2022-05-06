@@ -434,11 +434,16 @@ public:
 	typedef DWORD MCISTATUS; // * MCISTATUS [DWORD] is a 32-bit unsigned integer *
 
 	/// <summary>
-	/// > This Function Opens MCIDevice
+	/// MCI Error Codes
 	/// </summary>
-	/// <param name="FilePath">- Music File Path "*.wav" / "*.wma" / "*.mp3" || Video Formats not Supported Yet ||</param>
-	/// <param name="Alias">- Alias for MCIDevice</param>
-	/// <returns>If Succeeded Returns 0, but If not Returns MCIERROR Error Code</returns>
+	enum MCI {
+		MCI_OK = 0 // MCI Success Code
+	};
+
+	/// <summary>
+	/// This Function Opens MCIDevice
+	/// <para>Music File Path "*.wav" / "*.wma" / "*.mp3" || Video Formats not Supported Yet ||</para>
+	/// </summary>
 	static MCIERROR Open(LPCWSTR Alias, LPCWSTR FilePath) {
 
 		MCI_OPEN_PARMS open = { 0 };
@@ -450,46 +455,34 @@ public:
 	}
 
 	/// <summary>
-	/// > This Function Obtains Playback Status
-	/// <para>> MCI_STATUS_POSITION - Obtains Current Playback Position</para>
-	/// <para>> MCI_STATUS_LENGTH - Obtains Total Media Length</para>
-	/// <para>> MCI_STATUS_MODE - Obtains Current Mode of The Device</para>
-	/// <para>> MCI_STATUS_TIME_FORMAT - Obtains Current Time Format of The Device</para>
+	/// This Function Obtains Playback Status
+	/// <para>MCI_STATUS_POSITION - Obtains Current Playback Position</para>
+	/// <para>MCI_STATUS_LENGTH - Obtains Total Media Length</para>
+	/// <para>MCI_STATUS_MODE - Obtains Current Mode of The Device</para>
+	/// <para>MCI_STATUS_TIME_FORMAT - Obtains Current Time Format of The Device</para>
 	/// </summary>
-	/// <param name="Alias">- Alias for MCIDevice</param>
-	/// <param name="StatusCode">- Status Code</param>
-	/// <param name="AdditionalFlags">- Additional Flags</param>
-	/// <returns>If Succeeded Returns Requested Status Information, but If not Returns MCIERROR Error Code</returns>
-	static MCISTATUS GetPlaybackStatus(LPCWSTR Alias, MCISTATUSCODE StatusCode) {
+	static MCIERROR GetPlaybackStatus(LPCWSTR Alias, MCISTATUSCODE StatusCode, MCISTATUS *PlaybackStatus) {
 
 		MCI_STATUS_PARMS status = { 0 };
 		status.dwItem = StatusCode; // Status Code
 		status.dwReturn = NULL; // Return
 
 		MCIERROR Error = mciSendCommand(mciGetDeviceID(Alias), MCI_STATUS, MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)&status);
-
-		if (Error != 0) {
-			return Error;
-		} else {
-			return static_cast<MCISTATUS>(status.dwReturn);
-		}
+		*PlaybackStatus = static_cast<MCISTATUS>(status.dwReturn);
+		return Error;
 
 	}
 
 	/// <summary>
-	/// > This Function Plays Music From The Beginning
-	/// <para>> If Notify is TRUE 'MCI Sends To Callback Window [MM_MCINOTIFY] Message "LOWORD(lParam) - MCIDeviceID"'</para>
+	/// This Function Plays Music From The Beginning
+	/// <para>If Notify is TRUE MCI Sends To Callback Window [MM_MCINOTIFY] Message 'LOWORD(lParam) - MCIDeviceID'</para>
 	/// </summary>
-	/// <param name="CallbackWindow">- Callback Window</param>
-	/// <param name="Alias">- Alias for MCIDevice</param>
-	/// <param name="Notify">- MCI_NOTIFY</param>
-	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
 	static MCIERROR Play(HWND CallbackWindow, LPCWSTR Alias, BOOL Notify = FALSE) {
 
 		MCI_PLAY_PARMS play = { 0 };
-		play.dwCallback = (DWORD_PTR)CallbackWindow;
+		play.dwCallback = reinterpret_cast<DWORD_PTR>(CallbackWindow);
 		play.dwFrom = 0;
-
+		
 		if (Notify) {
 			return mciSendCommand(mciGetDeviceID(Alias), MCI_PLAY, MCI_NOTIFY | MCI_FROM, (DWORD_PTR)&play);
 		} else {
@@ -499,13 +492,10 @@ public:
 	}
 
 	/// <summary>
-	/// > This Function Seek To Specified Point of Playback
-	/// <para>> MCI_SEEK_TO_START - Seek To Beginning of Playback</para>
-	/// <para>> MCI_SEEK_TO_END - Seek To End of Playback</para>
+	/// This Function Seek To Specified Point of Playback
+	/// <para>MCI_SEEK_TO_START - Seek To Beginning of Playback</para>
+	/// <para>MCI_SEEK_TO_END - Seek To End of Playback</para>
 	/// </summary>
-	/// <param name="Alias">- Alias for MCIDevice</param>
-	/// <param name="SeekTo">- How Much Move Playback Current Position</param>
-	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
 	static MCIERROR Seek(LPCWSTR Alias, DWORD SeekTo) {
 
 		MCI_SEEK_PARMS seek = { 0 };
@@ -521,30 +511,30 @@ public:
 		
 	}
 
-	/// <summary>> This Function Pauses Playbeck</summary>
-	/// <param name="Alias">- Alias for MCIDevice</param>
-	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
+	/// <summary>
+	/// This Function Pauses Playbeck
+	/// </summary>
 	static MCIERROR Pause(LPCWSTR Alias) {
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_PAUSE, MCI_WAIT, NULL);
 	}
 
-	/// <summary>> This Function Resumes Playbeck</summary>
-	/// <param name="Alias">- Alias for MCIDevice</param>
-	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
+	/// <summary>
+	/// This Function Resumes Playbeck
+	/// </summary>
 	static MCIERROR Resume(LPCWSTR Alias) {
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_RESUME, MCI_WAIT, NULL);
 	}
 
-	/// <summary>> This Function Stops Playbeck</summary>
-	/// <param name="Alias">- Alias for MCIDevice</param>
-	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
+	/// <summary>
+	/// This Function Stops Playbeck
+	/// </summary>
 	static MCIERROR Stop(LPCWSTR Alias) {
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_STOP, MCI_WAIT, NULL);
 	}
 
-	/// <summary>> This Function Closes MCIDevice</summary>
-	/// <param name="Alias">- Alias for MCIDevice</param>
-	/// <returns>If Succeeded returns 0, but If not returns MCIERROR Error Code</returns>
+	/// <summary>
+	/// This Function Closes MCIDevice
+	/// </summary>
 	static MCIERROR Close(LPCWSTR Alias) {
 		return mciSendCommand(mciGetDeviceID(Alias), MCI_CLOSE, MCI_WAIT, NULL);
 	}

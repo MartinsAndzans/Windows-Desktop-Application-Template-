@@ -60,7 +60,7 @@ public:
 
 	}
 
-	BOOL setCursorPosition(SHORT COORD_X, SHORT COORD_Y, BOOL MOVE_CURSOR = TRUE, BOOL FLUSH_BUFFER = FALSE, BOOL CLS = FALSE) {
+	static BOOL setCursorPosition(SHORT COORD_X, SHORT COORD_Y, BOOL MOVE_CURSOR = TRUE, BOOL FLUSH_BUFFER = FALSE, BOOL CLS = FALSE) {
 
 		HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -91,7 +91,7 @@ public:
 		HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 
 		CONSOLE_CURSOR_INFO ci = { 0 };
-		if (GetConsoleCursorInfo(hOutput, &ci) == FALSE)
+		if (!GetConsoleCursorInfo(hOutput, &ci))
 			return FALSE;
 
 		ci.bVisible = CURSOR_VISIBLE;
@@ -104,7 +104,7 @@ public:
 		HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 
 		CONSOLE_CURSOR_INFO ci = { 0 };
-		if (GetConsoleCursorInfo(hOutput, &ci) == FALSE)
+		if (!GetConsoleCursorInfo(hOutput, &ci))
 			return FALSE;
 
 		if (CURSOR_SIZE <= 100) {

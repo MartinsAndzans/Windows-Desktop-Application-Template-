@@ -244,7 +244,7 @@ public:
 
 		BYTE R = 255, G = 255, B = 255;
 		CONST BYTE COLORSTEP = 5;
-		BYTE DONE = 0;
+		USHORT DONE = 0;
 
 		//Gradient
 		for (INT X = COORD_X + BorderWidth; X <= COORD_X + WIDTH - BorderWidth; X++) {
@@ -297,7 +297,7 @@ public:
 		BYTE R = 255, G = 255, B = 255;
 		BYTE RY = 255, GY = 255, BY = 255;
 		CONST BYTE COLORSTEP = 5;
-		BYTE DONE = 0;
+		USHORT DONE = 0;
 
 		//Gradient
 		for (INT X = COORD_X + BorderWidth; X <= COORD_X + WIDTH - BorderWidth; X++) {
@@ -450,7 +450,7 @@ class ID2D1ExtendedFactory : public ID2D1Factory {
 public:
 
 	/// <summary>
-	/// Creates a render target that draws to a GDI device context.
+	/// Creates a render target that draws to a GDI device context
 	/// </summary>
 	virtual HRESULT CreateRenderTarget(D2D1_RENDER_TARGET_TYPE Type, ID2D1DCRenderTarget **RenderTarget) {
 
@@ -464,6 +464,9 @@ public:
 
 	}
 
+	/// <summary>
+	/// Creates a triangle geometry
+	/// </summary>
 	virtual HRESULT CreateTriangleGeometry(D2D1_TRIANGLE TriangleVertices, ID2D1PathGeometry **TriangleGeometry) {
 
 		HRESULT hrPathGeometry = CreatePathGeometry(TriangleGeometry);
