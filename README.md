@@ -40,19 +40,6 @@ This is Windows Desktop Application Template
 	//// +------------------------------------------+ ////
 	//////////////////////////////////////////////////////
 
-<h2>Calculator Control : Class Name -- "CALCULATOR"</h2>
-
-	When Calculator Destroys : Calculator Control Post WM_COMMAND Message To Parent Window
-	
-	//////////////////////////////////////////////////////
-	//// +------------------------------------------+ ////
-	//// |                                          | ////
-	//// | [out] WPARAM - LOWORD(ID) | HIWORD(HWND) | ////
-	//// | [out] LPARAM - DestroyWindow             | ////
-	//// |                                          | ////
-	//// +------------------------------------------+ ////
-	//////////////////////////////////////////////////////
-
 <h2>Color Picker Control : Class Name -- "COLOR PICKER"</h2>
 
 	When User Select Color : Color Picker Control Post WM_COMMAND Message To Parent Window
