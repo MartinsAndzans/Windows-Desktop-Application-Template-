@@ -242,7 +242,7 @@ public:
 					CloseClipboard();
 					return FALSE;
 				}
-				memcpy(CopyDataPtr, (void*)Text, sizeof(CHAR) * (TextLength + 1));
+				memcpy(CopyDataPtr, static_cast<const void*>(Text), sizeof(CHAR) * (TextLength + 1));
 				SetClipboardData(CF_TEXT, CopyData);
 				LocalUnlock(CopyData);
 				LocalFree(CopyData);
@@ -278,7 +278,7 @@ public:
 					CloseClipboard();
 					return FALSE;
 				}
-				memcpy(CopyDataPtr, (void*)UText, sizeof(WCHAR) * (UTextLength + 1));
+				memcpy(CopyDataPtr, static_cast<const void*>(UText), sizeof(WCHAR) * (UTextLength + 1));
 				SetClipboardData(CF_UNICODETEXT, CopyData);
 				LocalUnlock(CopyData);
 				LocalFree(CopyData);
@@ -311,7 +311,7 @@ public:
 				CloseClipboard();
 				return FALSE;
 			}
-			Buffer += (char*)ClipboardDataPtr;
+			Buffer += static_cast<char*>(ClipboardDataPtr);
 			LocalUnlock(ClipboardData);
 			LocalFree(ClipboardData);
 			CloseClipboard();
@@ -342,7 +342,7 @@ public:
 				CloseClipboard();
 				return FALSE;
 			}
-			UBuffer += (wchar_t*)ClipboardDataPtr;
+			UBuffer += static_cast<wchar_t*>(ClipboardDataPtr);
 			LocalUnlock(ClipboardData);
 			LocalFree(ClipboardData);
 			CloseClipboard();
@@ -410,9 +410,9 @@ public:
 
 		if (image.is_open()) {
 
-			image.write((char*)&bmfheader, sizeof(BITMAPFILEHEADER)); // BITMAP FILE HEADER
-			image.write((char*)&bmiheader, sizeof(BITMAPINFOHEADER)); // BITMAP INFO HEADER
-			image.write((char*)BitmapBytes.get(), sizeof(COLORREF) * BitmapSizeCXxCY); // COLOR BYTE ARRAY
+			image.write(reinterpret_cast<char*>(&bmfheader), sizeof(BITMAPFILEHEADER)); // BITMAP FILE HEADER
+			image.write(reinterpret_cast<char*>(&bmiheader), sizeof(BITMAPINFOHEADER)); // BITMAP INFO HEADER
+			image.write(reinterpret_cast<char*>(BitmapBytes.get()), sizeof(COLORREF) * BitmapSizeCXxCY); // COLOR BYTE ARRAY
 
 			image.close(); // Close File
 

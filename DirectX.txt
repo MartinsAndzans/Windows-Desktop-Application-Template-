@@ -1,0 +1,34 @@
++----------+     +---------+     +-----------+
+| HARDWARE |<--->| DirectX |<--->| DirectX3D |
++----------+     +---------+     +-----------+
+                      ^
+                      |
+                      |
+                      V
+               +-------------+     +----------+
+               |  DirectX2D  |<--->| <d2d1.h> |
+               +-------------+     +----------+
+
+                +----------+     +--------------+     +---------------------+
+                | <d2d1.h> |<--->| ID2D1Factory |<--->| ID2D1DCRenderTarget |
+                +----------+     +--------------+     +---------------------+
+
+> Useful Macros SUCCEEDED(hr) and FAILED(hr)
+
+> ID2D1Factory - -/Root Interface For All DirectX2D Objects/-
+> <code>HRESULT Error = D2D1CreateFactory(D2D1_FACTORY_TYPE, **ID2D1Factory)</code>
+-----------------------------------------------------------------------------------------------------
+> D2D1_FACTORY_TYPE - -/Geometry Rendering With Single Thread or Multiple Threads/-
+-----------------------------------------------------------------------------------------------------
+> D2D1_FACTORY_TYPE_SINGLE_THREADED - -/Rendering With Single Thread/-
+> D2D1_FACTORY_TYPE_MULTI_THREADED - -/Rendering With Multiple Threads/-
+-----------------------------------------------------------------------------------------------------
+> **ID2D1Factory - -/Pointer To Created Factory Interface/-
+> Error - -/If something goes wrong Function Returns :DirectX2D Error: else Function Returns :S_OK:/-
+
+
+> ID2D1DCRenderTarget - -/Drawing Interface For All DirectX2D Objects/-
+> <code>HRESULT Error = Factory->CreateDCRenderTarget(D2D1_RENDER_TARGET_PROPERTIES, **ID2D1DCRenderTarget)</code>
+-----------------------------------------------------------------------------------------------------
+>
+>

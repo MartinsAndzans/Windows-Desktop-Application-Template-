@@ -11,7 +11,6 @@
 #define DarkerColor(SourceColor, DarkerTo) RGB(GetRValue(SourceColor) - DarkerTo, GetGValue(SourceColor) - DarkerTo, GetBValue(SourceColor) - DarkerTo) // returns DarkerColor
 
 #define MAX_ANIMATION_CHAR_STRING 256
-#define HInstance() GetModuleHandle(NULL)
 
 class Animation {
 

@@ -22,7 +22,7 @@ BOOL Animation::InitAnimation() {
 	AnimationEx.hCursor = LoadCursor(NULL, IDC_ARROW);
 	AnimationEx.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	AnimationEx.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-	AnimationEx.hInstance = HInstance();
+	AnimationEx.hInstance = GetModuleHandle(NULL);
 	AnimationEx.lpfnWndProc = AnimationProcedure;
 	AnimationEx.lpszClassName = L"ANIMATION";
 	AnimationEx.lpszMenuName = NULL;

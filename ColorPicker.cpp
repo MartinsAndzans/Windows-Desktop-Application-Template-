@@ -1,17 +1,8 @@
 #include "ColorPicker.h"
 
 #pragma region InitColorPickerStaticMembers
-HDC ColorPicker::ColorPickerDC = { 0 };
-PAINTSTRUCT ColorPicker::ps = { 0 };
-
-HDC ColorPicker::MemoryDC = { 0 };
-HBITMAP ColorPicker::Bitmap = { 0 };
-
 CONST SIZE ColorPicker::DimensionsSmall = { 420, 40 };
 CONST SIZE ColorPicker::DimensionsLarge = { 420, 100 };
-
-RECT ColorPicker::Dimensions = { 0 };
-POINT ColorPicker::mousePosition = { 0 };
 #pragma endregion
 
 // INIT COLOR PICKER
@@ -19,10 +10,10 @@ POINT ColorPicker::mousePosition = { 0 };
 #pragma region InitColorPicker
 /// <summary>
 /// Optional Function - Creates Class "COLOR PICKER"
-/// Window Title "SMALL" Creates Small "COLOR PICKER" X | Y = 420 | 40
-/// Window Title "LARGE" Creates Large "COLOR PICKER" X | Y = 420 | 100
+/// Window Title "Small" Creates Small "COLOR PICKER" 420 - 40
+/// Window Title "Large" Creates Large "COLOR PICKER" 420 - 100
 /// </summary>
-/// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
+/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
 BOOL ColorPicker::InitColorPicker() {
 
 	WNDCLASSEX ColorPickerEx = { 0 };
@@ -34,7 +25,7 @@ BOOL ColorPicker::InitColorPicker() {
 	ColorPickerEx.hCursor = LoadCursor(NULL, IDC_CROSS);
 	ColorPickerEx.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	ColorPickerEx.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-	ColorPickerEx.hInstance = HInstance();
+	ColorPickerEx.hInstance = GetModuleHandle(NULL);
 	ColorPickerEx.lpfnWndProc = ColorPickerProcedure;
 	ColorPickerEx.lpszClassName = L"COLOR PICKER";
 	ColorPickerEx.lpszMenuName = NULL;
@@ -90,13 +81,13 @@ VOID ColorPicker::drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HE
 	}
 
 }
+SHORT ColorPicker::drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor) {
 
-SHORT ColorPicker::drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth, COLORREF BorderColor) {
-
-	CONST SHORT WIDTH = 420, HEIGTH = 40;
+	CONST USHORT BorderWidth = 2;
+	CONST USHORT WIDTH = 420, HEIGTH = 40;
 
 	// Border
-	for (SHORT W = 0; W < BorderWidth; W++) {
+	for (USHORT W = 0; W < BorderWidth; W++) {
 		// Up and Down
 		for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
 			SetPixel(hdc, X, COORD_Y + W, BorderColor);
@@ -131,13 +122,13 @@ SHORT ColorPicker::drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT Bo
 	return BorderWidth;
 
 }
+SHORT ColorPicker::drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor) {
 
-SHORT ColorPicker::drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth, COLORREF BorderColor) {
-
-	CONST SHORT WIDTH = 420, HEIGTH = 100;
+	CONST USHORT BorderWidth = 2;
+	CONST USHORT WIDTH = 420, HEIGTH = 100;
 
 	// Border
-	for (SHORT W = 0; W < BorderWidth; W++) {
+	for (USHORT W = 0; W < BorderWidth; W++) {
 		// Up and Down
 		for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
 			SetPixel(hdc, X, COORD_Y + W, BorderColor);
@@ -189,20 +180,20 @@ SHORT ColorPicker::drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT Bo
 #pragma region Events
 VOID ColorPicker::onCreate(HWND hColorPicker, LPARAM lParam) {
 
-	LPCREATESTRUCT window = LPCREATESTRUCT(lParam);
+	LPCREATESTRUCT window = reinterpret_cast<LPCREATESTRUCT>(lParam);
 
 	if (window->hwndParent != NULL and (window->style & WS_CHILD) != NULL) {
 
-		if (window->lpszName == L"SMALL" and window->cx != 0 and window->cy != 0)
-			SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.cx, DimensionsSmall.cy, SWP_SHOWWINDOW);
-		else if (lstrcmpW(window->lpszName, L"LARGE") == 0 and window->cx != 0 and window->cy != 0)
-			SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsLarge.cx, DimensionsLarge.cy, SWP_SHOWWINDOW);
+		if (window->lpszName == L"Small" and window->cx != 0 and window->cy != 0)
+			SetWindowPos(hColorPicker, NULL, 0, 0, DimensionsSmall.cx, DimensionsSmall.cy, SWP_SHOWWINDOW | SWP_NOMOVE);
+		else if (lstrcmpW(window->lpszName, L"Large") == 0 and window->cx != 0 and window->cy != 0)
+			SetWindowPos(hColorPicker, NULL, 0, 0, DimensionsLarge.cx, DimensionsLarge.cy, SWP_SHOWWINDOW | SWP_NOMOVE);
 		else if (window->cx != 0 and window->cy != 0)
-			SetWindowPos(hColorPicker, NULL, window->x, window->y, DimensionsSmall.cx, DimensionsSmall.cy, SWP_SHOWWINDOW);
+			SetWindowPos(hColorPicker, NULL, 0, 0, DimensionsSmall.cx, DimensionsSmall.cy, SWP_SHOWWINDOW | SWP_NOMOVE);
 
 	} else {
 
-		OutputDebugString(L"ERROR [Color Picker] - \"hwndParent\" Must Be Non Zero Value\r\n");
+		OutputDebugStringA("\'ERROR \'ColorPicker\' - \"hwndParent\" Must Be Non Zero Value\r\n\'");
 		DestroyWindow(hColorPicker);
 
 	}
@@ -211,14 +202,14 @@ VOID ColorPicker::onCreate(HWND hColorPicker, LPARAM lParam) {
 
 VOID ColorPicker::onWindowPosChanging(HWND hColorPicker, LPARAM lParam) {
 
-	LPWINDOWPOS window = (LPWINDOWPOS)lParam;
+	LPWINDOWPOS window = reinterpret_cast<LPWINDOWPOS>(lParam);
 
 	WCHAR WindowTitle[MAX_COLOR_PICKER_CHAR_STRING] = { 0 };
 	GetWindowText(hColorPicker, WindowTitle, ARRAYSIZE(WindowTitle));
 
-	if (lstrcmpW(WindowTitle, L"SMALL") == 0 and window->cx != 0 and window->cy != 0)
+	if (lstrcmpW(WindowTitle, L"Small") == 0 and window->cx != 0 and window->cy != 0)
 		window->cx = DimensionsSmall.cx, window->cy = DimensionsSmall.cy;
-	else if (lstrcmpW(WindowTitle, L"LARGE") == 0 and window->cx != 0 and window->cy != 0)
+	else if (lstrcmpW(WindowTitle, L"Large") == 0 and window->cx != 0 and window->cy != 0)
 		window->cx = DimensionsLarge.cx, window->cy = DimensionsLarge.cy;
 	else if (window->cx != 0 and window->cy != 0)
 		window->cx = DimensionsSmall.cx, window->cy = DimensionsSmall.cy;
@@ -226,46 +217,48 @@ VOID ColorPicker::onWindowPosChanging(HWND hColorPicker, LPARAM lParam) {
 }
 
 VOID ColorPicker::onMouseMove(HWND hColorPicker, WPARAM wParam, LPARAM lParam) {
-
-	if (GetAsyncKeyState(VK_LBUTTON)) {
-		RedrawWindow(hColorPicker, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
-	}
-
+	if (GetAsyncKeyState(VK_LBUTTON)) RedrawWindow(hColorPicker, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
 }
 
 VOID ColorPicker::onPaint(HWND hColorPicker) {
 
+	PAINTSTRUCT ps = { 0 };
+	RECT Dimensions = { 0 };
+	POINT mousePosition = { 0 };
+
 	GetCursorPos(&mousePosition);
 	ScreenToClient(hColorPicker, &mousePosition);
+
 	GetClientRect(hColorPicker, &Dimensions);
 
-	ColorPickerDC = BeginPaint(hColorPicker, &ps);
+	HDC ColorPickerDC = BeginPaint(hColorPicker, &ps);
 
-	MemoryDC = CreateCompatibleDC(ColorPickerDC);
-	Bitmap = CreateCompatibleBitmap(ColorPickerDC, Dimensions.right, Dimensions.bottom);
+	HDC MemoryDC = CreateCompatibleDC(ColorPickerDC);
+	HBITMAP Bitmap = CreateCompatibleBitmap(ColorPickerDC, Dimensions.right, Dimensions.bottom);
 
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
 	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(BLACK_BRUSH));
+	CONST COLORREF BlackColor = RGB(0, 0, 0);
 
 	WCHAR WindowTitle[MAX_COLOR_PICKER_CHAR_STRING] = { 0 };
 	GetWindowText(hColorPicker, WindowTitle, ARRAYSIZE(WindowTitle));
 
 	// Draw Gradient
-	SHORT BorderWidth = 0;
-	if (lstrcmpW(WindowTitle, L"SMALL") == 0)
-		BorderWidth = drawSmallGradient(MemoryDC, Dimensions.left, Dimensions.top);
-	else if (lstrcmpW(WindowTitle, L"LARGE") == 0)
-		BorderWidth = drawLargeGradient(MemoryDC, Dimensions.left, Dimensions.top);
+	CONST USHORT BorderWidth = 2;
+	if (lstrcmpW(WindowTitle, L"Small") == 0)
+		drawSmallGradient(MemoryDC, Dimensions.left, Dimensions.top, BlackColor);
+	else if (lstrcmpW(WindowTitle, L"Large") == 0)
+		drawLargeGradient(MemoryDC, Dimensions.left, Dimensions.top, BlackColor);
 	else
-		BorderWidth = drawSmallGradient(MemoryDC, Dimensions.left, Dimensions.top);
+		drawSmallGradient(MemoryDC, Dimensions.left, Dimensions.top, BlackColor);
 	////
 
 	if (GetAsyncKeyState(VK_LBUTTON) and mousePosition.x >= Dimensions.left and mousePosition.x <= Dimensions.right and
 		mousePosition.y >= Dimensions.top and mousePosition.y <= Dimensions.bottom) {
 
 		COLORREF Color = GetPixel(MemoryDC, mousePosition.x, mousePosition.y);
-		drawCross(MemoryDC, mousePosition.x - 23 / 2, mousePosition.y - 23 / 2);
+		drawCross(MemoryDC, mousePosition.x - 23 / 2, mousePosition.y - 23 / 2, 23, 23, BlackColor);
 		SetWindowLong(hColorPicker, GWL_USERDATA, MAKELONG(mousePosition.x, mousePosition.y));
 		
 		//////////////////////////////////////////////////////
@@ -282,7 +275,7 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 	} else {
 		LONG PreviousPoint = GetWindowLong(hColorPicker, GWL_USERDATA);
 		if (PreviousPoint != NULL) {
-			drawCross(MemoryDC, LOWORD(PreviousPoint) - 23 / 2, HIWORD(PreviousPoint) - 23 / 2);
+			drawCross(MemoryDC, LOWORD(PreviousPoint) - 23 / 2, HIWORD(PreviousPoint) - 23 / 2, 23, 23, BlackColor);
 		}
 	}
 
@@ -301,31 +294,31 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 LRESULT CALLBACK ColorPicker::ColorPickerProcedure(HWND hColorPicker, UINT Msg, WPARAM wParam, LPARAM lParam) {
 
 	switch (Msg) {
-	case WM_CREATE:
-	{
-		onCreate(hColorPicker, lParam);
-		return 0;
-	}
-	case WM_WINDOWPOSCHANGING:
-	{
-		onWindowPosChanging(hColorPicker, lParam);
-		return 0;
-	}
-	case WM_MOUSEMOVE:
-	{
-		onMouseMove(hColorPicker, wParam, lParam);
-		return 0;
-	}
-	case WM_PAINT:
-	{
-		onPaint(hColorPicker);
-		return 0;
-	}
-	case WM_LBUTTONDOWN:
-	{
-		RedrawWindow(hColorPicker, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
-		return 0;
-	}
+		case WM_CREATE:
+		{
+			onCreate(hColorPicker, lParam);
+			return 0;
+		}
+		case WM_WINDOWPOSCHANGING:
+		{
+			onWindowPosChanging(hColorPicker, lParam);
+			return 0;
+		}
+		case WM_MOUSEMOVE:
+		{
+			onMouseMove(hColorPicker, wParam, lParam);
+			return 0;
+		}
+		case WM_PAINT:
+		{
+			onPaint(hColorPicker);
+			return 0;
+		}
+		case WM_LBUTTONDOWN:
+		{
+			RedrawWindow(hColorPicker, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
+			return 0;
+		}
 	}
 
 	return DefWindowProc(hColorPicker, Msg, wParam, lParam);

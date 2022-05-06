@@ -9,6 +9,7 @@
 
 #include <ciso646>
 #include <Windows.h>
+#include <d2d1.h>
 
 class Draw {
 
@@ -139,14 +140,11 @@ public:
 	/// This Function Draws Triangle
 	/// </summary>
 	/// <param name="hdc">- Device Context</param>
-	/// <param name="X1">- X1 Coordinate</param>
-	/// <param name="Y1">- Y1 Coordinate</param>
-	/// <param name="X2">- Y2 Coordinate</param>
-	/// <param name="Y2">- Y2 Coordinate</param>
-	/// <param name="X3">- X3 Coordinate</param>
-	/// <param name="Y3">- Y3 Coordinate</param>
+	/// <param name="V1">- First Vertice</param>
+	/// <param name="V2">- Second Vertice</param>
+	/// <param name="V3">- Third Vertice</param>
 	/// <param name="Color">- Color</param>
-	static VOID FillTriangle(HDC hdc, INT X1, INT Y1, INT X2, INT Y2, INT X3, INT Y3, COLORREF Color = Colors::BlueColor) {
+	static VOID FillTriangle(HDC hdc, POINT V1, POINT V2, POINT V3, COLORREF Color = Colors::BlueColor) {
 
 		SetDCPenColor(hdc, Color);
 		SetDCBrushColor(hdc, Color);
@@ -157,9 +155,9 @@ public:
 		SetPolyFillMode(hdc, ALTERNATE);
 
 		POINT TriangleVertices[] = {
-			{ X1, Y1 },
-			{ X2, Y2 },
-			{ X3, Y3 }
+			{ V1.x, V1.y },
+			{ V2.x, V2.y },
+			{ V3.x, V3.y }
 		};
 
 		Polygon(hdc, TriangleVertices, ARRAYSIZE(TriangleVertices));
@@ -185,7 +183,7 @@ public:
 	/// <param name="WIDTH">- Width</param>
 	/// <param name="HEIGHT">- Height</param>
 	/// <param name="Color">- Color</param>
-	static VOID drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 60, INT HEIGHT = 100, COLORREF Color = Colors::BlackColor) {
+	static VOID FillArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 60, INT HEIGHT = 100, COLORREF Color = Colors::BlackColor) {
 
 		CONST SHORT Proportion = 3;
 		INT XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
@@ -231,7 +229,7 @@ public:
 		CONST USHORT WIDTH = 420, HEIGTH = 40;
 
 		// Border
-		for (SHORT W = 0; W < BorderWidth; W++) {
+		for (USHORT W = 0; W < BorderWidth; W++) {
 			// Up and Down
 			for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
 				SetPixel(hdc, X, COORD_Y + W, BorderColor);
@@ -277,12 +275,13 @@ public:
 	/// <param name="BorderWidth">- Border Width</param>
 	/// <param name="BorderColor">- Border Color</param>
 	/// <returns>Returns Border Width</returns>
-	static SHORT drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, SHORT BorderWidth = 2, COLORREF BorderColor = Colors::BlackColor) {
+	static SHORT drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor = Colors::BlackColor) {
 
-		CONST SHORT WIDTH = 420, HEIGTH = 100;
+		CONST USHORT BorderWidth = 2;
+		CONST USHORT WIDTH = 420, HEIGTH = 100;
 
 		// Border
-		for (SHORT W = 0; W < BorderWidth; W++) {
+		for (USHORT W = 0; W < BorderWidth; W++) {
 			// Up and Down
 			for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
 				SetPixel(hdc, X, COORD_Y + W, BorderColor);
@@ -423,6 +422,72 @@ public:
 			OutputDebugString(L"ERROR [Draw::drawCross] - Width or Height Must be Odd Number!\r\n");
 
 		}
+
+	}
+
+};
+
+namespace D2D1 {
+
+	static D2D1_TRIANGLE TriangleF(D2D1_POINT_2F V1, D2D1_POINT_2F V2, D2D1_POINT_2F V3) {
+
+		D2D1_TRIANGLE TriangleF = { 0 };
+		TriangleF.point1.x = V1.x;
+		TriangleF.point1.y = V1.y;
+		TriangleF.point2.x = V2.x;
+		TriangleF.point2.y = V2.y;
+		TriangleF.point3.x = V3.x;
+		TriangleF.point3.y = V3.y;
+
+		return TriangleF;
+
+	}
+
+}
+
+class ID2D1ExtendedFactory : public ID2D1Factory {
+
+public:
+
+	/// <summary>
+	/// Creates a render target that draws to a GDI device context.
+	/// </summary>
+	virtual HRESULT CreateRenderTarget(D2D1_RENDER_TARGET_TYPE Type, ID2D1DCRenderTarget **RenderTarget) {
+
+		D2D1_RENDER_TARGET_PROPERTIES RTP = D2D1::RenderTargetProperties(Type,
+			D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
+			0.0F, 0.0F,
+			D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE,
+			D2D1_FEATURE_LEVEL_DEFAULT);
+		
+		return CreateDCRenderTarget(&RTP, RenderTarget);
+
+	}
+
+	virtual HRESULT CreateTriangleGeometry(D2D1_TRIANGLE TriangleVertices, ID2D1PathGeometry **TriangleGeometry) {
+
+		HRESULT hrPathGeometry = CreatePathGeometry(TriangleGeometry);
+		if (FAILED(hrPathGeometry)) {
+			return hrPathGeometry;
+		}
+
+		ID2D1GeometrySink *GeometrySink = nullptr;
+		HRESULT hrGeometrySink = (*TriangleGeometry)->Open(&GeometrySink);
+		if (FAILED(hrGeometrySink)) {
+			(*TriangleGeometry)->Release();
+			(*TriangleGeometry) = nullptr;
+			return hrGeometrySink;
+		}
+
+		GeometrySink->BeginFigure(TriangleVertices.point1, D2D1_FIGURE_BEGIN_FILLED);
+		GeometrySink->AddLine(TriangleVertices.point2);
+		GeometrySink->AddLine(TriangleVertices.point3);
+		GeometrySink->EndFigure(D2D1_FIGURE_END_CLOSED);
+
+		GeometrySink->Close();
+		GeometrySink->Release();
+
+		return S_OK;
 
 	}
 

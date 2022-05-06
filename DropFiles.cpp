@@ -23,7 +23,7 @@ BOOL DropFiles::InitDropFiles() {
 	DropFilesEx.hCursor = LoadCursor(NULL, IDC_ARROW);
 	DropFilesEx.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	DropFilesEx.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-	DropFilesEx.hInstance = HInstance();
+	DropFilesEx.hInstance = GetModuleHandle(NULL);
 	DropFilesEx.lpfnWndProc = DropFilesProcedure;
 	DropFilesEx.lpszClassName = L"DROP FILES";
 	DropFilesEx.lpszMenuName = NULL;
@@ -90,7 +90,7 @@ VOID DropFiles::FillRectOpacity50(HDC hdc, RECT &Rectangle, COLORREF Color) {
 	}
 
 }
-VOID DropFiles::drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF Color) {
+VOID DropFiles::FillArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF Color) {
 
 	CONST SHORT Proportion = 3;
 	INT XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
@@ -201,7 +201,7 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 		CONST USHORT ArrowPadding = 20;
 		INT ArrowWidth = Dimensions.right / 3, ArrowHeight = Dimensions.bottom - ArrowPadding * 2;
 		FillRectOpacity50(MemoryDC, Dimensions, StylePtr->ForegroundColor);
-		drawArrow(MemoryDC, Dimensions.right / 2 - ArrowWidth / 2, Dimensions.bottom / 2 - ArrowHeight / 2, ArrowWidth, ArrowHeight, StylePtr->ForegroundColor);
+		FillArrow(MemoryDC, Dimensions.right / 2 - ArrowWidth / 2, Dimensions.bottom / 2 - ArrowHeight / 2, ArrowWidth, ArrowHeight, StylePtr->ForegroundColor);
 	}
 
 	BitBlt(DropFilesDC, 0, 0, Dimensions.right, Dimensions.bottom, MemoryDC, 0, 0, SRCCOPY);

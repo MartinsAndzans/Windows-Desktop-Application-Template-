@@ -13,7 +13,6 @@
 
 #define MIN_CALCULATOR_CHAR_STRING 2
 #define MAX_CALCULATOR_CHAR_STRING 256
-#define HInstance() GetModuleHandle(NULL)
 
 #define SetFont(hwnd, font) SendMessage(hwnd, WM_SETFONT, (WPARAM)font, NULL)
 

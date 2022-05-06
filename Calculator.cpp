@@ -33,7 +33,7 @@ BOOL Calculator::InitCalculator() {
 	CalculatorEx.hCursor = LoadCursor(NULL, IDC_ARROW);
 	CalculatorEx.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	CalculatorEx.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-	CalculatorEx.hInstance = HInstance();
+	CalculatorEx.hInstance = GetModuleHandle(NULL);
 	CalculatorEx.lpfnWndProc = CalculatorProcedure;
 	CalculatorEx.lpszClassName = L"CALCULATOR";
 	CalculatorEx.lpszMenuName = NULL;
@@ -135,7 +135,7 @@ VOID Calculator::CreateCalculatorControls(HWND hCalculator) {
 				Padding, StaticY[I], StaticWidth, StaticHeight,
 				hCalculator,
 				(HMENU)CalculatorConntrolsID[I],
-				HInstance(),
+				GetModuleHandle(NULL),
 				NULL);
 
 			if (I == 0) OutputsPtr->Opearation = Hwnd;
@@ -151,7 +151,7 @@ VOID Calculator::CreateCalculatorControls(HWND hCalculator) {
 				NumPad.x, NumPad.y, ButtonWidth, ButtonHeight,
 				hCalculator,
 				(HMENU)CalculatorConntrolsID[I],
-				HInstance(),
+				GetModuleHandle(NULL),
 				NULL);
 
 			NumPad.x = NumPad.x + (ButtonWidth + Padding); // Move In X Coordinate

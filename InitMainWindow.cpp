@@ -40,7 +40,7 @@ BOOL MainWindow::InitMainWindowClass(LPCWSTR ClassName) {
 	mainwcex.lpszClassName = ClassName;
 	mainwcex.lpszMenuName = NULL;
 	mainwcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_GLOBALCLASS;
-
+	
 	if (!RegisterClassEx(&mainwcex)) {
 		Functions::ShowLastError(HWND_DESKTOP, " - Main Window Class not Created!");
 		return FALSE;
@@ -80,24 +80,22 @@ BOOL MainWindow::CreateMainWindow(LPCWSTR ClassName, LPCWSTR WindowTitle) {
 #pragma endregion
 
 #pragma region OverloadedOperators
-BOOL operator==(POINT& Left, POINT& Right) {
+BOOL operator==(POINT &Left, POINT &Right) {
 
 	if (Left.x == Right.x and Left.y == Right.y) {
 		return TRUE;
-	}
-	else {
+	} else {
 		return FALSE;
 	}
 
 }
 
-BOOL operator==(POINT& Position, RECT& Rectangle) {
+BOOL operator==(POINT &Position, RECT &Rectangle) {
 
 	if (Position.x >= Rectangle.left and Position.x <= Rectangle.right and
 		Position.y >= Rectangle.top and Position.y <= Rectangle.bottom) {
 		return TRUE;
-	}
-	else {
+	} else {
 		return FALSE;
 	}
 
@@ -124,13 +122,13 @@ VOID MainWindow::CreateMainWindowFont() {
 #ifdef APP_DEBUG
 VOID MainWindow::CreateDebugTools(HWND ParentWindow) {
 
-	std::vector <HWND> DebugTools = { hDebugTool1, hDebugTool2 };
+	std::vector <HWND*> DebugTools = { &hDebugTool1, &hDebugTool2 };
 	std::vector <std::string> Captions = { "X = 0 Y = 0", "Width = 0 Height = 0" };
 	std::vector <SHORT> DebugToolsID = { ID_DEBUG_TOOL_1, ID_DEBUG_TOOL_2 };
 
 	for (SIZE_T I = 0; I < DebugTools.size(); I++) {
 
-		if (!(DebugTools[I] = CreateWindowExA(WS_EX_CLIENTEDGE,
+		if (!(*DebugTools[I] = CreateWindowExA(WS_EX_CLIENTEDGE,
 			"STATIC",
 			Captions[I].c_str(),
 			WS_CHILD | WS_BORDER | WS_VISIBLE | SS_OWNERDRAW,
@@ -143,11 +141,9 @@ VOID MainWindow::CreateDebugTools(HWND ParentWindow) {
 			PostQuitMessage(0);
 		}
 
-		SetFont(DebugTools[I], MainFont);
+		SetFont(*DebugTools[I], MainFont);
 
 	}
-
-	hDebugTool1 = DebugTools[0], hDebugTool2 = DebugTools[1];
 
 }
 #endif // APP_DEBUG
@@ -177,9 +173,9 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 	dfs.BackgroundColor = Colors::OrangeColor;
 	dfs.ForegroundColor = Colors::BlueColor;
 
-	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION", L"ANIMATION", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 10, 140, 140, hMainWindow, (HMENU)ControlsIDs::ID_ANIMATION_STARS, HInstance(), &as);
+	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION", L"Animation", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 10, 140, 140, hMainWindow, (HMENU)ControlsIDs::ID_ANIMATION_STARS, HInstance(), &as);
 	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"Drop File/s Here", WS_CHILD | WS_BORDER | WS_VISIBLE, 270, 120, 240, 140, hMainWindow, (HMENU)ControlsIDs::ID_DROP_FILES, HInstance(), &dfs);
-	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"LARGE", WS_CHILD | WS_BORDER | WS_VISIBLE, 160, 10, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)ControlsIDs::ID_COLOR_PICKER, HInstance(), nullptr);
+	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"Large", WS_CHILD | WS_BORDER | WS_VISIBLE, 160, 10, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)ControlsIDs::ID_COLOR_PICKER, HInstance(), nullptr);
 	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 160, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)ControlsIDs::ID_CALCULATOR, HInstance(), nullptr);
 	#pragma endregion
 
@@ -256,17 +252,15 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 
 	SelectObject(MemoryDC, MainFont);
 
-	D2D1_RENDER_TARGET_PROPERTIES RenderTargetProperties = D2D1::RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_HARDWARE,
-		D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
-		0.0F, 0.0F, D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE, D2D1_FEATURE_LEVEL_DEFAULT);
-
-	ID2D1Factory *Factory = nullptr;
-	HRESULT hrFactory = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &Factory);
+	ID2D1Factory *FactoryBase = nullptr;
+	HRESULT hrFactory = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &FactoryBase);
 	
 	if (SUCCEEDED(hrFactory)) {
 
+		ID2D1ExtendedFactory *Factory = reinterpret_cast<ID2D1ExtendedFactory*>(FactoryBase);
+
 		ID2D1DCRenderTarget *RenderTarget = nullptr;
-		HRESULT hrRenderTarget = Factory->CreateDCRenderTarget(&RenderTargetProperties, &RenderTarget);
+		HRESULT hrRenderTarget = Factory->CreateRenderTarget(D2D1_RENDER_TARGET_TYPE_HARDWARE, &RenderTarget);
 		
 		if (SUCCEEDED(hrRenderTarget)) {
 
@@ -274,35 +268,39 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 			D2D1_SIZE_U RenderTargetSize = RenderTarget->GetPixelSize();
 			RenderTarget->BeginDraw();
 
-			std::vector<ID2D1Geometry*> Geometry{};
+			std::vector<ID2D1Geometry*> Triangles{};
 
-			for (FLOAT R = 10.0F; R <= 600.0F; R += 10.0F) {
-				ID2D1RectangleGeometry *RectanglePtr = nullptr;
-				HRESULT hrRectangleGeometry = Factory->CreateRectangleGeometry(D2D1::RectF(RenderTargetSize.width / 2.0F - R, RenderTargetSize.height / 2.0F - R,
-					RenderTargetSize.width / 2.0F + R, RenderTargetSize.height / 2.0F + R), &RectanglePtr);
-				if (FAILED(hrRectangleGeometry)) break;
-				Geometry.push_back(RectanglePtr);
+			for (FLOAT R = 10.0F; R < 400.0F; R += 10.0F) {
+				ID2D1PathGeometry *TriangleGeometry = nullptr;
+				HRESULT hrTriangleGeometry = Factory->CreateTriangleGeometry(D2D1::TriangleF(D2D1::Point2F(RenderTargetSize.width / 2.0F, RenderTargetSize.height / 2.0F - R),
+					D2D1::Point2F(RenderTargetSize.width / 2.0F - R, RenderTargetSize.height / 2.0F + R),
+					D2D1::Point2F(RenderTargetSize.width / 2.0F + R, RenderTargetSize.height / 2.0F + R)),
+					&TriangleGeometry);
+				if (FAILED(hrTriangleGeometry)) {
+					break;
+				}
+				Triangles.push_back(TriangleGeometry);
 			}
-			
+
 			ID2D1GeometryGroup *GeometryGroup = nullptr;
-			HRESULT hrGeometryGroup = Factory->CreateGeometryGroup(D2D1_FILL_MODE_ALTERNATE, Geometry.data(), static_cast<UINT32>(Geometry.size()), &GeometryGroup);
+			HRESULT hrGeometryGroup = Factory->CreateGeometryGroup(D2D1_FILL_MODE_ALTERNATE, Triangles.data(), static_cast<UINT32>(Triangles.size()), &GeometryGroup);
 
 			if (SUCCEEDED(hrGeometryGroup)) {
 
-				ID2D1SolidColorBrush *GoldBrush = nullptr;
-				HRESULT hrAntiqueWhiteBrush = RenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Enum::Gold), &GoldBrush);
+				ID2D1SolidColorBrush *Brush = nullptr;
+				HRESULT hrBrush = RenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Enum::DarkSeaGreen), &Brush);
 
-				if (SUCCEEDED(hrAntiqueWhiteBrush)) {
-					RenderTarget->FillGeometry(GeometryGroup, GoldBrush);
-					GoldBrush->Release();
+				if (SUCCEEDED(hrBrush)) {
+
+					RenderTarget->FillGeometry(GeometryGroup, Brush);
+					Brush->Release();
+
 				}
-
-				GeometryGroup->Release();
 
 			}
 
-			for (SIZE_T I = 0; I < Geometry.size(); I++) {
-				static_cast<ID2D1RectangleGeometry*>(Geometry[I])->Release();
+			for (SIZE_T I = 0; I < Triangles.size(); I++) {
+				reinterpret_cast<ID2D1PathGeometry*>(Triangles[I])->Release();
 			}
 
 			RenderTarget->EndDraw();

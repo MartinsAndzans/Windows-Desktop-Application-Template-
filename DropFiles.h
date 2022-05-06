@@ -5,7 +5,6 @@
 #include <Windows.h>
 
 #define MAX_DROP_FILES_CHAR_STRING 256
-#define HInstance() GetModuleHandle(NULL)
 
 class DropFiles {
 
@@ -20,7 +19,7 @@ private:
 	static VOID CreateDropFilesFont();
 	static VOID DrawBorder(HDC hdc, RECT &Rectangle, USHORT Width);
 	static VOID FillRectOpacity50(HDC hdc, RECT &Rectangle,COLORREF Color);
-	static VOID drawArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF Color);
+	static VOID FillArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF Color);
 	#pragma endregion
 
 	#pragma region Events
