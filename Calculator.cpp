@@ -16,11 +16,11 @@ CONST SIZE Calculator::CalculatorDimensions = { Calculator::StaticWidth + Calcul
 
 #pragma region InitCalculator
 /// <summary>
-/// Optional Function - Creates Class "CALCULATOR"
-/// <para>Width | Height = 250 | 400</para>
+/// Optional Function - Registers Class "Calculator"
+/// <para>250 - 400</para>
 /// </summary>
 /// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
-BOOL Calculator::InitCalculator() {
+BOOL Calculator::RegisterCalculatorClass() {
 	
 	CreateCalculatorFont();
 
@@ -35,7 +35,7 @@ BOOL Calculator::InitCalculator() {
 	CalculatorEx.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 	CalculatorEx.hInstance = GetModuleHandle(NULL);
 	CalculatorEx.lpfnWndProc = CalculatorProcedure;
-	CalculatorEx.lpszClassName = L"CALCULATOR";
+	CalculatorEx.lpszClassName = L"Calculator";
 	CalculatorEx.lpszMenuName = NULL;
 	CalculatorEx.style = CS_HREDRAW | CS_VREDRAW | CS_PARENTDC;
 
@@ -110,7 +110,7 @@ VOID Calculator::CreateCalculatorControls(HWND hCalculator) {
 		"7", "8", "9", "+/-",
 		"%", "0", ".", "=" };
 
-	std::vector<SHORT> CalculatorConntrolsID = { ID_CL_OPERATION, ID_CL_OUTPUT_RESULT,
+	std::vector<SHORT> CalculatorConntrolsIDs = { ID_CL_OPERATION, ID_CL_OUTPUT_RESULT,
 		ID_CL_MULTIPLY, ID_CL_DEVIDE, ID_CL_CLEAR, ID_CL_BACK,
 		ID_CL_NUM1, ID_CL_NUM2, ID_CL_NUM3, ID_CL_SUM,
 		ID_CL_NUM4, ID_CL_NUM5, ID_CL_NUM6, ID_CL_MINUS,
@@ -123,7 +123,7 @@ VOID Calculator::CreateCalculatorControls(HWND hCalculator) {
 	// NUMPAD CONTROLS
 	POINTS NumPad = { Padding, StaticHeight * 2 + Padding * 3 };
 
-	for (SIZE_T I = 0; I < CalculatorConntrolsID.size(); I++) {
+	for (SIZE_T I = 0; I < CalculatorConntrolsIDs.size(); I++) {
 
 		if (I == 0 or I == 1) {
 
@@ -134,7 +134,7 @@ VOID Calculator::CreateCalculatorControls(HWND hCalculator) {
 				WS_CHILD | WS_BORDER | WS_VISIBLE | SS_OWNERDRAW,
 				Padding, StaticY[I], StaticWidth, StaticHeight,
 				hCalculator,
-				(HMENU)CalculatorConntrolsID[I],
+				(HMENU)CalculatorConntrolsIDs[I],
 				GetModuleHandle(NULL),
 				NULL);
 
@@ -150,7 +150,7 @@ VOID Calculator::CreateCalculatorControls(HWND hCalculator) {
 				WS_CHILD | WS_BORDER | WS_VISIBLE | BS_CENTER | BS_VCENTER,
 				NumPad.x, NumPad.y, ButtonWidth, ButtonHeight,
 				hCalculator,
-				(HMENU)CalculatorConntrolsID[I],
+				(HMENU)CalculatorConntrolsIDs[I],
 				GetModuleHandle(NULL),
 				NULL);
 
@@ -164,7 +164,7 @@ VOID Calculator::CreateCalculatorControls(HWND hCalculator) {
 
 		if (Hwnd == NULL) {
 			std::string ErrorMessage = "ERROR " + std::to_string(GetLastError()) + " - Child Window not Created!";
-			MessageBoxA(hCalculator, ErrorMessage.c_str(), "ERROR", MB_OK | MB_ICONERROR);
+			MessageBoxA(hCalculator, ErrorMessage.c_str(), "-ERROR-", MB_OK | MB_ICONERROR);
 			DestroyWindow(hCalculator);
 		} else {
 			SetFont(Hwnd, CalculatorFont);
@@ -214,7 +214,8 @@ VOID Calculator::onDrawItem(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 	if (item->CtlID == ID_CL_OPERATION or item->CtlID == ID_CL_OUTPUT_RESULT) {
 
 		SIZE size = { 0 };
-		WCHAR StaticText[MAX_CALCULATOR_CHAR_STRING] = { 0 };
+		CONST USHORT MAX_CHAR_STRING = 256;
+		WCHAR StaticText[MAX_CHAR_STRING] = { 0 };
 		SetDCBrushColor(item->hDC, LIGHT_GRAY_COLOR);
 		FillRect(item->hDC, &item->rcItem, static_cast<HBRUSH>(GetStockObject(DC_BRUSH)));
 		SetBkMode(item->hDC, TRANSPARENT);
@@ -261,7 +262,8 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 		LpMathOutputs OutputsPtr = reinterpret_cast<LpMathOutputs>(GetWindowLongPtr(hCalculator, GWLP_USERDATA));
 
-		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
+		CONST USHORT MAX_CHAR_STRING = 256;
+		CHAR Result[MAX_CHAR_STRING] = { 0 };
 		GetWindowTextA(OutputsPtr->Result, Result, ARRAYSIZE(Result));
 
 		if (strcmp(Result, "0") == 0) {
@@ -278,7 +280,8 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 		LpMathOutputs OutputsPtr = reinterpret_cast<LpMathOutputs>(GetWindowLongPtr(hCalculator, GWLP_USERDATA));
 
-		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
+		CONST USHORT MAX_CHAR_STRING = 256;
+		CHAR Result[MAX_CHAR_STRING] = { 0 };
 		INT ResultLength = GetWindowTextA(OutputsPtr->Result, Result, ARRAYSIZE(Result));
 
 		if (ResultLength == 1 or (ResultLength == 2 and Result[0] == L'-') or
@@ -299,9 +302,11 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 		LpMathOutputs OutputsPtr = reinterpret_cast<LpMathOutputs>(GetWindowLongPtr(hCalculator, GWLP_USERDATA));
 
-		CHAR Num[MIN_CALCULATOR_CHAR_STRING] = { 0 };
+		CONST USHORT MIN_CHAR_STRING = 2;
+		CHAR Num[MIN_CHAR_STRING] = { 0 };
 		GetWindowTextA((HWND)lParam, Num, ARRAYSIZE(Num));
-		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
+		CONST USHORT MAX_CHAR_STRING = 256;
+		CHAR Result[MAX_CHAR_STRING] = { 0 };
 		GetWindowTextA(OutputsPtr->Result, Result, ARRAYSIZE(Result));
 
 		if (strcmp(Result, DEVISION_ZERO_BY_ZERO) == 0 or strcmp(Result, DEVISION_BY_ZERO) == 0) {
@@ -327,7 +332,8 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 		LpMathOutputs OutputsPtr = reinterpret_cast<LpMathOutputs>(GetWindowLongPtr(hCalculator, GWLP_USERDATA));
 
-		CHAR Result[MAX_CALCULATOR_CHAR_STRING] = { 0 };
+		CONST USHORT MAX_CHAR_STRING = 256;
+		CHAR Result[MAX_CHAR_STRING] = { 0 };
 		INT ResultLength = GetWindowTextA(OutputsPtr->Result, Result, ARRAYSIZE(Result));
 
 		if (strcmp(Result, DEVISION_ZERO_BY_ZERO) == 0 or strcmp(Result, DEVISION_BY_ZERO) == 0) {
@@ -350,8 +356,9 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 		LpMathOutputs OutputsPtr = reinterpret_cast<LpMathOutputs>(GetWindowLongPtr(hCalculator, GWLP_USERDATA));
 
-		CHAR ResultBuffer[MAX_CALCULATOR_CHAR_STRING] = { 0 };
-		INT ResultLength = GetWindowTextA(OutputsPtr->Result, ResultBuffer, ARRAYSIZE(ResultBuffer));
+		CONST USHORT MAX_CHAR_STRING = 256;
+		CHAR ResultBuffer[MAX_CHAR_STRING] = { 0 };
+		GetWindowTextA(OutputsPtr->Result, ResultBuffer, ARRAYSIZE(ResultBuffer));
 		std::string Result = ResultBuffer;
 
 		if (strcmp(ResultBuffer, DEVISION_ZERO_BY_ZERO) == 0 or strcmp(ResultBuffer, DEVISION_BY_ZERO) == 0) {
@@ -375,10 +382,12 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 		LpMathOutputs OutputsPtr = reinterpret_cast<LpMathOutputs>(GetWindowLongPtr(hCalculator, GWLP_USERDATA));
 
-		CHAR OperatorBuffer[MIN_CALCULATOR_CHAR_STRING] = { 0 };
+		CONST USHORT MIN_CHAR_STRING = 2;
+		CHAR OperatorBuffer[MIN_CHAR_STRING] = { 0 };
 		GetWindowTextA((HWND)lParam, OperatorBuffer, ARRAYSIZE(OperatorBuffer));
 		std::string Operator = OperatorBuffer;
-		CHAR ResultBuffer[MAX_CALCULATOR_CHAR_STRING] = { 0 };
+		CONST USHORT MAX_CHAR_STRING = 256;
+		CHAR ResultBuffer[MAX_CHAR_STRING] = { 0 };
 		GetWindowTextA(OutputsPtr->Result, ResultBuffer, ARRAYSIZE(ResultBuffer));
 		std::string Result = ResultBuffer;
 
@@ -401,10 +410,11 @@ VOID Calculator::onCommand(HWND hCalculator, WPARAM wParam, LPARAM lParam) {
 
 		LpMathOutputs OutputsPtr = reinterpret_cast<LpMathOutputs>(GetWindowLongPtr(hCalculator, GWLP_USERDATA));
 
-		CHAR OperationBuffer[MAX_CALCULATOR_CHAR_STRING] = { 0 };
+		CONST USHORT MAX_CHAR_STRING = 256;
+		CHAR OperationBuffer[MAX_CHAR_STRING] = { 0 };
 		GetWindowTextA(OutputsPtr->Opearation, OperationBuffer, ARRAYSIZE(OperationBuffer));
 		std::string Operation = OperationBuffer;
-		CHAR ResultBuffer[MAX_CALCULATOR_CHAR_STRING] = { 0 };
+		CHAR ResultBuffer[MAX_CHAR_STRING] = { 0 };
 		GetWindowTextA(OutputsPtr->Result, ResultBuffer, ARRAYSIZE(ResultBuffer));
 		std::string Result = ResultBuffer;
 

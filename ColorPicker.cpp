@@ -9,12 +9,12 @@ CONST SIZE ColorPicker::DimensionsLarge = { 420, 100 };
 
 #pragma region InitColorPicker
 /// <summary>
-/// Optional Function - Creates Class "COLOR PICKER"
-/// Window Title "Small" Creates Small "COLOR PICKER" 420 - 40
-/// Window Title "Large" Creates Large "COLOR PICKER" 420 - 100
+/// Optional Function - Registers Class "ColorPicker"
+/// <para>Window Title "Small" Creates Small Color Picker 420 - 40</para>
+/// <para>Window Title "Large" Creates Large Color Picker 420 - 100</para>
 /// </summary>
 /// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
-BOOL ColorPicker::InitColorPicker() {
+BOOL ColorPicker::RegisterColorPickerClass() {
 
 	WNDCLASSEX ColorPickerEx = { 0 };
 
@@ -27,7 +27,7 @@ BOOL ColorPicker::InitColorPicker() {
 	ColorPickerEx.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 	ColorPickerEx.hInstance = GetModuleHandle(NULL);
 	ColorPickerEx.lpfnWndProc = ColorPickerProcedure;
-	ColorPickerEx.lpszClassName = L"COLOR PICKER";
+	ColorPickerEx.lpszClassName = L"ColorPicker";
 	ColorPickerEx.lpszMenuName = NULL;
 	ColorPickerEx.style = CS_HREDRAW | CS_VREDRAW | CS_PARENTDC;
 
@@ -41,7 +41,7 @@ BOOL ColorPicker::InitColorPicker() {
 #pragma endregion
 
 #pragma region Functions
-VOID ColorPicker::drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF CrossColor) {
+VOID ColorPicker::drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT) {
 
 	if (WIDTH % 2 != 0 and HEIGHT % 2 != 0) {
 
@@ -55,9 +55,9 @@ VOID ColorPicker::drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HE
 				continue;
 			}
 
-			SetPixel(hdc, X, COORD_Y + HEIGHT / 2 - 1, CrossColor); // ==
-			SetPixel(hdc, X, COORD_Y + HEIGHT / 2, CrossColor); // --
-			SetPixel(hdc, X, COORD_Y + HEIGHT / 2 + 1, CrossColor); // ==
+			SetPixel(hdc, X, COORD_Y + HEIGHT / 2 - 1, RGB(0, 0, 0)); // ==
+			SetPixel(hdc, X, COORD_Y + HEIGHT / 2, RGB(0, 0, 0)); // --
+			SetPixel(hdc, X, COORD_Y + HEIGHT / 2 + 1, RGB(0, 0, 0)); // ==
 
 		}
 		// Vertical Line
@@ -67,9 +67,9 @@ VOID ColorPicker::drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HE
 				continue;
 			}
 
-			SetPixel(hdc, COORD_X + WIDTH / 2 - 1, Y, CrossColor); // ==
-			SetPixel(hdc, COORD_X + WIDTH / 2, Y, CrossColor); // --
-			SetPixel(hdc, COORD_X + WIDTH / 2 + 1, Y, CrossColor); // ==
+			SetPixel(hdc, COORD_X + WIDTH / 2 - 1, Y, RGB(0, 0, 0)); // ==
+			SetPixel(hdc, COORD_X + WIDTH / 2, Y, RGB(0, 0, 0)); // --
+			SetPixel(hdc, COORD_X + WIDTH / 2 + 1, Y, RGB(0, 0, 0)); // ==
 
 		}
 
@@ -81,32 +81,16 @@ VOID ColorPicker::drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HE
 	}
 
 }
-VOID ColorPicker::drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor) {
+VOID ColorPicker::drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y) {
 
-	CONST USHORT BorderWidth = 2;
 	CONST USHORT WIDTH = 420, HEIGTH = 40;
-
-	// Border
-	for (USHORT W = 0; W < BorderWidth; W++) {
-		// Up and Down
-		for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
-			SetPixel(hdc, X, COORD_Y + W, BorderColor);
-			SetPixel(hdc, X, COORD_Y + HEIGTH - W, BorderColor);
-		}
-		// Left and Right
-		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGTH; Y++) {
-			SetPixel(hdc, COORD_X + W, Y, BorderColor);
-			SetPixel(hdc, COORD_X + WIDTH - W, Y, BorderColor);
-		}
-	}
 
 	BYTE R = 255, G = 255, B = 255;
 	CONST BYTE COLORSTEP = 5;
-	USHORT DONE = 0;
+	BYTE DONE = 0;
 
-	//Gradient
-	for (INT X = COORD_X + BorderWidth; X <= COORD_X + WIDTH - BorderWidth; X++) {
-		for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + HEIGTH - BorderWidth; Y++) {
+	for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
+		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGTH; Y++) {
 			SetPixel(hdc, X, Y, RGB(R, G, B));
 		}
 		if (DONE == 0) (G == 0 and B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP); // White [255 255 255] -> Red [255 0 0]
@@ -120,33 +104,17 @@ VOID ColorPicker::drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF 
 	}
 
 }
-VOID ColorPicker::drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor) {
+VOID ColorPicker::drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y) {
 
-	CONST USHORT BorderWidth = 2;
 	CONST USHORT WIDTH = 420, HEIGTH = 100;
-
-	// Border
-	for (USHORT W = 0; W < BorderWidth; W++) {
-		// Up and Down
-		for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
-			SetPixel(hdc, X, COORD_Y + W, BorderColor);
-			SetPixel(hdc, X, COORD_Y + HEIGTH - W, BorderColor);
-		}
-		// Left and Right
-		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGTH; Y++) {
-			SetPixel(hdc, COORD_X + W, Y, BorderColor);
-			SetPixel(hdc, COORD_X + WIDTH - W, Y, BorderColor);
-		}
-	}
 
 	BYTE R = 255, G = 255, B = 255;
 	BYTE RY = 255, GY = 255, BY = 255;
 	CONST BYTE COLORSTEP = 5;
-	USHORT DONE = 0;
+	BYTE DONE = 0;
 
-	//Gradient
-	for (INT X = COORD_X + BorderWidth; X <= COORD_X + WIDTH - BorderWidth; X++) {
-		for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + HEIGTH - BorderWidth; Y++) {
+	for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
+		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGTH; Y++) {
 			SetPixel(hdc, X, Y, RGB(RY, GY, BY));
 			if (Y < COORD_Y + HEIGTH / 2) {
 				if (RY != R) RY -= COLORSTEP; //
@@ -201,7 +169,8 @@ VOID ColorPicker::onWindowPosChanging(HWND hColorPicker, LPARAM lParam) {
 
 	LPWINDOWPOS window = reinterpret_cast<LPWINDOWPOS>(lParam);
 
-	WCHAR WindowTitle[MAX_COLOR_PICKER_CHAR_STRING] = { 0 };
+	CONST USHORT MAX_CHAR_STRING = 20;
+	WCHAR WindowTitle[MAX_CHAR_STRING] = { 0 };
 	GetWindowText(hColorPicker, WindowTitle, ARRAYSIZE(WindowTitle));
 
 	if (lstrcmpW(WindowTitle, L"Small") == 0 and window->cx != 0 and window->cy != 0) {
@@ -237,18 +206,18 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 	SelectObject(MemoryDC, Bitmap);
 	SetBkMode(MemoryDC, TRANSPARENT);
 	FillRect(MemoryDC, &Dimensions, (HBRUSH)GetStockObject(BLACK_BRUSH));
-	CONST COLORREF BlackColor = RGB(0, 0, 0);
 
-	WCHAR WindowTitle[MAX_COLOR_PICKER_CHAR_STRING] = { 0 };
+	CONST USHORT MAX_CHAR_STRING = 20;
+	WCHAR WindowTitle[MAX_CHAR_STRING] = { 0 };
 	GetWindowText(hColorPicker, WindowTitle, ARRAYSIZE(WindowTitle));
 
 	// Draw Gradient
 	if (lstrcmpW(WindowTitle, L"Small") == 0) {
-		drawSmallGradient(MemoryDC, Dimensions.left, Dimensions.top, BlackColor);
+		drawSmallGradient(MemoryDC, Dimensions.left, Dimensions.top);
 	} else if (lstrcmpW(WindowTitle, L"Large") == 0) {
-		drawLargeGradient(MemoryDC, Dimensions.left, Dimensions.top, BlackColor);
+		drawLargeGradient(MemoryDC, Dimensions.left, Dimensions.top);
 	} else {
-		drawSmallGradient(MemoryDC, Dimensions.left, Dimensions.top, BlackColor);
+		drawSmallGradient(MemoryDC, Dimensions.left, Dimensions.top);
 	}
 	////
 
@@ -256,8 +225,8 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 		mousePosition.y >= Dimensions.top and mousePosition.y <= Dimensions.bottom) {
 
 		COLORREF Color = GetPixel(MemoryDC, mousePosition.x, mousePosition.y);
-		drawCross(MemoryDC, mousePosition.x - 23 / 2, mousePosition.y - 23 / 2, 23, 23, BlackColor);
-		SetWindowLong(hColorPicker, GWL_USERDATA, MAKELONG(mousePosition.x, mousePosition.y));
+		drawCross(MemoryDC, mousePosition.x - 23 / 2, mousePosition.y - 23 / 2, 23, 23);
+		SetWindowLong(hColorPicker, -21, MAKELONG(mousePosition.x, mousePosition.y));
 		
 		//////////////////////////////////////////////////////
 		//// +------------------------------------------+ ////
@@ -271,9 +240,9 @@ VOID ColorPicker::onPaint(HWND hColorPicker) {
 		PostMessage(GetParent(hColorPicker), WM_COMMAND, MAKEWPARAM(GetWindowLong(hColorPicker, GWL_ID), hColorPicker), Color);
 
 	} else {
-		LONG PreviousPoint = GetWindowLong(hColorPicker, GWL_USERDATA);
+		LONG PreviousPoint = GetWindowLong(hColorPicker, -21);
 		if (PreviousPoint != NULL) {
-			drawCross(MemoryDC, LOWORD(PreviousPoint) - 23 / 2, HIWORD(PreviousPoint) - 23 / 2, 23, 23, BlackColor);
+			drawCross(MemoryDC, LOWORD(PreviousPoint) - 23 / 2, HIWORD(PreviousPoint) - 23 / 2, 23, 23);
 		}
 	}
 

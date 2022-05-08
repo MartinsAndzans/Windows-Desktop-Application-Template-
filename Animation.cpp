@@ -4,12 +4,12 @@
 HFONT Animation::AnimationFont = { 0 };
 #pragma endregion
 
-#pragma region InitAnimationStars
+#pragma region RegisterAnimationClass
 /// <summary>
-/// Optional Function - Creates Class "ANIMATION"
+/// Optional Function - Registers Class "Animation"
 /// </summary>
 /// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
-BOOL Animation::InitAnimation() {
+BOOL Animation::RegisterAnimationClass() {
 	
 	CreateAnimationFont();
 
@@ -24,7 +24,7 @@ BOOL Animation::InitAnimation() {
 	AnimationEx.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 	AnimationEx.hInstance = GetModuleHandle(NULL);
 	AnimationEx.lpfnWndProc = AnimationProcedure;
-	AnimationEx.lpszClassName = L"ANIMATION";
+	AnimationEx.lpszClassName = L"Animation";
 	AnimationEx.lpszMenuName = NULL;
 	AnimationEx.style = CS_HREDRAW | CS_VREDRAW | CS_PARENTDC;
 
@@ -96,9 +96,9 @@ VOID Animation::onCreate(HWND hAnimation, LPARAM lParam) {
 
 	if (window->hwndParent != NULL and (window->style & WS_CHILD) != NULL) {
 
-		CONST COLORREF DefaultSymbolColor = RGB(255, 255, 255);
+		CONST COLORREF SymbolColor = RGB(255, 255, 255);
 
-		AnimationStyle *StylePtr = new AnimationStyle{ DefaultSymbolColor, 4, '+'}; // Default Value Initilization
+		AnimationStyle *StylePtr = new AnimationStyle{ SymbolColor, 4, '+'}; // Default Value Initilization
 
 		// Move Style Data To Heap Memory Structure / If "AnimationStyle" Structure is Passed To lpParam
 		if (window->lpCreateParams != nullptr) {
@@ -166,7 +166,8 @@ VOID Animation::onPaint(HWND hAnimation) {
 	//// +------------------------------------------+ ////
 	//////////////////////////////////////////////////////
 
-	WCHAR WindowTitle[MAX_ANIMATION_CHAR_STRING] = { 0 };
+	CONST USHORT MAX_CHAR_STRING = 256;
+	WCHAR WindowTitle[MAX_CHAR_STRING] = { 0 };
 	INT TextLength = GetWindowText(hAnimation, WindowTitle, ARRAYSIZE(WindowTitle));
 
 	drawAnimationFrame(MemoryDC, Dimensions.left, Dimensions.top, Dimensions.right, Dimensions.bottom, StylePtr->Symbol, StylePtr->Proportion, StylePtr->SymbolColor);

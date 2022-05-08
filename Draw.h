@@ -172,7 +172,7 @@ public:
 	/// <summary>
 	/// This Function Draws Arrow
 	/// </summary>
-	static VOID FillArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 60, INT HEIGHT = 100, COLORREF Color = Colors::BlackColor) {
+	static VOID FillArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 60, INT HEIGHT = 100, INT FillMode = ALTERNATE, COLORREF Color = Colors::BlackColor) {
 
 		CONST SHORT Proportion = 3;
 		INT XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
@@ -183,7 +183,7 @@ public:
 		HPEN PreviousPen = (HPEN)SelectObject(hdc, (HPEN)GetStockObject(DC_PEN));
 		HBRUSH PreviousBrush = (HBRUSH)SelectObject(hdc, (HBRUSH)GetStockObject(DC_BRUSH));
 
-		SetPolyFillMode(hdc, ALTERNATE);
+		SetPolyFillMode(hdc, FillMode);
 
 		POINT First = { COORD_X + XCELL, COORD_Y }; // --+----
 		POINT Second = { COORD_X + XCELL * 2, COORD_Y }; // ----+--
@@ -425,7 +425,8 @@ public:
 		RenderTarget->EndDraw();
 	}
 
-	BOOL DrawCircle(CONST D2D1_POINT_2F &CenterPoint, FLOAT Radius, D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue), FLOAT BrushWidth = 2.0F) {
+	BOOL DrawCircle(CONST D2D1_POINT_2F &CenterPoint, FLOAT Radius,
+		D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue), FLOAT BrushWidth = 2.0F) {
 
 		ID2D1SolidColorBrush *SolidColorBrush = nullptr;
 		if (SUCCEEDED(RenderTarget->CreateSolidColorBrush(Color, &SolidColorBrush))) {
@@ -437,39 +438,40 @@ public:
 
 	}
 
-	BOOL DrawTriangle(CONST D2D1_POINT_2F &V1, CONST D2D1_POINT_2F &V2, CONST D2D1_POINT_2F &V3, D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue), FLOAT BrushWidth = 2.0F) {
+	BOOL DrawTriangle(CONST D2D1_POINT_2F &V1, CONST D2D1_POINT_2F &V2, CONST D2D1_POINT_2F &V3,
+		D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue), FLOAT BrushWidth = 2.0F) {
 
 		ID2D1PathGeometry *PathGeometry = nullptr;
-		if (SUCCEEDED(Factory->CreatePathGeometry(&PathGeometry))) {
+		if (FAILED(Factory->CreatePathGeometry(&PathGeometry)))
+			return FALSE;
 
-			ID2D1GeometrySink *GeometrySink = nullptr;
-			if (SUCCEEDED(PathGeometry->Open(&GeometrySink))) {
-
-				GeometrySink->BeginFigure(V1, D2D1_FIGURE_BEGIN_FILLED);
-				GeometrySink->AddLine(V2);
-				GeometrySink->AddLine(V3);
-				GeometrySink->EndFigure(D2D1_FIGURE_END_CLOSED);
-				GeometrySink->Close();
-				GeometrySink->Release();
-
-				ID2D1SolidColorBrush *SolidColorBrush = nullptr;
-				if (SUCCEEDED(RenderTarget->CreateSolidColorBrush(Color, &SolidColorBrush))) {
-					RenderTarget->DrawGeometry(PathGeometry, SolidColorBrush, BrushWidth);
-					SolidColorBrush->Release();
-					return TRUE;
-				}
-
-			}
-
+		ID2D1GeometrySink *GeometrySink = nullptr;
+		if (FAILED(PathGeometry->Open(&GeometrySink))) {
 			PathGeometry->Release();
+			return FALSE;
+		}
 
+		GeometrySink->BeginFigure(V1, D2D1_FIGURE_BEGIN_FILLED);
+		GeometrySink->AddLine(V2);
+		GeometrySink->AddLine(V3);
+		GeometrySink->EndFigure(D2D1_FIGURE_END_CLOSED);
+		GeometrySink->Close();
+		GeometrySink->Release();
+
+		ID2D1SolidColorBrush *SolidColorBrush = nullptr;
+		if (SUCCEEDED(RenderTarget->CreateSolidColorBrush(Color, &SolidColorBrush))) {
+			RenderTarget->DrawGeometry(PathGeometry, SolidColorBrush, BrushWidth);
+			SolidColorBrush->Release();
+			PathGeometry->Release();
+			return TRUE;
 		}
 
 		return FALSE;
 
 	}
 
-	BOOL FillCircle(CONST D2D1_POINT_2F &CenterPoint, FLOAT Radius, D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue)) {
+	BOOL FillCircle(CONST D2D1_POINT_2F &CenterPoint, FLOAT Radius,
+		D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue)) {
 
 		ID2D1SolidColorBrush *SolidColorBrush = nullptr;
 		if (SUCCEEDED(RenderTarget->CreateSolidColorBrush(Color, &SolidColorBrush))) {

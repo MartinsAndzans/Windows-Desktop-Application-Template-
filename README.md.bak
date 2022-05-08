@@ -26,7 +26,7 @@ This is Windows Desktop Application Template
 	<tr><th>[in] struct AnimationStyle - Symbol</th></tr>
 </table>
 
-<h2>Color Picker Control : Class Name -- "ColorPicker"</h2>
+<h2>Color Picker Control : Class Name -- "COLOR PICKER"</h2>
 
 <table>
 	<tr><th>When User Select Color : Color Picker Control Post WM_COMMAND Message To Parent Window</th></tr>

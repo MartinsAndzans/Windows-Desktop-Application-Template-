@@ -4,20 +4,17 @@
 #include <ciso646>
 #include <Windows.h>
 
-#define MAX_DROP_FILES_CHAR_STRING 256
-
 class DropFiles {
 
 private:
 
-	#pragma region CalculatorStaticMembers
+	#pragma region DropFilesrStaticMembers
 	static HFONT DropFilesFont;
 	static BOOL FileDroped;
 	#pragma endregion
 
 	#pragma region Functions
 	static VOID CreateDropFilesFont();
-	static VOID DrawBorder(HDC hdc, RECT &Rectangle, USHORT Width);
 	static VOID FillRectOpacity50(HDC hdc, CONST RECT &Rectangle,COLORREF Color);
 	static VOID FillArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF Color);
 	#pragma endregion
@@ -39,8 +36,8 @@ public:
 		COLORREF ForegroundColor;
 	}DFStyle, *LPDFStyle, *LPDropFilesStyle;
 
-	#pragma region InitDropFiles
-	static BOOL InitDropFiles();
+	#pragma region RegisterDropFilesClass
+	static BOOL RegisterDropFilesClass();
 	#pragma endregion
 };
 

@@ -1,16 +1,16 @@
 #include "DropFiles.h"
 
-#pragma region CalculatorStaticMembers
+#pragma region DropFilesStaticMembers
 HFONT DropFiles::DropFilesFont = { 0 };
 BOOL DropFiles::FileDroped = FALSE;
 #pragma endregion
 
-#pragma region InitDropFiles
+#pragma region RegisterDropFilesClass
 /// <summary>
-/// Optional Function - Creates Class "DROP FILES"
+/// Optional Function - Registers Class "DropFiles"
 /// </summary>
 /// <returns>If Function Succeeded returns TRUE, but If not returns FALSE</returns>
-BOOL DropFiles::InitDropFiles() {
+BOOL DropFiles::RegisterDropFilesClass() {
 
 	CreateDropFilesFont();
 
@@ -20,15 +20,15 @@ BOOL DropFiles::InitDropFiles() {
 	DropFilesEx.cbWndExtra = 0;
 	DropFilesEx.cbSize = sizeof(WNDCLASSEX);
 	DropFilesEx.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
-	DropFilesEx.hCursor = LoadCursor(NULL, IDC_ARROW);
+	DropFilesEx.hCursor = LoadCursor(NULL, IDC_CROSS);
 	DropFilesEx.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	DropFilesEx.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 	DropFilesEx.hInstance = GetModuleHandle(NULL);
 	DropFilesEx.lpfnWndProc = DropFilesProcedure;
-	DropFilesEx.lpszClassName = L"DROP FILES";
+	DropFilesEx.lpszClassName = L"DropFiles";
 	DropFilesEx.lpszMenuName = NULL;
 	DropFilesEx.style = CS_HREDRAW | CS_VREDRAW | CS_PARENTDC;
-
+	
 	if (!RegisterClassEx(&DropFilesEx)) {
 		return FALSE;
 	}
@@ -52,26 +52,6 @@ VOID DropFiles::CreateDropFilesFont() {
 		CLEARTYPE_QUALITY,
 		VARIABLE_PITCH,
 		L"Segoe UI");
-
-}
-VOID DropFiles::DrawBorder(HDC hdc, RECT &Rectangle, USHORT Width) {
-
-	for (UINT W = 0; W < Width; W++) {
-
-		// TOP
-		MoveToEx(hdc, Rectangle.left, Rectangle.top + W, NULL);
-		LineTo(hdc, Rectangle.right, Rectangle.top + W);
-		// BOTTOM
-		MoveToEx(hdc, Rectangle.left, Rectangle.bottom - W, NULL);
-		LineTo(hdc, Rectangle.right, Rectangle.bottom - W);
-		// LEFT
-		MoveToEx(hdc, Rectangle.left + W, Rectangle.top, NULL);
-		LineTo(hdc, Rectangle.left + W, Rectangle.bottom);
-		// RIGHT
-		MoveToEx(hdc, Rectangle.right - W, Rectangle.top, NULL);
-		LineTo(hdc, Rectangle.right - W, Rectangle.bottom);
-
-	}
 
 }
 VOID DropFiles::FillRectOpacity50(HDC hdc, CONST RECT &Rectangle, COLORREF Color) {
@@ -101,7 +81,7 @@ VOID DropFiles::FillArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIG
 	HPEN PreviousPen = (HPEN)SelectObject(hdc, (HPEN)GetStockObject(DC_PEN));
 	HBRUSH PreviousBrush = (HBRUSH)SelectObject(hdc, (HBRUSH)GetStockObject(DC_BRUSH));
 
-	SetPolyFillMode(hdc, ALTERNATE);
+	SetPolyFillMode(hdc, WINDING);
 
 	POINT First = { COORD_X + XCELL, COORD_Y }; // --+----
 	POINT Second = { COORD_X + XCELL * 2, COORD_Y }; // ----+--
@@ -131,10 +111,9 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 
 		DragAcceptFiles(hDropFiles, TRUE);
 
-		CONST COLORREF DefaultBackgroundColor = RGB(255, 255, 255);
-		CONST COLORREF DefaultForegroundColor = RGB(0, 0, 0);
+		CONST COLORREF BackgroundColor = RGB(255, 255, 255), ForegroundColor = RGB(0, 0, 0);
 
-		DropFilesStyle *StylePtr = new DropFilesStyle{ DefaultBackgroundColor, DefaultForegroundColor }; // Default Value Initialization
+		DropFilesStyle *StylePtr = new DropFilesStyle{ BackgroundColor, ForegroundColor }; // Default Value Initialization
 
 		// Move Style Data To Heap Memory Structure | If "DropFilesStyle" Structure is Passed To lpParam
 		if (window->lpCreateParams != nullptr) {
@@ -182,24 +161,19 @@ VOID DropFiles::onPaint(HWND hDropFiles) {
 	FillRect(MemoryDC, &Dimensions, static_cast<HBRUSH>(GetStockObject(DC_BRUSH)));
 	SelectObject(MemoryDC, DropFilesFont);
 
-	// Border
-	CONST USHORT BorderPadding = 4, BorderWidth = 2;
-	RECT BorderRect = { Dimensions.left + BorderPadding, Dimensions.top + BorderPadding, Dimensions.right - BorderPadding, Dimensions.bottom - BorderPadding };
-	DrawBorder(MemoryDC, BorderRect, BorderWidth);
-	////
-
 	// Text To User
 	SIZE size = { 0 };
-	WCHAR WindowTitle[MAX_DROP_FILES_CHAR_STRING] = { 0 };
+	CONST USHORT MAX_CHAR_STRING = 256;
+	WCHAR WindowTitle[MAX_CHAR_STRING] = { 0 };
 	INT TextLength = GetWindowText(hDropFiles, WindowTitle, ARRAYSIZE(WindowTitle));
-	GetTextExtentPoint(MemoryDC, WindowTitle, TextLength, &size);
 	SetTextColor(MemoryDC, StylePtr->ForegroundColor);
+	GetTextExtentPoint(MemoryDC, WindowTitle, TextLength, &size);
 	TextOut(MemoryDC, Dimensions.right / 2 - size.cx / 2, Dimensions.bottom / 2 - size.cy / 2, WindowTitle, TextLength);
 	////
 
 	if (FileDroped) {
 		CONST USHORT ArrowPadding = 20;
-		INT ArrowWidth = Dimensions.right / 3, ArrowHeight = Dimensions.bottom - ArrowPadding * 2;
+		INT ArrowWidth = Dimensions.bottom / 2, ArrowHeight = Dimensions.bottom - ArrowPadding * 2;
 		FillRectOpacity50(MemoryDC, Dimensions, StylePtr->ForegroundColor);
 		FillArrow(MemoryDC, Dimensions.right / 2 - ArrowWidth / 2, Dimensions.bottom / 2 - ArrowHeight / 2, ArrowWidth, ArrowHeight, StylePtr->ForegroundColor);
 	}

@@ -7,8 +7,6 @@
 
 #define DarkerColor(SourceColor, DarkerTo) RGB(GetRValue(SourceColor) - DarkerTo, GetGValue(SourceColor) - DarkerTo, GetBValue(SourceColor) - DarkerTo) // returns DarkerColor
 
-#define MAX_ANIMATION_CHAR_STRING 256
-
 class Animation {
 
 private:
@@ -46,8 +44,8 @@ public:
 		CHAR Symbol;
 	}AStyle, *LPAStyle, *LPAnimationStyle;
 
-	#pragma region InitAnimation
-	static BOOL InitAnimation();
+	#pragma region RegisterAnimationClass
+	static BOOL RegisterAnimationClass();
 	#pragma endregion
 
 };

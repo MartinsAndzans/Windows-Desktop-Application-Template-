@@ -4,9 +4,6 @@
 #include <ciso646>
 #include <Windows.h>
 
-#define GWL_USERDATA -21
-#define MAX_COLOR_PICKER_CHAR_STRING 20
-
 class ColorPicker {
 
 private:
@@ -17,9 +14,9 @@ private:
 	#pragma endregion
 
 	#pragma region Functions
-	static VOID drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF CrossColor);
-	static VOID drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor);
-	static VOID drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor);
+	static VOID drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT);
+	static VOID drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y);
+	static VOID drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y);
 	#pragma endregion
 
 	#pragma region Events
@@ -35,12 +32,10 @@ private:
 
 public:
 
-	enum CP {
-		SHOW = 101010 // Small Color Picker -/Width 420 - Height 40/- : Large Color Picker -/Width 420 - Height 100/-
-	};
+	static CONST USHORT SHOW = 1010; // Small Color Picker -/Width 420 - Height 40/- : Large Color Picker -/Width 420 - Height 100/-
 
-	#pragma region InitColorPicker
-	static BOOL InitColorPicker();
+	#pragma region RegisterColorPickerClass
+	static BOOL RegisterColorPickerClass();
 	#pragma endregion
 
 };

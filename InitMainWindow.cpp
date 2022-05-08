@@ -13,8 +13,10 @@ HBRUSH MainWindow::MainWindowBackgroundBrush = CreateSolidBrush(MainWindowBackgr
 HWND MainWindow::hMainWindow = { 0 };
 RECT MainWindow::MainWindowDimensions = { 0, 0, MainWindowWidth, MainWindowHeight };
 
-HWND MainWindow::hDebugTool1 = { 0 };
-HWND MainWindow::hDebugTool2 = { 0 };
+HWND MainWindow::hDebugTool1 = nullptr;
+HWND MainWindow::hDebugTool2 = nullptr;
+
+HWND MainWindow::Test = nullptr;
 
 POINT MainWindow::mousePosition = { 0 };
 #pragma endregion
@@ -131,7 +133,7 @@ VOID MainWindow::CreateDebugTools(HWND ParentWindow) {
 			WS_CHILD | WS_BORDER | WS_VISIBLE | SS_OWNERDRAW,
 			0, 0, 0, 0,
 			ParentWindow,
-			(HMENU)DebugToolsID[I],
+			reinterpret_cast<HMENU>(DebugToolsID[I]),
 			HInstance(),
 			nullptr))) {
 			Functions::ShowLastError(hMainWindow, " - Child Window not Created!");
@@ -148,18 +150,18 @@ VOID MainWindow::CreateDebugTools(HWND ParentWindow) {
 #pragma region Events
 VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
-	#pragma region InitCustomControls
-	Animation::InitAnimation();
-	DropFiles::InitDropFiles();
-	ColorPicker::InitColorPicker();
-	Calculator::InitCalculator();
+	#pragma region RegisterCustomControls
+	Animation::RegisterAnimationClass();
+	DropFiles::RegisterDropFilesClass();
+	ColorPicker::RegisterColorPickerClass();
+	Calculator::RegisterCalculatorClass();
 	#pragma endregion
 
 	CreateDebugTools(hMainWindow);
 
 	#pragma region Examples
 	Animation::AnimationStyle as = { 0 };
-	as.SymbolColor = Colors::BlueColor;
+	as.SymbolColor = Colors::OrangeColor;
 	as.Proportion = 4;
 	as.Symbol = '+';
 
@@ -167,11 +169,13 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 	dfs.BackgroundColor = Colors::OrangeColor;
 	dfs.ForegroundColor = Colors::BlueColor;
 
-	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION", L"Animation", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 10, 140, 140, hMainWindow, (HMENU)ControlsIDs::ID_ANIMATION_STARS, HInstance(), &as);
-	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"Drop File/s Here", WS_CHILD | WS_BORDER | WS_VISIBLE, 270, 120, 240, 140, hMainWindow, (HMENU)ControlsIDs::ID_DROP_FILES, HInstance(), &dfs);
-	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"Large", WS_CHILD | WS_BORDER | WS_VISIBLE, 160, 10, ColorPicker::CP::SHOW, ColorPicker::CP::SHOW, hMainWindow, (HMENU)ControlsIDs::ID_COLOR_PICKER, HInstance(), nullptr);
-	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 160, Calculator::CL::SHOW, Calculator::CL::SHOW, hMainWindow, (HMENU)ControlsIDs::ID_CALCULATOR, HInstance(), nullptr);
+	CreateWindowEx(WS_EX_STATICEDGE, L"Animation", L"Animation", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 10, 140, 140, hMainWindow, reinterpret_cast<HMENU>(ControlsIDs::ID_ANIMATION_STARS), HInstance(), &as);
+	CreateWindowEx(WS_EX_STATICEDGE, L"DropFiles", L"Drop File/s Here", WS_CHILD | WS_BORDER | WS_VISIBLE, 270, 120, 240, 140, hMainWindow, reinterpret_cast<HMENU>(ControlsIDs::ID_DROP_FILES), HInstance(), &dfs);
+	CreateWindowEx(WS_EX_STATICEDGE, L"ColorPicker", L"Large", WS_CHILD | WS_BORDER | WS_VISIBLE, 160, 10, ColorPicker::SHOW, ColorPicker::SHOW, hMainWindow, reinterpret_cast<HMENU>(ControlsIDs::ID_COLOR_PICKER), HInstance(), nullptr);
+	CreateWindowEx(WS_EX_STATICEDGE, L"Calculator", L"", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 160, Calculator::SHOW, Calculator::SHOW, hMainWindow, reinterpret_cast<HMENU>(ControlsIDs::ID_CALCULATOR), HInstance(), nullptr);
 	#pragma endregion
+
+	Test = CreateWindow(L"BUTTON", L"Click", WS_CHILD | WS_BORDER | WS_VISIBLE, 0, 0, 0, 0, hMainWindow, reinterpret_cast<HMENU>(1111), HInstance(), nullptr);
 
 }
 
@@ -180,8 +184,10 @@ VOID MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	MainWindowDimensions.right = LOWORD(lParam);
 	MainWindowDimensions.bottom = HIWORD(lParam);
 
-	SetWindowPos(hDebugTool1, NULL, MainWindowDimensions.right - 160, 0, 160, 25, SWP_SHOWWINDOW);
-	SetWindowPos(hDebugTool2, NULL, MainWindowDimensions.right - 240, 30, 240, 25, SWP_SHOWWINDOW);
+	SetWindowPos(Test, nullptr, MainWindowDimensions.right / 2 - 50, MainWindowDimensions.bottom / 2 - 80, 100, 40, SWP_SHOWWINDOW);
+
+	SetWindowPos(hDebugTool1, nullptr, MainWindowDimensions.right - 160, 0, 160, 25, SWP_SHOWWINDOW);
+	SetWindowPos(hDebugTool2, nullptr, MainWindowDimensions.right - 240, 30, 240, 25, SWP_SHOWWINDOW);
 
 	#pragma region DebugTool2
 	std::string SMainWindowDimensions = "Width = " + std::to_string(MainWindowDimensions.right) + " Height = " + std::to_string(MainWindowDimensions.bottom);
@@ -246,18 +252,9 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 
 		DXDraw->BeginDraw(MemoryDC, MainWindowDimensions);
 
-		SYSTEMTIME st = { 0 };
-		GetSystemTime(&st);
-		srand(st.wMilliseconds);
-
-		for (SIZE_T I = 1; I < 100; I++) {
-			DXDraw->FillCircle(D2D1::Point2F(static_cast<FLOAT>(rand() % MainWindowDimensions.right), static_cast<FLOAT>(rand() % MainWindowDimensions.bottom)), 100.0F,
-				D2D1::ColorF(RGB(rand() % 256, rand() % 256, rand() % 256), 0.5F));
-		}
-
-		DXDraw->DrawTriangle(D2D1::Point2F(MainWindowDimensions.right / 2.0F, MainWindowDimensions.bottom / 2.0F - 40.0F),
-			D2D1::Point2F(MainWindowDimensions.right / 2.0F - 40.0F, MainWindowDimensions.bottom / 2.0F + 40.0F),
-			D2D1::Point2F(MainWindowDimensions.right / 2.0F + 40.0F, MainWindowDimensions.bottom / 2.0F + 40.0F));
+		DXDraw->DrawTriangle(D2D1::Point2F(MainWindowDimensions.right / 2.0F, MainWindowDimensions.bottom / 2.0F - 200.0F),
+			D2D1::Point2F(MainWindowDimensions.right / 2.0F - 200.0F, MainWindowDimensions.bottom / 2.0F + 200.0F),
+			D2D1::Point2F(MainWindowDimensions.right / 2.0F + 200.0F, MainWindowDimensions.bottom / 2.0F + 200.0F));
 
 		DXDraw->EndDraw();
 

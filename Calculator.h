@@ -8,17 +8,13 @@
 
 #define DEVISION_ZERO_BY_ZERO "Undefined"
 #define DEVISION_BY_ZERO "Infinity"
-
-#define MIN_CALCULATOR_CHAR_STRING 2
-#define MAX_CALCULATOR_CHAR_STRING 256
-
 #define SetFont(hwnd, font) SendMessage(hwnd, WM_SETFONT, (WPARAM)font, NULL)
 
 class Calculator {
 
 private:
 
-	enum CalculatorConntrolsID {
+	enum CalculatorConntrolsIDs {
 		ID_CL_OPERATION, ID_CL_OUTPUT_RESULT,
 		ID_CL_MULTIPLY, ID_CL_DEVIDE, ID_CL_CLEAR, ID_CL_BACK,
 		ID_CL_NUM1, ID_CL_NUM2, ID_CL_NUM3, ID_CL_SUM,
@@ -67,12 +63,10 @@ private:
 
 public:
 
-	enum CL {
-		SHOW = 202020 // Calculator -/Width 250 - Height 400/-
-	};
+	static CONST USHORT SHOW = 2020; // Calculator -/Width 250 - Height 400/-
 
-	#pragma region InitCalculator
-	static BOOL InitCalculator();
+	#pragma region RegisterCalculatorClass
+	static BOOL RegisterCalculatorClass();
 	#pragma endregion
 
 };
