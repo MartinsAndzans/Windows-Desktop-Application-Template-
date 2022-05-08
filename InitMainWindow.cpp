@@ -169,8 +169,8 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	CreateWindowEx(WS_EX_STATICEDGE, L"ANIMATION", L"Animation", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 10, 140, 140, hMainWindow, (HMENU)ControlsIDs::ID_ANIMATION_STARS, HInstance(), &as);
 	CreateWindowEx(WS_EX_STATICEDGE, L"DROP FILES", L"Drop File/s Here", WS_CHILD | WS_BORDER | WS_VISIBLE, 270, 120, 240, 140, hMainWindow, (HMENU)ControlsIDs::ID_DROP_FILES, HInstance(), &dfs);
-	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"Large", WS_CHILD | WS_BORDER | WS_VISIBLE, 160, 10, CP_SHOW, CP_SHOW, hMainWindow, (HMENU)ControlsIDs::ID_COLOR_PICKER, HInstance(), nullptr);
-	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 160, CL_SHOW, CL_SHOW, hMainWindow, (HMENU)ControlsIDs::ID_CALCULATOR, HInstance(), nullptr);
+	CreateWindowEx(WS_EX_STATICEDGE, L"COLOR PICKER", L"Large", WS_CHILD | WS_BORDER | WS_VISIBLE, 160, 10, ColorPicker::CP::SHOW, ColorPicker::CP::SHOW, hMainWindow, (HMENU)ControlsIDs::ID_COLOR_PICKER, HInstance(), nullptr);
+	CreateWindowEx(WS_EX_STATICEDGE, L"CALCULATOR", L"", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 160, Calculator::CL::SHOW, Calculator::CL::SHOW, hMainWindow, (HMENU)ControlsIDs::ID_CALCULATOR, HInstance(), nullptr);
 	#pragma endregion
 
 }
@@ -208,8 +208,7 @@ VOID MainWindow::onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 	LPDRAWITEMSTRUCT item = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);
 
-	#pragma region DebugTools
-	#ifdef APP_DEBUG
+	#pragma region DebugToolsStyle
 	if (item->CtlID == ID_DEBUG_TOOL_1 or item->CtlID == ID_DEBUG_TOOL_2) {
 
 		SIZE size = { 0 };
@@ -223,7 +222,6 @@ VOID MainWindow::onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 		TextOut(item->hDC, item->rcItem.right / 2 - size.cx / 2, item->rcItem.bottom / 2 - size.cy / 2, StaticText, TextLength);
 
 	}
-	#endif
 	#pragma endregion
 
 }
@@ -242,65 +240,26 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 
 	SelectObject(MemoryDC, MainFont);
 
-	// * DirectX2D Factory *
-	ID2D1Factory *Factory = nullptr;
-	HRESULT hrFactory = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &Factory);
-	
-	if (SUCCEEDED(hrFactory)) {
+	std::unique_ptr<Graphics> DXDraw(new Graphics{});
 
-		// * DirectX2D GDI Compatible Render Target *
-		ID2D1DCRenderTarget *RenderTarget = nullptr;
-		HRESULT hrRenderTarget = Factory->CreateRenderTarget(D2D1_RENDER_TARGET_TYPE_HARDWARE, &RenderTarget);
-		
-		if (SUCCEEDED(hrRenderTarget)) {
+	if (DXDraw->Init()) {
 
-			RenderTarget->BindDC(MemoryDC, &MainWindowDimensions);
-			D2D1_SIZE_U RenderTargetSize = RenderTarget->GetPixelSize();
-			RenderTarget->BeginDraw();
+		DXDraw->BeginDraw(MemoryDC, MainWindowDimensions);
 
-			std::vector<ID2D1Geometry*> Triangles{};
+		SYSTEMTIME st = { 0 };
+		GetSystemTime(&st);
+		srand(st.wMilliseconds);
 
-			for (FLOAT R = 10.0F; R < 400.0F; R += 10.0F) {
-				ID2D1PathGeometry *TriangleGeometry = nullptr;
-				HRESULT hrTriangleGeometry = Factory->CreateTriangleGeometry(D2D1::TriangleF(D2D1::Point2F(RenderTargetSize.width / 2.0F, RenderTargetSize.height / 2.0F - R),
-					D2D1::Point2F(RenderTargetSize.width / 2.0F - R, RenderTargetSize.height / 2.0F + R),
-					D2D1::Point2F(RenderTargetSize.width / 2.0F + R, RenderTargetSize.height / 2.0F + R)),
-					&TriangleGeometry);
-				if (FAILED(hrTriangleGeometry)) {
-					break;
-				}
-				Triangles.push_back(TriangleGeometry);
-			}
-
-			ID2D1GeometryGroup *GeometryGroup = nullptr;
-			HRESULT hrGeometryGroup = Factory->CreateGeometryGroup(D2D1_FILL_MODE_ALTERNATE, Triangles.data(), static_cast<UINT32>(Triangles.size()), &GeometryGroup);
-
-			if (SUCCEEDED(hrGeometryGroup)) {
-
-				ID2D1SolidColorBrush *Brush = nullptr;
-				HRESULT hrBrush = RenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Enum::DarkSeaGreen), &Brush);
-
-				if (SUCCEEDED(hrBrush)) {
-
-					RenderTarget->FillGeometry(GeometryGroup, Brush);
-					Brush->Release();
-
-				}
-
-				GeometryGroup->Release();
-
-			}
-
-			for (SIZE_T I = 0; I < Triangles.size(); I++) {
-				reinterpret_cast<ID2D1PathGeometry*>(Triangles[I])->Release();
-			}
-
-			RenderTarget->EndDraw();
-			RenderTarget->Release();
-
+		for (SIZE_T I = 1; I < 100; I++) {
+			DXDraw->FillCircle(D2D1::Point2F(static_cast<FLOAT>(rand() % MainWindowDimensions.right), static_cast<FLOAT>(rand() % MainWindowDimensions.bottom)), 100.0F,
+				D2D1::ColorF(RGB(rand() % 256, rand() % 256, rand() % 256), 0.5F));
 		}
 
-		Factory->Release();
+		DXDraw->DrawTriangle(D2D1::Point2F(MainWindowDimensions.right / 2.0F, MainWindowDimensions.bottom / 2.0F - 40.0F),
+			D2D1::Point2F(MainWindowDimensions.right / 2.0F - 40.0F, MainWindowDimensions.bottom / 2.0F + 40.0F),
+			D2D1::Point2F(MainWindowDimensions.right / 2.0F + 40.0F, MainWindowDimensions.bottom / 2.0F + 40.0F));
+
+		DXDraw->EndDraw();
 
 	}
 

@@ -18,7 +18,7 @@ private:
 	#pragma region Functions
 	static VOID CreateDropFilesFont();
 	static VOID DrawBorder(HDC hdc, RECT &Rectangle, USHORT Width);
-	static VOID FillRectOpacity50(HDC hdc, RECT &Rectangle,COLORREF Color);
+	static VOID FillRectOpacity50(HDC hdc, CONST RECT &Rectangle,COLORREF Color);
 	static VOID FillArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, COLORREF Color);
 	#pragma endregion
 

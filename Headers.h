@@ -7,7 +7,7 @@
 #include <d2d1.h> // DirectX2D
 #include <string> // std::string
 #include <fstream> // File Read/Write
-#include <vector>
+#include <vector> // std::vector
 #include <math.h>
 
 #include "resource.h" // Resources

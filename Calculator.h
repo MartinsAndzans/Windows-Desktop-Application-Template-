@@ -6,8 +6,6 @@
 #include <string>
 #include <vector>
 
-#define CL_SHOW 2002 // 250 - 400
-
 #define DEVISION_ZERO_BY_ZERO "Undefined"
 #define DEVISION_BY_ZERO "Infinity"
 
@@ -68,6 +66,10 @@ private:
 	#pragma endregion
 
 public:
+
+	enum CL {
+		SHOW = 202020 // Calculator -/Width 250 - Height 400/-
+	};
 
 	#pragma region InitCalculator
 	static BOOL InitCalculator();

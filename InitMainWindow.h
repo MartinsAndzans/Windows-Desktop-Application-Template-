@@ -23,9 +23,9 @@ private:
 	/// * Converted Time From Milliseconds *
 	/// </summary>
 	enum Time {
-		Second = 1000, // Milliseconds
-		Minute = 1000 * 60, // Milliseconds
-		Hour = 1000 * 120 // Milliseconds
+		Second = 1000, // From Milliseconds
+		Minute = 1000 * 60, // From Milliseconds
+		Hour = 1000 * 120 // From Milliseconds
 	};
 
 	/// <summary>

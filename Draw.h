@@ -8,6 +8,7 @@
 ************************************************/
 
 #include <ciso646>
+#include <assert.h>
 #include <Windows.h>
 #include <d2d1.h>
 
@@ -31,9 +32,9 @@ public:
 	/// <summary>
 	/// This Function Draws Rectangle
 	/// </summary>
-	/// <param name="hdc">- Device Context</param>
-	/// <param name="Rectangle">- Rectangle</param>
-	static VOID drawRectangle(HDC hdc, RECT &Rectangle) {
+	/// <param name="hdc">Device Context</param>
+	/// <param name="Rectangle">Rectangle</param>
+	static VOID drawRectangle(HDC hdc, CONST RECT &Rectangle) {
 
 		POINT RectangleVertices[] = {
 			{ Rectangle.left, Rectangle.top }, // First Point
@@ -50,14 +51,14 @@ public:
 	/// <summary>
 	/// This Function Draws Rectangle
 	/// </summary>
-	/// <param name="hdc">- Device Context</param>
-	/// <param name="COORD_X">- X Coordinate</param>
-	/// <param name="COORD_Y">- Y Coordinate</param>
-	/// <param name="WIDTH">- Width</param>
-	/// <param name="HEIGTH">- Height</param>
-	/// <param name="BorderWidth">- Border Width</param>
-	/// <param name="Color">- Rectangle Color</param>
-	/// <param name="BorderColor">- Border Color</param>
+	/// <param name="hdc">Device Context</param>
+	/// <param name="COORD_X">X Coordinate</param>
+	/// <param name="COORD_Y">Y Coordinate</param>
+	/// <param name="WIDTH">Width</param>
+	/// <param name="HEIGTH">Height</param>
+	/// <param name="BorderWidth">Border Width</param>
+	/// <param name="Color">Rectangle Color</param>
+	/// <param name="BorderColor">Border Color</param>
 	static VOID drawRectangle(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 120, INT HEIGTH = 40, INT BorderWidth = 2,
 		COLORREF RectangleColor = Colors::BlueColor, COLORREF BorderColor = Colors::BlackColor) {
 
@@ -87,10 +88,10 @@ public:
 	/// <summary>
 	/// This Function Fill Rectangle [50/50 Pixels] - [50% Opacity]
 	/// </summary>
-	/// <param name="hdc">- Device Context</param>
-	/// <param name="Rectangle">- Rectangle</param>
-	/// <param name="Color">- Color</param>
-	static VOID FillRectOpacity50(HDC hdc, RECT &Rectangle, COLORREF Color = Colors::BlackColor) {
+	/// <param name="hdc">Device Context</param>
+	/// <param name="Rectangle">Rectangle</param>
+	/// <param name="Color">Color</param>
+	static VOID FillRectOpacity50(HDC hdc, CONST RECT &Rectangle, COLORREF Color = Colors::BlackColor) {
 
 		BOOL DRAWPIXEL; // TRUE = |X| - FALSE = | |
 		for (INT X = Rectangle.left; X <= Rectangle.right; X++) {
@@ -110,11 +111,11 @@ public:
 	/// <summary>
 	/// This Function Draws Bitmap From File
 	/// </summary>
-	/// <param name="hdc">- Device Context</param>
-	/// <param name="Rectangle">- Where Draw Bitmap</param>
-	/// <param name="FilePath">- File Path -/Supported Image Formats : "*.bmp; *.ico; *.cur"/-</param>
-	/// <param name="BitmapType">- Bitmap Type</param>
-	/// <param name="DrawMethod">- Draw Method</param>
+	/// <param name="hdc">Device Context</param>
+	/// <param name="Rectangle">Where Draw Bitmap</param>
+	/// <param name="FilePath">File Path -/Supported Image Formats : "*.bmp; *.ico; *.cur"/-</param>
+	/// <param name="BitmapType">Bitmap Type</param>
+	/// <param name="DrawMethod">Draw Method</param>
 	/// <returns>If Succeeded Returns TRUE, but If not Returns FALSE</returns>
 	static BOOL drawBitmapFromFile(HDC hdc, RECT &Rectangle, LPCWSTR FilePath, UINT BitmapType = IMAGE_BITMAP, DWORD DrawMethod = SRCCOPY) {
 
@@ -139,12 +140,13 @@ public:
 	/// <summary>
 	/// This Function Draws Triangle
 	/// </summary>
-	/// <param name="hdc">- Device Context</param>
-	/// <param name="V1">- First Vertice</param>
-	/// <param name="V2">- Second Vertice</param>
-	/// <param name="V3">- Third Vertice</param>
-	/// <param name="Color">- Color</param>
-	static VOID FillTriangle(HDC hdc, POINT V1, POINT V2, POINT V3, COLORREF Color = Colors::BlueColor) {
+	/// <param name="hdc">Device Context</param>
+	/// <param name="V1">First Vertice</param>
+	/// <param name="V2">Second Vertice</param>
+	/// <param name="V3">Third Vertice</param>
+	/// <param name="FillMode">Fill Mode ALTERNATE or WINDING</param>
+	/// <param name="Color">Color</param>
+	static VOID FillTriangle(HDC hdc, POINT V1, POINT V2, POINT V3, INT FillMode = ALTERNATE, COLORREF Color = Colors::BlueColor) {
 
 		SetDCPenColor(hdc, Color);
 		SetDCBrushColor(hdc, Color);
@@ -152,7 +154,7 @@ public:
 		HPEN PreviousPen = (HPEN)SelectObject(hdc, (HPEN)GetStockObject(DC_PEN));
 		HBRUSH PreviousBrush = (HBRUSH)SelectObject(hdc, (HBRUSH)GetStockObject(DC_BRUSH));
 
-		SetPolyFillMode(hdc, ALTERNATE);
+		SetPolyFillMode(hdc, FillMode);
 
 		POINT TriangleVertices[] = {
 			{ V1.x, V1.y },
@@ -169,20 +171,7 @@ public:
 
 	/// <summary>
 	/// This Function Draws Arrow
-	/// <para>..+--+..</para>
-	/// <para>..|..|..</para>
-	/// <para>..|..|..</para>
-	/// <para>+-+--+-+</para>
-	/// <para>.\..../.</para>
-	/// <para>..\../..</para>
-	/// <para>...\/...</para>
 	/// </summary>
-	/// <param name="hdc">- Device Context</param>
-	/// <param name="COORD_X">- X Coordinate</param>
-	/// <param name="COORD_Y">- Y Coordinate</param>
-	/// <param name="WIDTH">- Width</param>
-	/// <param name="HEIGHT">- Height</param>
-	/// <param name="Color">- Color</param>
 	static VOID FillArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 60, INT HEIGHT = 100, COLORREF Color = Colors::BlackColor) {
 
 		CONST SHORT Proportion = 3;
@@ -218,12 +207,7 @@ public:
 	/// This Function Draws Small Gradient
 	/// <para>Size - Width = 420 / Height = 40</para>
 	/// </summary>
-	/// <param name="hdc">- Device Context</param>
-	/// <param name="COORD_X">- X Coordinate</param>
-	/// <param name="COORD_Y">- Y Coordinate</param>
-	/// <param name="BorderColor">- Border Color</param>
-	/// <returns>Returns Border Width</returns>
-	static SHORT drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor = Colors::BlackColor) {
+	static VOID drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor = Colors::BlackColor) {
 
 		CONST USHORT BorderWidth = 2;
 		CONST USHORT WIDTH = 420, HEIGTH = 40;
@@ -261,21 +245,13 @@ public:
 			else if (DONE == 7) (R == 0) ? DONE = 8 : R = R - COLORSTEP; // Red [255 0 0] -> Black [0 0 0]
 		}
 
-		return BorderWidth;
-
 	}
 
 	/// <summary>
 	/// This Function Draws Large Gradient
 	/// <para>Size - Width = 420 / Height = 100</para>
 	/// </summary>
-	/// <param name="hdc">- Device Context</param>
-	/// <param name="COORD_X">- X Coordinate</param>
-	/// <param name="COORD_Y">- Y Coordinate</param>
-	/// <param name="BorderWidth">- Border Width</param>
-	/// <param name="BorderColor">- Border Color</param>
-	/// <returns>Returns Border Width</returns>
-	static SHORT drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor = Colors::BlackColor) {
+	static VOID drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor = Colors::BlackColor) {
 
 		CONST USHORT BorderWidth = 2;
 		CONST USHORT WIDTH = 420, HEIGTH = 100;
@@ -325,21 +301,11 @@ public:
 			else if (DONE == 7) (R == 0) ? DONE = 8 : R = R - COLORSTEP; // Red [255 0 0] -> Black [0 0 0]
 		}
 
-		return BorderWidth;
-
 	}
 
 	/// <summary>
 	/// This Function Draws Animation Frame
 	/// </summary>
-	/// <param name="hdc">- Device Context</param>
-	/// <param name="COORD_X">- X Coordinate</param>
-	/// <param name="COORD_Y">- Y Coordinate</param>
-	/// <param name="WIDTH">- Width</param>
-	/// <param name="HEIGTH">- Height</param>
-	/// <param name="Symbol">- Symbol</param>
-	/// <param name="Proportion">- Proportion</param>
-	/// <param name="SymbolColor">- Symbol Color</param>
 	static VOID drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, CONST CHAR Symbol = '+', UINT Proportion = 4, COLORREF SymbolColor = Colors::WhiteColor) {
 
 		if (WIDTH > 0 and HEIGHT > 0) {
@@ -378,12 +344,6 @@ public:
 	/// <summary>
 	/// This Function Draws Cross
 	/// </summary>
-	/// <param name="hdc">- Device Context</param>
-	/// <param name="COORD_X">- X Coordinate</param>
-	/// <param name="COORD_Y">- Y Coordinate</param>
-	/// <param name="WIDTH">- Width</param>
-	/// <param name="HEIGTH">- Height</param>
-	/// <param name="CrossColor">- Cross Color</param>
 	static VOID drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 23, INT HEIGHT = 23, COLORREF CrossColor = Colors::BlackColor) {
 
 		if (WIDTH % 2 != 0 and HEIGHT % 2 != 0) {
@@ -427,70 +387,104 @@ public:
 
 };
 
-namespace D2D1 {
+struct Graphics {
 
-	static D2D1_TRIANGLE TriangleF(D2D1_POINT_2F V1, D2D1_POINT_2F V2, D2D1_POINT_2F V3) {
+private:
 
-		D2D1_TRIANGLE TriangleF = { 0 };
-		TriangleF.point1.x = V1.x;
-		TriangleF.point1.y = V1.y;
-		TriangleF.point2.x = V2.x;
-		TriangleF.point2.y = V2.y;
-		TriangleF.point3.x = V3.x;
-		TriangleF.point3.y = V3.y;
-
-		return TriangleF;
-
-	}
-
-}
-
-class ID2D1ExtendedFactory : public ID2D1Factory {
+	ID2D1Factory *Factory = nullptr; // * DirectX2D Factory *
+	ID2D1DCRenderTarget *RenderTarget = nullptr; // * DirectX2D GDI Compatible Render Target *
 
 public:
 
-	/// <summary>
-	/// Creates a render target that draws to a GDI device context
-	/// </summary>
-	virtual HRESULT CreateRenderTarget(D2D1_RENDER_TARGET_TYPE Type, ID2D1DCRenderTarget **RenderTarget) {
-
-		D2D1_RENDER_TARGET_PROPERTIES RTP = D2D1::RenderTargetProperties(Type,
-			D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
-			0.0F, 0.0F,
-			D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE,
-			D2D1_FEATURE_LEVEL_DEFAULT);
+	BOOL Init() {
 		
-		return CreateDCRenderTarget(&RTP, RenderTarget);
+		// * Creating DirectX2D Factory *
+		if (FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &Factory)))
+			return FALSE;
+
+		// * Creating DirectX2D GDI Compatible Render Target *
+		D2D1_RENDER_TARGET_PROPERTIES RTP = D2D1::RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_HARDWARE,
+			D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
+			0.0F, 0.0F, D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE, D2D1_FEATURE_LEVEL_DEFAULT);
+		if (FAILED(Factory->CreateDCRenderTarget(&RTP, &RenderTarget)))
+			return FALSE;
+
+		return TRUE;
 
 	}
 
-	/// <summary>
-	/// Creates a triangle geometry
-	/// </summary>
-	virtual HRESULT CreateTriangleGeometry(D2D1_TRIANGLE TriangleVertices, ID2D1PathGeometry **TriangleGeometry) {
+	VOID BeginDraw(HDC RenderDC, CONST RECT &RenderRect) {
+		// * Binding Device Context To DirectX2D GDI Compatible Render Target *
+		RenderTarget->BindDC(RenderDC, &RenderRect);
+		// * Begins Drawing *
+		RenderTarget->BeginDraw();
+	}
 
-		HRESULT hrPathGeometry = CreatePathGeometry(TriangleGeometry);
-		if (FAILED(hrPathGeometry)) {
-			return hrPathGeometry;
+	VOID EndDraw() {
+		// * Ends Drawing *
+		RenderTarget->EndDraw();
+	}
+
+	BOOL DrawCircle(CONST D2D1_POINT_2F &CenterPoint, FLOAT Radius, D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue), FLOAT BrushWidth = 2.0F) {
+
+		ID2D1SolidColorBrush *SolidColorBrush = nullptr;
+		if (SUCCEEDED(RenderTarget->CreateSolidColorBrush(Color, &SolidColorBrush))) {
+			RenderTarget->DrawEllipse(D2D1::Ellipse(CenterPoint, Radius, Radius), SolidColorBrush, BrushWidth);
+			SolidColorBrush->Release();
+			return TRUE;
+		}
+		return FALSE;
+
+	}
+
+	BOOL DrawTriangle(CONST D2D1_POINT_2F &V1, CONST D2D1_POINT_2F &V2, CONST D2D1_POINT_2F &V3, D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue), FLOAT BrushWidth = 2.0F) {
+
+		ID2D1PathGeometry *PathGeometry = nullptr;
+		if (SUCCEEDED(Factory->CreatePathGeometry(&PathGeometry))) {
+
+			ID2D1GeometrySink *GeometrySink = nullptr;
+			if (SUCCEEDED(PathGeometry->Open(&GeometrySink))) {
+
+				GeometrySink->BeginFigure(V1, D2D1_FIGURE_BEGIN_FILLED);
+				GeometrySink->AddLine(V2);
+				GeometrySink->AddLine(V3);
+				GeometrySink->EndFigure(D2D1_FIGURE_END_CLOSED);
+				GeometrySink->Close();
+				GeometrySink->Release();
+
+				ID2D1SolidColorBrush *SolidColorBrush = nullptr;
+				if (SUCCEEDED(RenderTarget->CreateSolidColorBrush(Color, &SolidColorBrush))) {
+					RenderTarget->DrawGeometry(PathGeometry, SolidColorBrush, BrushWidth);
+					SolidColorBrush->Release();
+					return TRUE;
+				}
+
+			}
+
+			PathGeometry->Release();
+
 		}
 
-		ID2D1GeometrySink *GeometrySink = nullptr;
-		HRESULT hrGeometrySink = (*TriangleGeometry)->Open(&GeometrySink);
-		if (FAILED(hrGeometrySink)) {
-			(*TriangleGeometry)->Release();
-			(*TriangleGeometry) = nullptr;
-			return hrGeometrySink;
+		return FALSE;
+
+	}
+
+	BOOL FillCircle(CONST D2D1_POINT_2F &CenterPoint, FLOAT Radius, D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue)) {
+
+		ID2D1SolidColorBrush *SolidColorBrush = nullptr;
+		if (SUCCEEDED(RenderTarget->CreateSolidColorBrush(Color, &SolidColorBrush))) {
+			RenderTarget->FillEllipse(D2D1::Ellipse(CenterPoint, Radius, Radius), SolidColorBrush);
+			SolidColorBrush->Release();
+			return TRUE;
 		}
+		return FALSE;
 
-		GeometrySink->BeginFigure(TriangleVertices.point1, D2D1_FIGURE_BEGIN_FILLED);
-		GeometrySink->AddLine(TriangleVertices.point2);
-		GeometrySink->AddLine(TriangleVertices.point3);
-		GeometrySink->EndFigure(D2D1_FIGURE_END_CLOSED);
+	}
 
-		GeometrySink->Close();
-		GeometrySink->Release();
+	~Graphics() {
 
-		return S_OK;
+		if (Factory != nullptr) Factory->Release();
+		if (RenderTarget != nullptr) RenderTarget->Release();
 
 	}
 

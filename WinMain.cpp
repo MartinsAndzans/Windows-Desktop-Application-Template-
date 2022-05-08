@@ -13,16 +13,15 @@ WCHAR MainWindow::ApplicationDirectory[MAX_CHAR_STRING] = { 0 };
 
 void BroadcastMessages();
 
-int wmain(INT ArrgumentCount, LPWSTR Arrguments[]) {
+int main(INT ArrgumentCount, LPSTR Arrguments[]) {
 
-	#ifdef APP_DEBUG
+	#if DEBUG == 1
 	ShowWindow(GetConsoleWindow(), SW_SHOW);
-	Console::setConsoleTitle("Debug Console");
-	#else
+	#elif DEBUG == 0
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
-	Console::setConsoleTitle("Console");
-	#endif // APP_DEBUG
-
+	#endif // DEBUG
+	
+	Console::setConsoleTitle("Debug Console");
 	Console::Print("Debug Console Initilaized Correctly . . .", 0x0A);
 
 	GetCurrentDirectory(ARRAYSIZE(MainWindow::ApplicationDirectory), MainWindow::ApplicationDirectory);
@@ -34,7 +33,6 @@ int wmain(INT ArrgumentCount, LPWSTR Arrguments[]) {
 	}
 
 	Console::Print("App Closed Successfully . . .", 0x0A);
-	Console::Pause("Press any Key to continue . . .", 0x0A);
 
 	return 0;
 

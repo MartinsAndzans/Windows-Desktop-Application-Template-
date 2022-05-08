@@ -74,7 +74,7 @@ VOID DropFiles::DrawBorder(HDC hdc, RECT &Rectangle, USHORT Width) {
 	}
 
 }
-VOID DropFiles::FillRectOpacity50(HDC hdc, RECT &Rectangle, COLORREF Color) {
+VOID DropFiles::FillRectOpacity50(HDC hdc, CONST RECT &Rectangle, COLORREF Color) {
 
 	BOOL DRAWPIXEL; // TRUE = |X| - FALSE = | |
 	for (INT X = Rectangle.left; X <= Rectangle.right; X++) {

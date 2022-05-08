@@ -81,7 +81,7 @@ VOID ColorPicker::drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HE
 	}
 
 }
-SHORT ColorPicker::drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor) {
+VOID ColorPicker::drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor) {
 
 	CONST USHORT BorderWidth = 2;
 	CONST USHORT WIDTH = 420, HEIGTH = 40;
@@ -119,10 +119,8 @@ SHORT ColorPicker::drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF
 		else if (DONE == 7) (R == 0) ? DONE = 8 : R = R - COLORSTEP; // Red [255 0 0] -> Black [0 0 0]
 	}
 
-	return BorderWidth;
-
 }
-SHORT ColorPicker::drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor) {
+VOID ColorPicker::drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor) {
 
 	CONST USHORT BorderWidth = 2;
 	CONST USHORT WIDTH = 420, HEIGTH = 100;
@@ -171,8 +169,6 @@ SHORT ColorPicker::drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF
 		else if (DONE == 6) (B == 0) ? DONE = 7 : B -= COLORSTEP; // Pink [255 0 255] -> Red [255 0 0]
 		else if (DONE == 7) (R == 0) ? DONE = 8 : R = R - COLORSTEP; // Red [255 0 0] -> Black [0 0 0]
 	}
-
-	return BorderWidth;
 
 }
 #pragma endregion

@@ -67,7 +67,7 @@ public:
 		COORD Coordinates = { COORD_X, COORD_Y };
 
 		CONSOLE_SCREEN_BUFFER_INFO csbi = { 0 };
-		if (GetConsoleScreenBufferInfo(hOutput, &csbi) == FALSE)
+		if (!GetConsoleScreenBufferInfo(hOutput, &csbi))
 			return FALSE;
 
 		if (MOVE_CURSOR == TRUE) 
