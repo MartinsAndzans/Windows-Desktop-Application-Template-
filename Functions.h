@@ -369,7 +369,7 @@ public:
 	/// <param name="FilePath">File Path With ".bmp" Extension</param>
 	/// <param name="BitmapSize">Bitmap Size In Pixels</param>
 	/// <returns>If Succeeded returns TRUE, but If not returns FALSE</returns>
-	static BOOL SaveBitmapToFile(HBITMAP Bitmap, LPCSTR FilePath, SIZE &BitmapSize) {
+	static BOOL SaveBitmapToFile(HBITMAP Bitmap, LPCSTR FilePath, CONST SIZE &BitmapSize) {
 
 		std::ofstream image;
 

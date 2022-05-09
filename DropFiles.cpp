@@ -78,21 +78,20 @@ VOID DropFiles::FillArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIG
 	SetDCPenColor(hdc, Color);
 	SetDCBrushColor(hdc, Color);
 
-	HPEN PreviousPen = (HPEN)SelectObject(hdc, (HPEN)GetStockObject(DC_PEN));
-	HBRUSH PreviousBrush = (HBRUSH)SelectObject(hdc, (HBRUSH)GetStockObject(DC_BRUSH));
+	HPEN PreviousPen = static_cast<HPEN>(SelectObject(hdc, static_cast<HPEN>(GetStockObject(DC_PEN))));
+	HBRUSH PreviousBrush = static_cast<HBRUSH>(SelectObject(hdc, static_cast<HBRUSH>(GetStockObject(DC_BRUSH))));
 
 	SetPolyFillMode(hdc, WINDING);
 
-	POINT First = { COORD_X + XCELL, COORD_Y }; // --+----
-	POINT Second = { COORD_X + XCELL * 2, COORD_Y }; // ----+--
-	POINT Third = { COORD_X + XCELL, COORD_Y + YCELL * 2 }; // --+----
-	POINT Fourth = { COORD_X + XCELL * 2, COORD_Y + YCELL * 2 }; // ----+--
-
-	POINT Fifth = { COORD_X, COORD_Y + YCELL * 2 }; // +------
-	POINT Sixth = { COORD_X + WIDTH, COORD_Y + YCELL * 2 }; //------+
-	POINT Seventh = { COORD_X + WIDTH / 2, COORD_Y + HEIGHT }; // ---+---
-
-	POINT ArrowVertices[] = { Third, First, Second, Fourth, Sixth, Seventh, Fifth };
+	POINT ArrowVertices[] = {
+		{ COORD_X + XCELL, COORD_Y + YCELL * 2 }, // Third
+		{ COORD_X + XCELL, COORD_Y }, // First
+		{ COORD_X + XCELL * 2, COORD_Y }, // Second
+		{ COORD_X + XCELL * 2, COORD_Y + YCELL * 2 }, // Fourth
+		{ COORD_X + WIDTH, COORD_Y + YCELL * 2 }, // Sixth
+		{ COORD_X + WIDTH / 2, COORD_Y + HEIGHT }, // Seventh
+		{ COORD_X, COORD_Y + YCELL * 2 }  // Fifth
+	};
 
 	Polygon(hdc, ArrowVertices, ARRAYSIZE(ArrowVertices));
 
@@ -120,7 +119,6 @@ VOID DropFiles::onCreate(HWND hDropFiles, LPARAM lParam) {
 			StylePtr ->BackgroundColor = static_cast<LPDropFilesStyle>(window->lpCreateParams)->BackgroundColor;
 			StylePtr->ForegroundColor = static_cast<LPDropFilesStyle>(window->lpCreateParams)->ForegroundColor;
 		}
-		////
 
 		SetWindowLongPtr(hDropFiles, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(StylePtr)); // Save Pointer To Window User Data
 

@@ -53,7 +53,7 @@ VOID Animation::CreateAnimationFont() {
 		L"Segoe UI");
 
 }
-VOID Animation::drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, CONST CHAR Symbol, USHORT Proportion, COLORREF SymbolColor) {
+VOID Animation::DrawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, CONST CHAR Symbol, USHORT Proportion, COLORREF SymbolColor) {
 
 	if (WIDTH > 0 and HEIGHT > 0) {
 
@@ -83,7 +83,7 @@ VOID Animation::drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH,
 		SetTextColor(hdc, PreviousColor);
 
 	} else {
-		OutputDebugString(L"ERROR [Animation::drawAnimationFrame] - Width or Height Must be non Zero Value!\r\n");
+		OutputDebugString(L"\'ERROR \'Animation::drawAnimationFrame\' - Width or Height Must be non Zero Value!\'\r\n");
 	}
 
 }
@@ -170,7 +170,7 @@ VOID Animation::onPaint(HWND hAnimation) {
 	WCHAR WindowTitle[MAX_CHAR_STRING] = { 0 };
 	INT TextLength = GetWindowText(hAnimation, WindowTitle, ARRAYSIZE(WindowTitle));
 
-	drawAnimationFrame(MemoryDC, Dimensions.left, Dimensions.top, Dimensions.right, Dimensions.bottom, StylePtr->Symbol, StylePtr->Proportion, StylePtr->SymbolColor);
+	DrawAnimationFrame(MemoryDC, Dimensions.left, Dimensions.top, Dimensions.right, Dimensions.bottom, StylePtr->Symbol, StylePtr->Proportion, StylePtr->SymbolColor);
 	
 	// Text Shadow
 	SetTextColor(MemoryDC, DarkerColor(StylePtr->SymbolColor, 0x20)); // 0x20 / 32

@@ -26,7 +26,7 @@ int main(INT ArrgumentCount, LPSTR Arrguments[]) {
 
 	GetCurrentDirectory(ARRAYSIZE(MainWindow::ApplicationDirectory), MainWindow::ApplicationDirectory);
 
-	if (MainWindow::InitMainWindowClass(MainWindowClass)) {
+	if (MainWindow::RegisterMainWindowClass(MainWindowClass)) {
 		if (MainWindow::CreateMainWindow(MainWindowClass, MainWindowTitle)) {
 			BroadcastMessages();
 		}

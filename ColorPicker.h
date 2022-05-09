@@ -14,9 +14,9 @@ private:
 	#pragma endregion
 
 	#pragma region Functions
-	static VOID drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT);
-	static VOID drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y);
-	static VOID drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y);
+	static VOID DrawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT);
+	static VOID DrawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y);
+	static VOID DrawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y);
 	#pragma endregion
 
 	#pragma region Events

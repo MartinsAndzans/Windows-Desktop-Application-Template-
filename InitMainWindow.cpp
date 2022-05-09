@@ -9,20 +9,19 @@ HBITMAP MainWindow::MainBitmap = { 0 };
 
 HFONT MainWindow::MainFont = { 0 };
 HBRUSH MainWindow::MainWindowBackgroundBrush = CreateSolidBrush(MainWindowBackgroundColor);
+POINT MainWindow::mousePosition = { 0 };
 
 HWND MainWindow::hMainWindow = { 0 };
-RECT MainWindow::MainWindowDimensions = { 0, 0, MainWindowWidth, MainWindowHeight };
+RECT MainWindow::MainWindowDimensions = { 0 };
 
 HWND MainWindow::hDebugTool1 = nullptr;
 HWND MainWindow::hDebugTool2 = nullptr;
 
 HWND MainWindow::Test = nullptr;
-
-POINT MainWindow::mousePosition = { 0 };
 #pragma endregion
 
 #pragma region InitMainWindow
-BOOL MainWindow::InitMainWindowClass(LPCWSTR ClassName) {
+BOOL MainWindow::RegisterMainWindowClass(LPCWSTR ClassName) {
 
 	CreateMainWindowFont();
 
@@ -59,10 +58,10 @@ BOOL MainWindow::CreateMainWindow(LPCWSTR ClassName, LPCWSTR WindowTitle) {
 		ClassName,
 		WindowTitle,
 		WS_OVERLAPPEDWINDOW,
-		ScreenWidth / 2 - MainWindowDimensions.right / 2,
-		ScreenHeight / 2 - MainWindowDimensions.bottom / 2,
-		MainWindowDimensions.right,
-		MainWindowDimensions.bottom,
+		ScreenWidth / 2 - MainWindowWidth / 2,
+		ScreenHeight / 2 - MainWindowHeight / 2,
+		MainWindowWidth,
+		MainWindowHeight,
 		HWND_DESKTOP,
 		NULL,
 		HInstance(),
@@ -84,20 +83,8 @@ BOOL operator==(POINT &Left, POINT &Right) {
 
 	if (Left.x == Right.x and Left.y == Right.y) {
 		return TRUE;
-	} else {
-		return FALSE;
 	}
-
-}
-
-BOOL operator==(POINT &Position, RECT &Rectangle) {
-
-	if (Position.x >= Rectangle.left and Position.x <= Rectangle.right and
-		Position.y >= Rectangle.top and Position.y <= Rectangle.bottom) {
-		return TRUE;
-	} else {
-		return FALSE;
-	}
+	return FALSE;
 
 }
 #pragma endregion
@@ -190,8 +177,8 @@ VOID MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 	SetWindowPos(hDebugTool2, nullptr, MainWindowDimensions.right - 240, 30, 240, 25, SWP_SHOWWINDOW);
 
 	#pragma region DebugTool2
-	std::string SMainWindowDimensions = "Width = " + std::to_string(MainWindowDimensions.right) + " Height = " + std::to_string(MainWindowDimensions.bottom);
-	SetWindowTextA(hDebugTool2, SMainWindowDimensions.c_str());
+	std::string MainWindowDimensionsWH = "Width = " + std::to_string(MainWindowDimensions.right) + " Height = " + std::to_string(MainWindowDimensions.bottom);
+	SetWindowTextA(hDebugTool2, MainWindowDimensionsWH.c_str());
 	#pragma endregion
 
 	RedrawWindow(hMainWindow, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
@@ -200,12 +187,12 @@ VOID MainWindow::onSize(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 VOID MainWindow::onMouseMove(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
-	GetCursorPos(&mousePosition);
-	ScreenToClient(hMainWindow, &mousePosition);
+	mousePosition.x = LOWORD(lParam);
+	mousePosition.y = HIWORD(lParam);
 
 	#pragma region DebugTool1
-	std::string SMousePosition = "X = " + std::to_string(mousePosition.x) + " Y = " + std::to_string(mousePosition.y);
-	SetWindowTextA(hDebugTool1, SMousePosition.c_str());
+	std::string MousePositionXY = "X = " + std::to_string(mousePosition.x) + " Y = " + std::to_string(mousePosition.y);
+	SetWindowTextA(hDebugTool1, MousePositionXY.c_str());
 	#pragma endregion
 
 }
@@ -246,26 +233,25 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 
 	SelectObject(MemoryDC, MainFont);
 
-	std::unique_ptr<Graphics> DXDraw(new Graphics{});
-
-	if (DXDraw->Init()) {
-
-		DXDraw->BeginDraw(MemoryDC, MainWindowDimensions);
-
-		DXDraw->DrawTriangle(D2D1::Point2F(MainWindowDimensions.right / 2.0F, MainWindowDimensions.bottom / 2.0F - 200.0F),
-			D2D1::Point2F(MainWindowDimensions.right / 2.0F - 200.0F, MainWindowDimensions.bottom / 2.0F + 200.0F),
-			D2D1::Point2F(MainWindowDimensions.right / 2.0F + 200.0F, MainWindowDimensions.bottom / 2.0F + 200.0F));
-
-		DXDraw->EndDraw();
-
-	}
-
-	Draw::drawSmallGradient(MemoryDC, MainWindowDimensions.right / 2 - 420 / 2, MainWindowDimensions.bottom / 2 - 40 / 2);
+	Draw::DrawSmallGradient(MemoryDC, MainWindowDimensions.right / 2 - 420 / 2, MainWindowDimensions.bottom / 2 - 40 / 2);
 
 	SIZE size = { 0 };
 	CHAR Text[] = "Hello World!";
 	GetTextExtentPointA(MainWindowDC, Text, ARRAYSIZE(Text), &size);
 	TextOutA(MemoryDC, MainWindowDimensions.right / 2 - size.cx / 2, MainWindowDimensions.bottom / 2 - size.cy / 2, Text, ARRAYSIZE(Text) - 1);
+
+	//SYSTEMTIME st = { 0 };
+	//GetSystemTime(&st);
+	//srand(st.wMilliseconds);
+
+	//MoveToEx(MemoryDC, mousePosition.x, mousePosition.y, nullptr);
+	//LineTo(MemoryDC, mousePosition.x, mousePosition.y);
+
+	for (ULONG I = 0; I < static_cast<ULONG>(100); I++) {
+		Draw::FillStar(MemoryDC, rand() % MainWindowDimensions.right - 60 / 2, rand() % MainWindowDimensions.bottom - 60 / 2, 60, 60, WINDING, RGB(rand() % 256, rand() % 256, rand() % 256));
+	}
+
+	//Functions::SaveBitmapToFile(MainBitmap, "File.bmp", { MainWindowDimensions.right, MainWindowDimensions.bottom });
 
 	BitBlt(MainWindowDC, 0, 0, MainWindowDimensions.right, MainWindowDimensions.bottom, MemoryDC, 0, 0, SRCCOPY);
 
@@ -277,8 +263,6 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 }
 
 VOID MainWindow::onCommand(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
-
-	#define DEFAULT_ID 0xFFFF
 
 	switch (LOWORD(wParam)) {
 	case ID_COLOR_PICKER:
@@ -346,7 +330,7 @@ LRESULT CALLBACK MainWindow::MainWindowProcedure(HWND hMainWindow, UINT Msg, WPA
 	case WM_GETMINMAXINFO:
 	{
 
-		LPMINMAXINFO minmax = (LPMINMAXINFO)lParam;
+		LPMINMAXINFO minmax = reinterpret_cast<LPMINMAXINFO>(lParam);
 		POINT minsize = { MainWindowWidth, MainWindowHeight };
 		minmax->ptMinTrackSize = minsize;
 
@@ -379,7 +363,7 @@ LRESULT CALLBACK MainWindow::MainWindowProcedure(HWND hMainWindow, UINT Msg, WPA
 	}
 	case WM_CLOSE:
 	{
-		if (MessageBox(hMainWindow, L"Are You Serious!", L"INFORMATION", MB_YESNO | MB_ICONINFORMATION | MB_DEFBUTTON2) == IDYES) {
+		if (MessageBoxA(hMainWindow, "Are You Serious!", "INFORMATION", MB_YESNO | MB_ICONINFORMATION | MB_DEFBUTTON2) == IDYES) {
 			mciSendCommand(MCI_ALL_DEVICE_ID, MCI_CLOSE, NULL, NULL);
 			DestroyWindow(hMainWindow);
 		}

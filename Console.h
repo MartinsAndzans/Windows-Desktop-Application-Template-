@@ -31,6 +31,28 @@ public:
 		std::cout << Text << std::endl;
 	}
 
+	static VOID Scan(LPSTR Buffer, SIZE_T BufferSize, WORD Color = 0x0F) {
+
+		HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(hOutput, FOREGROUND_INTENSITY | Color);
+
+		CHAR Key = 0;
+
+		for (SIZE_T I = 0; I < BufferSize - 1; I++) {
+
+			if (Key == '\r')
+				break;
+
+			Key = _getch();
+			Buffer[I] = Key;
+			std::cout << Key;
+
+		}
+
+		std::cout << std::endl;
+
+	}
+
 	static CHAR Pause(LPCSTR MessageToUser = "Press any key to continue . . .", WORD Color = 0x0F) {
 		HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 		SetConsoleTextAttribute(hOutput, FOREGROUND_INTENSITY | Color);

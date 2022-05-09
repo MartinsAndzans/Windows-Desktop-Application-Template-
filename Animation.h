@@ -22,7 +22,7 @@ private:
 
 	#pragma region Functions
 	static VOID CreateAnimationFont();
-	static VOID drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, CONST CHAR Symbol, USHORT Proportion, COLORREF SymbolColor);
+	static VOID DrawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, CONST CHAR Symbol, USHORT Proportion, COLORREF SymbolColor);
 	#pragma endregion
 
 	#pragma region Events

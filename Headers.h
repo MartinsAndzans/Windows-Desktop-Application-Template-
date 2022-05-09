@@ -49,8 +49,8 @@
 #pragma endregion
 
 #pragma region SetMacros
-#define SetFont(hwnd, font) SendMessage(hwnd, WM_SETFONT, (WPARAM)font, NULL)
-#define SetIcon(hwnd, type, hicon) SendMessage(hwnd, WM_SETICON, (WPARAM)type, (LPARAM)hicon)
+#define SetFont(hwnd, font) SendMessage(hwnd, WM_SETFONT, reinterpret_cast<WPARAM>(font), NULL)
+#define SetIcon(hwnd, type, hicon) SendMessage(hwnd, WM_SETICON, reinterpret_cast<WPARAM>(type), static_cast<LPARAM>(hicon))
 #pragma endregion
 
 #pragma region WindowMacros

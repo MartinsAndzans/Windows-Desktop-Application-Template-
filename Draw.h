@@ -8,7 +8,6 @@
 ************************************************/
 
 #include <ciso646>
-#include <assert.h>
 #include <Windows.h>
 #include <d2d1.h>
 
@@ -22,26 +21,27 @@ public:
 	enum Colors {
 		WhiteColor = RGB(255, 255, 255),
 		BlackColor = RGB(0, 0, 0),
-		OrangeColor = RGB(240, 190, 0),
 		RedColor = RGB(255, 0, 0),
-		BlueColor = RGB(0, 0, 255),
 		GreenColor = RGB(0, 255, 0),
-		DarkGreenColor = RGB(0, 145, 0)
+		BlueColor = RGB(0, 0, 255),
+		DarkRedColor = RGB(145, 0, 0),
+		DarkGreenColor = RGB(0, 145, 0),
+		DarkBlueColor = RGB(0, 0, 145),
+		OrangeColor = RGB(240, 190, 0)
 	};
 
 	/// <summary>
-	/// This Function Draws Rectangle
+	/// This Function Draw Rectangle
+	/// <para>Function Use Current Pen</para>
 	/// </summary>
-	/// <param name="hdc">Device Context</param>
-	/// <param name="Rectangle">Rectangle</param>
-	static VOID drawRectangle(HDC hdc, CONST RECT &Rectangle) {
+	static VOID DrawRectangle(HDC hdc, CONST RECT &Rectangle) {
 
 		POINT RectangleVertices[] = {
-			{ Rectangle.left, Rectangle.top }, // First Point
-			{ Rectangle.right, Rectangle.top }, // Second Point
-			{ Rectangle.right, Rectangle.bottom }, // Third Point
-			{ Rectangle.left, Rectangle.bottom }, // Fourth Point
-			{ Rectangle.left, Rectangle.top } // Fifth Point
+			{ Rectangle.left, Rectangle.top }, // First
+			{ Rectangle.right, Rectangle.top }, // Second
+			{ Rectangle.right, Rectangle.bottom }, // Third
+			{ Rectangle.left, Rectangle.bottom }, // Fourth
+			{ Rectangle.left, Rectangle.top } // First
 		};
 
 		Polyline(hdc, RectangleVertices, ARRAYSIZE(RectangleVertices));
@@ -49,44 +49,7 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Draws Rectangle
-	/// </summary>
-	/// <param name="hdc">Device Context</param>
-	/// <param name="COORD_X">X Coordinate</param>
-	/// <param name="COORD_Y">Y Coordinate</param>
-	/// <param name="WIDTH">Width</param>
-	/// <param name="HEIGTH">Height</param>
-	/// <param name="BorderWidth">Border Width</param>
-	/// <param name="Color">Rectangle Color</param>
-	/// <param name="BorderColor">Border Color</param>
-	static VOID drawRectangle(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 120, INT HEIGTH = 40, INT BorderWidth = 2,
-		COLORREF RectangleColor = Colors::BlueColor, COLORREF BorderColor = Colors::BlackColor) {
-
-		// Border
-		for (SHORT W = 0; W < BorderWidth; W++) {
-			// Up and Down
-			for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
-				SetPixel(hdc, X, COORD_Y + W, BorderColor);
-				SetPixel(hdc, X, COORD_Y + HEIGTH - W, BorderColor);
-			}
-			// Left and Right
-			for (INT Y = COORD_Y; Y <= COORD_Y + HEIGTH; Y++) {
-				SetPixel(hdc, COORD_X + W, Y, BorderColor);
-				SetPixel(hdc, COORD_X + WIDTH - W, Y, BorderColor);
-			}
-		}
-
-		// Rectangle
-		for (INT X = COORD_X + BorderWidth; X <= COORD_X + WIDTH - BorderWidth; X++) {
-			for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + HEIGTH - BorderWidth; Y++) {
-				SetPixel(hdc, X, Y, RectangleColor);
-			}
-		}
-
-	}
-
-	/// <summary>
-	/// This Function Fill Rectangle [50/50 Pixels] - [50% Opacity]
+	/// This Function Fill Rectangle [50% Opacity]
 	/// </summary>
 	/// <param name="hdc">Device Context</param>
 	/// <param name="Rectangle">Rectangle</param>
@@ -109,20 +72,19 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Draws Bitmap From File
+	/// This Function Draw Bitmap From File
 	/// </summary>
 	/// <param name="hdc">Device Context</param>
 	/// <param name="Rectangle">Where Draw Bitmap</param>
-	/// <param name="FilePath">File Path -/Supported Image Formats : "*.bmp; *.ico; *.cur"/-</param>
-	/// <param name="BitmapType">Bitmap Type</param>
+	/// <param name="FilePath">File Path With ".bmp" Extension</param>
 	/// <param name="DrawMethod">Draw Method</param>
 	/// <returns>If Succeeded Returns TRUE, but If not Returns FALSE</returns>
-	static BOOL drawBitmapFromFile(HDC hdc, RECT &Rectangle, LPCWSTR FilePath, UINT BitmapType = IMAGE_BITMAP, DWORD DrawMethod = SRCCOPY) {
+	static BOOL DrawBitmapFromFile(HDC hdc, CONST RECT &Rectangle, LPCWSTR FilePath, DWORD DrawMethod = SRCCOPY) {
 
 		HDC BitmapDC = CreateCompatibleDC(hdc);
-		HBITMAP Bitmap = (HBITMAP)LoadImage(NULL, FilePath, BitmapType, 0, 0, LR_LOADFROMFILE | LR_VGACOLOR);
+		HBITMAP Bitmap = static_cast<HBITMAP>(LoadImage(GetModuleHandle(NULL), FilePath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_VGACOLOR));
+
 		if (Bitmap == NULL) {
-			OutputDebugString(L"\'[Draw::drawBitmapFromFile] - \"Image File not Found!\"\'\r\n");
 			DeleteDC(BitmapDC);
 			return FALSE;
 		}
@@ -138,21 +100,15 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Draws Triangle
+	/// This Function Fill Triangle
 	/// </summary>
-	/// <param name="hdc">Device Context</param>
-	/// <param name="V1">First Vertice</param>
-	/// <param name="V2">Second Vertice</param>
-	/// <param name="V3">Third Vertice</param>
-	/// <param name="FillMode">Fill Mode ALTERNATE or WINDING</param>
-	/// <param name="Color">Color</param>
 	static VOID FillTriangle(HDC hdc, POINT V1, POINT V2, POINT V3, INT FillMode = ALTERNATE, COLORREF Color = Colors::BlueColor) {
 
 		SetDCPenColor(hdc, Color);
 		SetDCBrushColor(hdc, Color);
 
-		HPEN PreviousPen = (HPEN)SelectObject(hdc, (HPEN)GetStockObject(DC_PEN));
-		HBRUSH PreviousBrush = (HBRUSH)SelectObject(hdc, (HBRUSH)GetStockObject(DC_BRUSH));
+		HPEN PreviousPen = static_cast<HPEN>(SelectObject(hdc, static_cast<HPEN>(GetStockObject(DC_PEN))));
+		HBRUSH PreviousBrush = static_cast<HBRUSH>(SelectObject(hdc, static_cast<HBRUSH>(GetStockObject(DC_BRUSH))));
 
 		SetPolyFillMode(hdc, FillMode);
 
@@ -170,7 +126,27 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Draws Arrow
+	/// This Function Fill Standart Triangle
+	/// </summary>
+	static VOID FillStandartTriangle(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, LPCSTR Direction = "up", INT FillMode = ALTERNATE, COLORREF Color = Colors::BlackColor) {
+
+		SetDCPenColor(hdc, Color);
+		SetDCBrushColor(hdc, Color);
+
+		HPEN PreviousPen = static_cast<HPEN>(SelectObject(hdc, static_cast<HPEN>(GetStockObject(DC_PEN))));
+		HBRUSH PreviousBrush = static_cast<HBRUSH>(SelectObject(hdc, static_cast<HBRUSH>(GetStockObject(DC_BRUSH))));
+
+		SetPolyFillMode(hdc, FillMode);
+
+
+
+		SelectObject(hdc, PreviousPen);
+		SelectObject(hdc, PreviousBrush);
+
+	}
+
+	/// <summary>
+	/// This Function Fill Arrow
 	/// </summary>
 	static VOID FillArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 60, INT HEIGHT = 100, INT FillMode = ALTERNATE, COLORREF Color = Colors::BlackColor) {
 
@@ -180,21 +156,20 @@ public:
 		SetDCPenColor(hdc, Color);
 		SetDCBrushColor(hdc, Color);
 
-		HPEN PreviousPen = (HPEN)SelectObject(hdc, (HPEN)GetStockObject(DC_PEN));
-		HBRUSH PreviousBrush = (HBRUSH)SelectObject(hdc, (HBRUSH)GetStockObject(DC_BRUSH));
+		HPEN PreviousPen = static_cast<HPEN>(SelectObject(hdc, static_cast<HPEN>(GetStockObject(DC_PEN))));
+		HBRUSH PreviousBrush = static_cast<HBRUSH>(SelectObject(hdc, static_cast<HBRUSH>(GetStockObject(DC_BRUSH))));
 
 		SetPolyFillMode(hdc, FillMode);
 
-		POINT First = { COORD_X + XCELL, COORD_Y }; // --+----
-		POINT Second = { COORD_X + XCELL * 2, COORD_Y }; // ----+--
-		POINT Third = { COORD_X + XCELL, COORD_Y + YCELL * 2 }; // --+----
-		POINT Fourth = { COORD_X + XCELL * 2, COORD_Y + YCELL * 2 }; // ----+--
-
-		POINT Fifth = { COORD_X, COORD_Y + YCELL * 2 }; // +------
-		POINT Sixth = { COORD_X + WIDTH, COORD_Y + YCELL * 2 }; //------+
-		POINT Seventh = { COORD_X + WIDTH / 2, COORD_Y + HEIGHT }; // ---+---
-
-		POINT ArrowVertices[] = { Third, First, Second, Fourth, Sixth, Seventh, Fifth };
+		POINT ArrowVertices[] = {
+			{ COORD_X + XCELL, COORD_Y + YCELL * 2 }, // Third
+			{ COORD_X + XCELL, COORD_Y }, // First
+			{ COORD_X + XCELL * 2, COORD_Y }, // Second
+			{ COORD_X + XCELL * 2, COORD_Y + YCELL * 2 }, // Fourth
+			{ COORD_X + WIDTH, COORD_Y + YCELL * 2 }, // Sixth
+			{ COORD_X + WIDTH / 2, COORD_Y + HEIGHT }, // Seventh
+			{ COORD_X, COORD_Y + YCELL * 2 }  // Fifth
+		};
 
 		Polygon(hdc, ArrowVertices, ARRAYSIZE(ArrowVertices));
 
@@ -204,10 +179,38 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Draws Small Gradient
+	/// This Function Fill Star
+	/// </summary>
+	static VOID FillStar(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 60, INT HEIGTH = 60, INT FillMode = WINDING, COLORREF Color = Colors::DarkGreenColor) {
+
+		SetDCPenColor(hdc, Color);
+		SetDCBrushColor(hdc, Color);
+
+		HPEN PreviousPen = static_cast<HPEN>(SelectObject(hdc, static_cast<HPEN>(GetStockObject(DC_PEN))));
+		HBRUSH PreviousBrush = static_cast<HBRUSH>(SelectObject(hdc, static_cast<HBRUSH>(GetStockObject(DC_BRUSH))));
+
+		SetPolyFillMode(hdc, FillMode);
+
+		POINT StarVertices[] = {
+			{ COORD_X, COORD_Y + HEIGTH },
+			{ COORD_X + WIDTH / 2, COORD_Y },
+			{ COORD_X + WIDTH, COORD_Y + HEIGTH },
+			{ COORD_X, COORD_Y + HEIGTH / 3 },
+			{ COORD_X + WIDTH, COORD_Y + HEIGTH / 3 }
+		};
+
+		Polygon(hdc, StarVertices, ARRAYSIZE(StarVertices));
+
+		SelectObject(hdc, PreviousPen);
+		SelectObject(hdc, PreviousBrush);
+
+	}
+
+	/// <summary>
+	/// This Function Draw Small Gradient
 	/// <para>Size - Width = 420 / Height = 40</para>
 	/// </summary>
-	static VOID drawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor = Colors::BlackColor) {
+	static VOID DrawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor = Colors::BlackColor) {
 
 		CONST USHORT BorderWidth = 2;
 		CONST USHORT WIDTH = 420, HEIGTH = 40;
@@ -232,9 +235,11 @@ public:
 
 		//Gradient
 		for (INT X = COORD_X + BorderWidth; X <= COORD_X + WIDTH - BorderWidth; X++) {
+
 			for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + HEIGTH - BorderWidth; Y++) {
 				SetPixel(hdc, X, Y, RGB(R, G, B));
 			}
+
 			if (DONE == 0) (G == 0 and B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP); // White [255 255 255] -> Red [255 0 0]
 			else if (DONE == 1) (G == 255) ? DONE = 2 : G += COLORSTEP; // Red [255 0 0] -> Yellow [255 255 0]
 			else if (DONE == 2) (R == 0) ? DONE = 3 : R -= COLORSTEP; // Yellow [255 255 0] -> Grean [0 255 0]
@@ -243,15 +248,16 @@ public:
 			else if (DONE == 5) (R == 255) ? DONE = 6 : R += COLORSTEP; // Blue [0 0 255] -> Pink [255 0 255]
 			else if (DONE == 6) (B == 0) ? DONE = 7 : B -= COLORSTEP; // Pink [255 0 255] -> Red [255 0 0]
 			else if (DONE == 7) (R == 0) ? DONE = 8 : R = R - COLORSTEP; // Red [255 0 0] -> Black [0 0 0]
+
 		}
 
 	}
 
 	/// <summary>
-	/// This Function Draws Large Gradient
+	/// This Function Draw Large Gradient
 	/// <para>Size - Width = 420 / Height = 100</para>
 	/// </summary>
-	static VOID drawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor = Colors::BlackColor) {
+	static VOID DrawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor = Colors::BlackColor) {
 
 		CONST USHORT BorderWidth = 2;
 		CONST USHORT WIDTH = 420, HEIGTH = 100;
@@ -277,6 +283,7 @@ public:
 
 		//Gradient
 		for (INT X = COORD_X + BorderWidth; X <= COORD_X + WIDTH - BorderWidth; X++) {
+
 			for (INT Y = COORD_Y + BorderWidth; Y <= COORD_Y + HEIGTH - BorderWidth; Y++) {
 				SetPixel(hdc, X, Y, RGB(RY, GY, BY));
 				if (Y < COORD_Y + HEIGTH / 2) {
@@ -290,6 +297,7 @@ public:
 					if (BY != 0) BY -= COLORSTEP; //
 				}
 			}
+
 			RY = 255, GY = 255, BY = 255;
 			if (DONE == 0) (G == 0 and B == 0) ? DONE = 1 : (G -= COLORSTEP, B -= COLORSTEP); // White [255 255 255] -> Red [255 0 0]
 			else if (DONE == 1) (G == 255) ? DONE = 2 : G += COLORSTEP; // Red [255 0 0] -> Yellow [255 255 0]
@@ -299,14 +307,15 @@ public:
 			else if (DONE == 5) (R == 255) ? DONE = 6 : R += COLORSTEP; // Blue [0 0 255] -> Pink [255 0 255]
 			else if (DONE == 6) (B == 0) ? DONE = 7 : B -= COLORSTEP; // Pink [255 0 255] -> Red [255 0 0]
 			else if (DONE == 7) (R == 0) ? DONE = 8 : R = R - COLORSTEP; // Red [255 0 0] -> Black [0 0 0]
+
 		}
 
 	}
 
 	/// <summary>
-	/// This Function Draws Animation Frame
+	/// This Function Draw Animation Frame
 	/// </summary>
-	static VOID drawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, CONST CHAR Symbol = '+', UINT Proportion = 4, COLORREF SymbolColor = Colors::WhiteColor) {
+	static VOID DrawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, CONST CHAR Symbol = '+', UINT Proportion = 4, COLORREF SymbolColor = Colors::WhiteColor) {
 
 		if (WIDTH > 0 and HEIGHT > 0) {
 
@@ -336,15 +345,15 @@ public:
 			SetTextColor(hdc, PreviousColor);
 
 		} else {
-			OutputDebugString(L"ERROR [Draw::drawAnimationFrame] - Width or Height Must be non Zero Value!\r\n");
+			OutputDebugString(L"\'ERROR \'Draw::drawAnimationFrame\' - Width or Height Must be non Zero Value!\'\r\n");
 		}
 
 	}
 
 	/// <summary>
-	/// This Function Draws Cross
+	/// This Function Draw Cross
 	/// </summary>
-	static VOID drawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 23, INT HEIGHT = 23, COLORREF CrossColor = Colors::BlackColor) {
+	static VOID DrawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 23, INT HEIGHT = 23, COLORREF CrossColor = Colors::BlackColor) {
 
 		if (WIDTH % 2 != 0 and HEIGHT % 2 != 0) {
 
@@ -379,7 +388,7 @@ public:
 		}
 		else {
 
-			OutputDebugString(L"ERROR [Draw::drawCross] - Width or Height Must be Odd Number!\r\n");
+			OutputDebugString(L"\'ERROR \'Draw::drawCross\' - Width or Height Must be Odd Number!\'\r\n");
 
 		}
 
@@ -387,12 +396,13 @@ public:
 
 };
 
-struct Graphics {
+class Graphics {
 
 private:
 
 	ID2D1Factory *Factory = nullptr; // * DirectX2D Factory *
 	ID2D1DCRenderTarget *RenderTarget = nullptr; // * DirectX2D GDI Compatible Render Target *
+	ID2D1SolidColorBrush *SolidColorBrush = nullptr; // * DirectX2D Solid Color Brush *
 
 public:
 
@@ -407,6 +417,10 @@ public:
 			D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
 			0.0F, 0.0F, D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE, D2D1_FEATURE_LEVEL_DEFAULT);
 		if (FAILED(Factory->CreateDCRenderTarget(&RTP, &RenderTarget)))
+			return FALSE;
+
+		// * Creating DirectX2D Solid Color Brush *
+		if (FAILED(RenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Enum::Black), &SolidColorBrush)))
 			return FALSE;
 
 		return TRUE;
@@ -425,68 +439,33 @@ public:
 		RenderTarget->EndDraw();
 	}
 
-	BOOL DrawCircle(CONST D2D1_POINT_2F &CenterPoint, FLOAT Radius,
-		D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue), FLOAT BrushWidth = 2.0F) {
-
-		ID2D1SolidColorBrush *SolidColorBrush = nullptr;
-		if (SUCCEEDED(RenderTarget->CreateSolidColorBrush(Color, &SolidColorBrush))) {
-			RenderTarget->DrawEllipse(D2D1::Ellipse(CenterPoint, Radius, Radius), SolidColorBrush, BrushWidth);
-			SolidColorBrush->Release();
-			return TRUE;
-		}
-		return FALSE;
-
+	#pragma region DirectX2D-Drawing
+	VOID DrawCircle(CONST D2D1_POINT_2F &CenterPoint, FLOAT Radius, D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue), FLOAT BrushWidth = 2.0F) {
+		SolidColorBrush->SetColor(Color);
+		RenderTarget->DrawEllipse(D2D1::Ellipse(CenterPoint, Radius, Radius), SolidColorBrush, BrushWidth);
 	}
 
-	BOOL DrawTriangle(CONST D2D1_POINT_2F &V1, CONST D2D1_POINT_2F &V2, CONST D2D1_POINT_2F &V3,
-		D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue), FLOAT BrushWidth = 2.0F) {
-
-		ID2D1PathGeometry *PathGeometry = nullptr;
-		if (FAILED(Factory->CreatePathGeometry(&PathGeometry)))
-			return FALSE;
-
-		ID2D1GeometrySink *GeometrySink = nullptr;
-		if (FAILED(PathGeometry->Open(&GeometrySink))) {
-			PathGeometry->Release();
-			return FALSE;
-		}
-
-		GeometrySink->BeginFigure(V1, D2D1_FIGURE_BEGIN_FILLED);
-		GeometrySink->AddLine(V2);
-		GeometrySink->AddLine(V3);
-		GeometrySink->EndFigure(D2D1_FIGURE_END_CLOSED);
-		GeometrySink->Close();
-		GeometrySink->Release();
-
-		ID2D1SolidColorBrush *SolidColorBrush = nullptr;
-		if (SUCCEEDED(RenderTarget->CreateSolidColorBrush(Color, &SolidColorBrush))) {
-			RenderTarget->DrawGeometry(PathGeometry, SolidColorBrush, BrushWidth);
-			SolidColorBrush->Release();
-			PathGeometry->Release();
-			return TRUE;
-		}
-
-		return FALSE;
-
+	VOID DrawRectangle(CONST D2D1_RECT_F &Rectangle, D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue), FLOAT BrushWidth = 2.0F) {
+		SolidColorBrush->SetColor(Color);
+		RenderTarget->DrawRectangle(Rectangle, SolidColorBrush, BrushWidth);
 	}
 
-	BOOL FillCircle(CONST D2D1_POINT_2F &CenterPoint, FLOAT Radius,
-		D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue)) {
-
-		ID2D1SolidColorBrush *SolidColorBrush = nullptr;
-		if (SUCCEEDED(RenderTarget->CreateSolidColorBrush(Color, &SolidColorBrush))) {
-			RenderTarget->FillEllipse(D2D1::Ellipse(CenterPoint, Radius, Radius), SolidColorBrush);
-			SolidColorBrush->Release();
-			return TRUE;
-		}
-		return FALSE;
-
+	VOID FillCircle(CONST D2D1_POINT_2F &CenterPoint, FLOAT Radius, D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue)) {
+		SolidColorBrush->SetColor(Color);
+		RenderTarget->FillEllipse(D2D1::Ellipse(CenterPoint, Radius, Radius), SolidColorBrush);
 	}
+
+	VOID FillRectangle(CONST D2D1_RECT_F &Rectangle, D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue)) {
+		SolidColorBrush->SetColor(Color);
+		RenderTarget->FillRectangle(Rectangle, SolidColorBrush);
+	}
+	#pragma endregion
 
 	~Graphics() {
 
 		if (Factory != nullptr) Factory->Release();
 		if (RenderTarget != nullptr) RenderTarget->Release();
+		if (SolidColorBrush != nullptr) SolidColorBrush->Release();
 
 	}
 

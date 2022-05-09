@@ -23,9 +23,9 @@ private:
 	/// * Converted Time From Milliseconds *
 	/// </summary>
 	enum Time {
-		Second = 1000, // From Milliseconds
-		Minute = 1000 * 60, // From Milliseconds
-		Hour = 1000 * 120 // From Milliseconds
+		Second = 1000,
+		Minute = 1000 * 60,
+		Hour = 1000 * 120
 	};
 
 	/// <summary>
@@ -34,11 +34,13 @@ private:
 	enum Colors {
 		WhiteColor = RGB(255, 255, 255),
 		BlackColor = RGB(0, 0, 0),
-		OrangeColor = RGB(240, 190, 0),
 		RedColor = RGB(255, 0, 0),
-		BlueColor = RGB(0, 0, 255),
 		GreenColor = RGB(0, 255, 0),
-		DarkGreenColor = RGB(0, 145, 0)
+		BlueColor = RGB(0, 0, 255),
+		DarkRedColor = RGB(145, 0, 0),
+		DarkGreenColor = RGB(0, 145, 0),
+		DarkBlueColor = RGB(0, 0, 145),
+		OrangeColor = RGB(240, 190, 0)
 	};
 
 	#pragma region MainWindowStaticMembers
@@ -50,6 +52,7 @@ private:
 
 	static HFONT MainFont;
 	static HBRUSH MainWindowBackgroundBrush;
+	static POINT mousePosition;
 
 	static HWND hMainWindow;
 	static RECT MainWindowDimensions;
@@ -58,8 +61,6 @@ private:
 	static HWND hDebugTool2;
 
 	static HWND Test;
-
-	static POINT mousePosition;
 	#pragma endregion
 
 private:
@@ -96,7 +97,7 @@ public:
 public:
 
 	#pragma region InitMainWindow
-	static BOOL InitMainWindowClass(LPCWSTR ClassName);
+	static BOOL RegisterMainWindowClass(LPCWSTR ClassName);
 	static BOOL CreateMainWindow(LPCWSTR ClassName, LPCWSTR WindowTitle);
 	#pragma endregion
 

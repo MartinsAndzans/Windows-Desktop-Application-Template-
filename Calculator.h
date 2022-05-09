@@ -8,7 +8,7 @@
 
 #define DEVISION_ZERO_BY_ZERO "Undefined"
 #define DEVISION_BY_ZERO "Infinity"
-#define SetFont(hwnd, font) SendMessage(hwnd, WM_SETFONT, (WPARAM)font, NULL)
+#define SetFont(hwnd, font) SendMessage(hwnd, WM_SETFONT, reinterpret_cast<WPARAM>(font), NULL)
 
 class Calculator {
 
