@@ -13,7 +13,7 @@
 #include "resource.h" // Resources
 
 #include "Functions.h" // Useful Functions
-#include "Draw.h" // GDI Draw
+#include "Graphics.h" // GDI Draw
 #include "Console.h" // Console API
 
 #pragma region CostomCotrols

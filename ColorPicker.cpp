@@ -83,7 +83,7 @@ VOID ColorPicker::DrawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HE
 }
 VOID ColorPicker::DrawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y) {
 
-	CONST USHORT WIDTH = 420, HEIGTH = 40;
+	CONST USHORT WIDTH = 420, HEIGHT = 40;
 
 	BYTE R = 255, G = 255, B = 255;
 	CONST BYTE COLORSTEP = 5;
@@ -91,7 +91,7 @@ VOID ColorPicker::DrawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y) {
 
 	for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
 
-		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGTH; Y++) {
+		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGHT; Y++) {
 			SetPixel(hdc, X, Y, RGB(R, G, B));
 		}
 
@@ -109,7 +109,7 @@ VOID ColorPicker::DrawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y) {
 }
 VOID ColorPicker::DrawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y) {
 
-	CONST USHORT WIDTH = 420, HEIGTH = 100;
+	CONST USHORT WIDTH = 420, HEIGHT = 100;
 
 	BYTE R = 255, G = 255, B = 255;
 	BYTE RY = 255, GY = 255, BY = 255;
@@ -118,9 +118,9 @@ VOID ColorPicker::DrawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y) {
 
 	for (INT X = COORD_X; X <= COORD_X + WIDTH; X++) {
 
-		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGTH; Y++) {
+		for (INT Y = COORD_Y; Y <= COORD_Y + HEIGHT; Y++) {
 			SetPixel(hdc, X, Y, RGB(RY, GY, BY));
-			if (Y < COORD_Y + HEIGTH / 2) {
+			if (Y < COORD_Y + HEIGHT / 2) {
 				if (RY != R) RY -= COLORSTEP; //
 				if (GY != G) GY -= COLORSTEP; // Up - Middle
 				if (BY != B) BY -= COLORSTEP; //

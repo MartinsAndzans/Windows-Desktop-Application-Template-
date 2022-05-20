@@ -24,7 +24,7 @@ public:
 	/// <param name="Buffer">Char Buffer</param>
 	/// <param name="BufferSize">Buffer Size</param>
 	/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
-	static BOOL _itoa(int64_t Value, LPSTR Buffer, SIZE_T BufferSize) {
+	static BOOL _itoa(int64_t Value, LPSTR Buffer, SIZE_T BufferSize) noexcept {
 
 		BOOL Minus = FALSE;
 		CONST SHORT ASCI_VALUE_ZERO = 48; // * Char Value 48 *
@@ -69,12 +69,12 @@ public:
 	/// </summary>
 	/// <param name="TextToBeEncrypted">Text To Be Encrypted</param>
 	/// <returns>Encrypted Text</returns>
-	static std::string EncryptText(const std::string &TextToBeEncrypted) {
+	static std::string EncryptText(const std::string &TextToBeEncrypted) noexcept {
 
 		std::string EncryptedText{};
 
 		for (CHAR CHARACTER : TextToBeEncrypted) {
-			SHORT ASCII_VALUE = static_cast<SHORT>(CHARACTER);
+			USHORT ASCII_VALUE = static_cast<USHORT>(CHARACTER);
 			EncryptedText += std::to_string(ASCII_VALUE) + ":";
 		}
 
@@ -87,12 +87,12 @@ public:
 	/// </summary>
 	/// <param name="UTextToBeEncrypted">Unicode Text To Be Encrypted</param>
 	/// <returns>Encrypted Unicode Text</returns>
-	static std::wstring EncryptText(const std::wstring &UTextToBeEncrypted) {
+	static std::wstring EncryptText(const std::wstring &UTextToBeEncrypted) noexcept {
 
 		std::wstring EncryptedUText{};
 
 		for (WCHAR UCHARACTER : UTextToBeEncrypted) {
-			SHORT ASCII_VALUE = static_cast<SHORT>(UCHARACTER);
+			USHORT ASCII_VALUE = static_cast<USHORT>(UCHARACTER);
 			EncryptedUText += std::to_wstring(ASCII_VALUE) + L":";
 		}
 
@@ -105,7 +105,7 @@ public:
 	/// </summary>
 	/// <param name="EncryptedText">Text To Be Decrypted</param>
 	/// <returns>Decrypted Text</returns>
-	static std::string DecryptText(std::string EncryptedText) {
+	static std::string DecryptText(std::string EncryptedText) noexcept {
 
 		std::string DecryptedText{};
 
@@ -115,7 +115,7 @@ public:
 				DecryptedText += CHARACTER;
 				EncryptedText.replace(0, EncryptedText.find(':') + 1, "");
 			} else {
-				return "Cannot Decrypt Text because Text is Corrupted!";
+				return "Cannot Decrypt Text Because Text Is Corrupted!";
 			}
 		}
 
@@ -128,7 +128,7 @@ public:
 	/// </summary>
 	/// <param name="UEncryptedText">Unicode Text To Be Decrypted</param>
 	/// <returns>Decrypted Unicode Text</returns>
-	static std::wstring DecryptText(std::wstring UEncryptedText) {
+	static std::wstring DecryptText(std::wstring UEncryptedText) noexcept {
 
 		std::wstring UDecryptedText{};
 
@@ -138,7 +138,7 @@ public:
 				UDecryptedText += UCHARACTER;
 				UEncryptedText.replace(0, UEncryptedText.find(L':') + 1, L"");
 			} else {
-				return L"Cannot Decrypt Unicode Text because Unicode Text is Corrupted!";
+				return L"Cannot Decrypt Unicode Text Because Unicode Text Is Corrupted!";
 			}
 		}
 
@@ -156,7 +156,7 @@ public:
 	/// If Character has been found Function Returns Character Position,
 	/// <para>but If Character not found Function Returns MAXSIZE_T Value</para>
 	/// </returns>
-	static SIZE_T FindChar(LPCSTR Text, CONST CHAR Char, SIZE_T TextLength) {
+	static SIZE_T FindChar(LPCSTR Text, CONST CHAR Char, SIZE_T TextLength) noexcept {
 		
 		for (SIZE_T I = 0; I < TextLength; I++) {
 			if (Text[I] == Char) {
@@ -178,7 +178,7 @@ public:
 	/// If Unicode Character has been found Function Returns Unicode Character Position,
 	/// <para>but If Character not found Function Returns MAXSIZE_T Value</para>
 	/// </returns>
-	static SIZE_T FindChar(LPCWSTR UText, CONST WCHAR UChar, SIZE_T UTextLength) {
+	static SIZE_T FindChar(LPCWSTR UText, CONST WCHAR UChar, SIZE_T UTextLength) noexcept {
 
 		for (SIZE_T I = 0; I < UTextLength; I++) {
 			if (UText[I] == UChar) {
@@ -195,7 +195,7 @@ public:
 	/// </summary>
 	/// <param name="DoubleString">Double String</param>
 	/// <returns>Rounded Double String</returns>
-	static std::string RoundDoubleString(std::string DoubleString) {
+	static std::string RoundDoubleString(std::string DoubleString) noexcept {
 
 		if (DoubleString.find('.') != std::string::npos) {
 
@@ -225,7 +225,7 @@ public:
 	/// <param name="Text">Text To Clipboard</param>
 	/// <param name="TextLength">Text Length In Characters Without [null character] - [\0]</param>
 	/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
-	static BOOL CopyTextToClipboard(HWND NewClipboardOwner, LPCSTR Text, SIZE_T TextLength) {
+	static BOOL CopyTextToClipboard(HWND NewClipboardOwner, LPCSTR Text, SIZE_T TextLength) noexcept {
 
 		if (TextLength != 0) {
 			if (OpenClipboard(NewClipboardOwner)) {
@@ -261,7 +261,7 @@ public:
 	/// <param name="UText">Unicode Text To Clipboard</param>
 	/// <param name="UTextLength">Unicode Text Length In Characters Without [null character] - [\0]</param>
 	/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
-	static BOOL CopyTextToClipboard(HWND NewClipboardOwner, LPCWSTR UText, SIZE_T UTextLength) {
+	static BOOL CopyTextToClipboard(HWND NewClipboardOwner, LPCWSTR UText, SIZE_T UTextLength) noexcept {
 
 		if (UTextLength != 0) {
 			if (OpenClipboard(NewClipboardOwner)) {
@@ -296,7 +296,7 @@ public:
 	/// <param name="NewClipboardOwner">New Clipboard Owner</param>
 	/// <param name="Buffer">Text From Clipboard</param>
 	/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
-	static BOOL GetTextFromClipboard(HWND NewClipboardOwner, std::string &Buffer) {
+	static BOOL GetTextFromClipboard(HWND NewClipboardOwner, std::string &Buffer) noexcept {
 
 		if (OpenClipboard(NewClipboardOwner)) {
 			HLOCAL ClipboardData = GetClipboardData(CF_TEXT);
@@ -327,7 +327,7 @@ public:
 	/// <param name="NewClipboardOwner">New Clipboard Owner</param>
 	/// <param name="UBuffer">Unicode Text From Clipboard</param>
 	/// <returns>If Function Succeeded Returns TRUE, but If not Returns FALSE</returns>
-	static BOOL GetTextFromClipboard(HWND NewClipboardOwner, std::wstring &UBuffer) {
+	static BOOL GetTextFromClipboard(HWND NewClipboardOwner, std::wstring &UBuffer) noexcept {
 
 		if (OpenClipboard(NewClipboardOwner)) {
 			HLOCAL ClipboardData = GetClipboardData(CF_UNICODETEXT);
@@ -353,11 +353,11 @@ public:
 	}
 
 	/// <summary>
-	/// Shows Error Message
+	/// Shows Last Error Message
 	/// </summary>
 	/// <param name="ParentWindow">Parent Window</param>
 	/// <param name="AdditionalErroMessage">Additional Error Message</param>
-	static VOID ShowLastError(HWND ParentWindow = HWND_DESKTOP, std::string AdditionalErrorMessage = " - Additional Error Message") {
+	static VOID ShowLastError(HWND ParentWindow = HWND_DESKTOP, std::string AdditionalErrorMessage = " - Additional Error Message") noexcept {
 		std::string ErrorMessage = "ERROR " + std::to_string(GetLastError()) + AdditionalErrorMessage;
 		MessageBoxA(ParentWindow, ErrorMessage.c_str(), "-ERROR-", MB_OK | MB_ICONERROR);
 	}
@@ -368,8 +368,8 @@ public:
 	/// <param name="Bitmap">Bitmap</param>
 	/// <param name="FilePath">File Path With ".bmp" Extension</param>
 	/// <param name="BitmapSize">Bitmap Size In Pixels</param>
-	/// <returns>If Succeeded returns TRUE, but If not returns FALSE</returns>
-	static BOOL SaveBitmapToFile(HBITMAP Bitmap, LPCSTR FilePath, CONST SIZE &BitmapSize) {
+	/// <returns>If Succeeded Returns TRUE, but If not Returns FALSE</returns>
+	static BOOL SaveBitmapToFile(HBITMAP Bitmap, LPCSTR FilePath, CONST SIZE &BitmapSize) noexcept {
 
 		std::ofstream image;
 
@@ -385,8 +385,8 @@ public:
 
 		BITMAPINFOHEADER bmiheader = { 0 };
 		bmiheader.biSize = sizeof(BITMAPINFOHEADER);
-		bmiheader.biWidth = BitmapSize.cx;
-		bmiheader.biHeight = BitmapSize.cy;
+		bmiheader.biWidth = BitmapSize.cx; // Bitmap Width In Pixels
+		bmiheader.biHeight = BitmapSize.cy; // Bitmap Height In Pixels
 		bmiheader.biPlanes = 0x01; // 1 - Bitmap has a one plane
 		bmiheader.biBitCount = 0x20; // 32 - Bitmap has a maximum of 2^32 colors
 		bmiheader.biCompression = BI_RGB;
@@ -396,26 +396,30 @@ public:
 		bmiheader.biClrUsed = NULL;
 		bmiheader.biClrImportant = NULL;
 
-		std::unique_ptr<COLORREF> BitmapBytes(new COLORREF[BitmapSizeCXxCY]{});
+		std::unique_ptr<COLORREF[]> BitmapBytesPtr = std::make_unique<COLORREF[]>(BitmapSizeCXxCY);
 
-		BITMAPINFO bminfo = { 0 };
-		bminfo.bmiHeader = bmiheader;
+		if (BitmapBytesPtr) {
 
-		HDC ScreenDC = GetDC(HWND_DESKTOP);
-		GetDIBits(ScreenDC, Bitmap, 0, BitmapSize.cy, BitmapBytes.get(), &bminfo, DIB_RGB_COLORS);
-		ReleaseDC(HWND_DESKTOP, ScreenDC);
-		
-		image.open(FilePath, std::ios::binary); // Open File
+			BITMAPINFO bminfo = { 0 };
+			bminfo.bmiHeader = bmiheader;
 
-		if (image.is_open()) {
+			HDC ScreenDC = GetDC(HWND_DESKTOP);
+			GetDIBits(ScreenDC, Bitmap, 0, BitmapSize.cy, BitmapBytesPtr.get(), &bminfo, DIB_RGB_COLORS);
+			ReleaseDC(HWND_DESKTOP, ScreenDC);
 
-			image.write(reinterpret_cast<char*>(&bmfheader), sizeof(BITMAPFILEHEADER)); // BITMAP FILE HEADER
-			image.write(reinterpret_cast<char*>(&bmiheader), sizeof(BITMAPINFOHEADER)); // BITMAP INFO HEADER
-			image.write(reinterpret_cast<char*>(BitmapBytes.get()), sizeof(COLORREF) * BitmapSizeCXxCY); // COLOR BYTE ARRAY
-			
-			image.close(); // Close File
+			image.open(FilePath, std::ios::binary); // Open File
 
-			return TRUE;
+			if (image.is_open()) {
+
+				image.write(reinterpret_cast<char*>(&bmfheader), sizeof(BITMAPFILEHEADER)); // BITMAP FILE HEADER
+				image.write(reinterpret_cast<char*>(&bmiheader), sizeof(BITMAPINFOHEADER)); // BITMAP INFO HEADER
+				image.write(reinterpret_cast<char*>(BitmapBytesPtr.get()), sizeof(COLORREF) * BitmapSizeCXxCY); // COLOR BYTE ARRAY
+
+				image.close(); // Close File
+
+				return TRUE;
+
+			}
 
 		}
 
@@ -460,14 +464,14 @@ public:
 	/// <para>MCI_STATUS_MODE - Obtains Current Mode of The Device</para>
 	/// <para>MCI_STATUS_TIME_FORMAT - Obtains Current Time Format of The Device</para>
 	/// </summary>
-	static MCIERROR GetPlaybackStatus(LPCWSTR Alias, MCISTATUSCODE StatusCode, MCISTATUS *PlaybackStatus) {
+	static MCIERROR GetPlaybackStatus(LPCWSTR Alias, MCISTATUSCODE StatusCode, MCISTATUS &PlaybackStatus) {
 
 		MCI_STATUS_PARMS status = { 0 };
 		status.dwItem = StatusCode; // Status Code
 		status.dwReturn = NULL; // Return
 
 		MCIERROR Error = mciSendCommand(mciGetDeviceID(Alias), MCI_STATUS, MCI_WAIT | MCI_STATUS_ITEM, (DWORD_PTR)&status);
-		*PlaybackStatus = static_cast<MCISTATUS>(status.dwReturn);
+		PlaybackStatus = static_cast<MCISTATUS>(status.dwReturn);
 		return Error;
 
 	}

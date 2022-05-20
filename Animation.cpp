@@ -64,7 +64,7 @@ VOID Animation::DrawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH,
 		COLORREF PreviousColor = GetTextColor(hdc);
 		SetTextColor(hdc, SymbolColor);
 
-		GetTextExtentPointA(hdc, &Symbol, 1, &size); // Symbol Size In Pixels
+		GetTextExtentPoint32A(hdc, &Symbol, 1, &size); // Symbol Size In Pixels
 
 		GetSystemTime(&st); // Gets System Time
 		srand(st.wMilliseconds); // Random Sead

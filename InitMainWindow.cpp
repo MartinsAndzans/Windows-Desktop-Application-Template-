@@ -148,13 +148,13 @@ VOID MainWindow::onCreate(HWND hMainWindow, LPARAM lParam) {
 
 	#pragma region Examples
 	Animation::AnimationStyle as = { 0 };
-	as.SymbolColor = Colors::OrangeColor;
+	as.SymbolColor = Graphics::Colors::Orange;
 	as.Proportion = 4;
 	as.Symbol = '+';
 
 	DropFiles::DropFilesStyle dfs = { 0 };
-	dfs.BackgroundColor = Colors::OrangeColor;
-	dfs.ForegroundColor = Colors::BlueColor;
+	dfs.BackgroundColor = Graphics::Colors::Orange;
+	dfs.ForegroundColor = Graphics::Colors::Blue;
 
 	CreateWindowEx(WS_EX_STATICEDGE, L"Animation", L"Animation", WS_CHILD | WS_BORDER | WS_VISIBLE, 10, 10, 140, 140, hMainWindow, reinterpret_cast<HMENU>(ControlsIDs::ID_ANIMATION_STARS), HInstance(), &as);
 	CreateWindowEx(WS_EX_STATICEDGE, L"DropFiles", L"Drop File/s Here", WS_CHILD | WS_BORDER | WS_VISIBLE, 270, 120, 240, 140, hMainWindow, reinterpret_cast<HMENU>(ControlsIDs::ID_DROP_FILES), HInstance(), &dfs);
@@ -206,10 +206,10 @@ VOID MainWindow::onDrawItem(HWND hMainWindow, WPARAM wParam, LPARAM lParam) {
 
 		SIZE size = { 0 };
 		WCHAR StaticText[MAX_CHAR_STRING] = { 0 };
-		SetDCBrushColor(item->hDC, Colors::DarkGreenColor);
+		SetDCBrushColor(item->hDC, Graphics::Colors::DarkGreen);
 		FillRect(item->hDC, &item->rcItem, static_cast<HBRUSH>(GetStockObject(DC_BRUSH)));
 		SetBkMode(item->hDC, TRANSPARENT);
-		SetTextColor(item->hDC, Colors::WhiteColor);
+		SetTextColor(item->hDC, Graphics::Colors::White);
 		INT TextLength = GetWindowText(item->hwndItem, StaticText, ARRAYSIZE(StaticText));
 		GetTextExtentPoint(item->hDC, StaticText, TextLength, &size);
 		TextOut(item->hDC, item->rcItem.right / 2 - size.cx / 2, item->rcItem.bottom / 2 - size.cy / 2, StaticText, TextLength);
@@ -233,22 +233,20 @@ VOID MainWindow::onPaint(HWND hMainWindow) {
 
 	SelectObject(MemoryDC, MainFont);
 
-	Draw::DrawSmallGradient(MemoryDC, MainWindowDimensions.right / 2 - 420 / 2, MainWindowDimensions.bottom / 2 - 40 / 2);
+	Graphics::FillSmallGradient(MemoryDC, MainWindowDimensions.right / 2 - 420 / 2, MainWindowDimensions.bottom / 2 - 40 / 2);
 
 	SIZE size = { 0 };
 	CHAR Text[] = "Hello World!";
-	GetTextExtentPointA(MainWindowDC, Text, ARRAYSIZE(Text), &size);
-	TextOutA(MemoryDC, MainWindowDimensions.right / 2 - size.cx / 2, MainWindowDimensions.bottom / 2 - size.cy / 2, Text, ARRAYSIZE(Text) - 1);
+	GetTextExtentPoint32A(MainWindowDC, Text, static_cast<INT>(strlen(Text)), &size);
+	TextOutA(MemoryDC, MainWindowDimensions.right / 2 - size.cx / 2, MainWindowDimensions.bottom / 2 - size.cy / 2, Text, static_cast<INT>(strlen(Text)));
 
-	//SYSTEMTIME st = { 0 };
-	//GetSystemTime(&st);
-	//srand(st.wMilliseconds);
+	POINT SP = { MainWindowDimensions.right / 2, MainWindowDimensions.bottom / 2 };
+	POINT EP = { MainWindowDimensions.right / 2, MainWindowDimensions.bottom / 2 };
 
-	//MoveToEx(MemoryDC, mousePosition.x, mousePosition.y, nullptr);
-	//LineTo(MemoryDC, mousePosition.x, mousePosition.y);
+	for (SIZE_T I = 0; I < 1000; I++) {
 
-	for (ULONG I = 0; I < static_cast<ULONG>(100); I++) {
-		Draw::FillStar(MemoryDC, rand() % MainWindowDimensions.right - 60 / 2, rand() % MainWindowDimensions.bottom - 60 / 2, 60, 60, WINDING, RGB(rand() % 256, rand() % 256, rand() % 256));
+		
+
 	}
 
 	//Functions::SaveBitmapToFile(MainBitmap, "File.bmp", { MainWindowDimensions.right, MainWindowDimensions.bottom });

@@ -1,5 +1,5 @@
-#ifndef _DRAW_
-#define _DRAW_
+#ifndef _GRAPHICS_
+#define _GRAPHICS_
 
 /************************************************
 *                                               *
@@ -9,9 +9,8 @@
 
 #include <ciso646>
 #include <Windows.h>
-#include <d2d1.h>
 
-class Draw {
+class Graphics {
 
 public:
 
@@ -19,22 +18,29 @@ public:
 	/// * Predefined Colors *
 	/// </summary>
 	enum Colors {
-		WhiteColor = RGB(255, 255, 255),
-		BlackColor = RGB(0, 0, 0),
-		RedColor = RGB(255, 0, 0),
-		GreenColor = RGB(0, 255, 0),
-		BlueColor = RGB(0, 0, 255),
-		DarkRedColor = RGB(145, 0, 0),
-		DarkGreenColor = RGB(0, 145, 0),
-		DarkBlueColor = RGB(0, 0, 145),
-		OrangeColor = RGB(240, 190, 0)
+		White = RGB(255, 255, 255),
+		Black = RGB(0, 0, 0),
+		Red = RGB(255, 0, 0),
+		Green = RGB(0, 255, 0),
+		Blue = RGB(0, 0, 255),
+		DarkRed = RGB(145, 0, 0),
+		DarkGreen = RGB(0, 145, 0),
+		DarkBlue = RGB(0, 0, 145),
+		Orange = RGB(240, 190, 0)
 	};
 
 	/// <summary>
-	/// This Function Draw Rectangle
-	/// <para>Function Use Current Pen</para>
+	/// This Function Draw Line
 	/// </summary>
-	static VOID DrawRectangle(HDC hdc, CONST RECT &Rectangle) {
+	static VOID DrawLine(HDC hdc, CONST POINT &LineStart, CONST POINT &LineEnd) noexcept {
+		MoveToEx(hdc, LineStart.x, LineStart.y, nullptr);
+		LineTo(hdc, LineEnd.x, LineEnd.y);
+	}
+
+	/// <summary>
+	/// This Function Draw Rectangle
+	/// </summary>
+	static VOID DrawRectangle(HDC hdc, CONST RECT &Rectangle) noexcept {
 
 		POINT RectangleVertices[] = {
 			{ Rectangle.left, Rectangle.top }, // First
@@ -51,10 +57,7 @@ public:
 	/// <summary>
 	/// This Function Fill Rectangle [50% Opacity]
 	/// </summary>
-	/// <param name="hdc">Device Context</param>
-	/// <param name="Rectangle">Rectangle</param>
-	/// <param name="Color">Color</param>
-	static VOID FillRectOpacity50(HDC hdc, CONST RECT &Rectangle, COLORREF Color = Colors::BlackColor) {
+	static VOID FillRectOpacity50(HDC hdc, CONST RECT &Rectangle, COLORREF Color = Colors::DarkBlue) noexcept {
 
 		BOOL DRAWPIXEL; // TRUE = |X| - FALSE = | |
 		for (INT X = Rectangle.left; X <= Rectangle.right; X++) {
@@ -79,7 +82,7 @@ public:
 	/// <param name="FilePath">File Path With ".bmp" Extension</param>
 	/// <param name="DrawMethod">Draw Method</param>
 	/// <returns>If Succeeded Returns TRUE, but If not Returns FALSE</returns>
-	static BOOL DrawBitmapFromFile(HDC hdc, CONST RECT &Rectangle, LPCWSTR FilePath, DWORD DrawMethod = SRCCOPY) {
+	static BOOL DrawBitmapFromFile(HDC hdc, CONST RECT &Rectangle, LPCWSTR FilePath, DWORD DrawMethod = SRCCOPY) noexcept {
 
 		HDC BitmapDC = CreateCompatibleDC(hdc);
 		HBITMAP Bitmap = static_cast<HBITMAP>(LoadImage(GetModuleHandle(NULL), FilePath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_VGACOLOR));
@@ -102,7 +105,7 @@ public:
 	/// <summary>
 	/// This Function Fill Triangle
 	/// </summary>
-	static VOID FillTriangle(HDC hdc, POINT V1, POINT V2, POINT V3, INT FillMode = ALTERNATE, COLORREF Color = Colors::BlueColor) {
+	static VOID FillTriangle(HDC hdc, POINT V1, POINT V2, POINT V3, INT FillMode = ALTERNATE, COLORREF Color = Colors::DarkBlue) noexcept {
 
 		SetDCPenColor(hdc, Color);
 		SetDCBrushColor(hdc, Color);
@@ -126,29 +129,9 @@ public:
 	}
 
 	/// <summary>
-	/// This Function Fill Standart Triangle
-	/// </summary>
-	static VOID FillStandartTriangle(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH, INT HEIGHT, LPCSTR Direction = "up", INT FillMode = ALTERNATE, COLORREF Color = Colors::BlackColor) {
-
-		SetDCPenColor(hdc, Color);
-		SetDCBrushColor(hdc, Color);
-
-		HPEN PreviousPen = static_cast<HPEN>(SelectObject(hdc, static_cast<HPEN>(GetStockObject(DC_PEN))));
-		HBRUSH PreviousBrush = static_cast<HBRUSH>(SelectObject(hdc, static_cast<HBRUSH>(GetStockObject(DC_BRUSH))));
-
-		SetPolyFillMode(hdc, FillMode);
-
-
-
-		SelectObject(hdc, PreviousPen);
-		SelectObject(hdc, PreviousBrush);
-
-	}
-
-	/// <summary>
 	/// This Function Fill Arrow
 	/// </summary>
-	static VOID FillArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 60, INT HEIGHT = 100, INT FillMode = ALTERNATE, COLORREF Color = Colors::BlackColor) {
+	static VOID FillArrow(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 60, INT HEIGHT = 100, INT FillMode = ALTERNATE, COLORREF Color = Colors::DarkBlue) noexcept {
 
 		CONST SHORT Proportion = 3;
 		INT XCELL = WIDTH / Proportion, YCELL = HEIGHT / Proportion;
@@ -181,7 +164,7 @@ public:
 	/// <summary>
 	/// This Function Fill Star
 	/// </summary>
-	static VOID FillStar(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 60, INT HEIGTH = 60, INT FillMode = WINDING, COLORREF Color = Colors::DarkGreenColor) {
+	static VOID FillStar(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 60, INT HEIGTH = 60, INT FillMode = WINDING, COLORREF Color = Colors::DarkBlue) noexcept {
 
 		SetDCPenColor(hdc, Color);
 		SetDCBrushColor(hdc, Color);
@@ -210,7 +193,7 @@ public:
 	/// This Function Draw Small Gradient
 	/// <para>Size - Width = 420 / Height = 40</para>
 	/// </summary>
-	static VOID DrawSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor = Colors::BlackColor) {
+	static VOID FillSmallGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor = Colors::DarkBlue) noexcept {
 
 		CONST USHORT BorderWidth = 2;
 		CONST USHORT WIDTH = 420, HEIGTH = 40;
@@ -257,7 +240,7 @@ public:
 	/// This Function Draw Large Gradient
 	/// <para>Size - Width = 420 / Height = 100</para>
 	/// </summary>
-	static VOID DrawLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor = Colors::BlackColor) {
+	static VOID FillLargeGradient(HDC hdc, INT COORD_X, INT COORD_Y, COLORREF BorderColor = Colors::DarkBlue) noexcept {
 
 		CONST USHORT BorderWidth = 2;
 		CONST USHORT WIDTH = 420, HEIGTH = 100;
@@ -315,7 +298,7 @@ public:
 	/// <summary>
 	/// This Function Draw Animation Frame
 	/// </summary>
-	static VOID DrawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, CONST CHAR Symbol = '+', UINT Proportion = 4, COLORREF SymbolColor = Colors::WhiteColor) {
+	static VOID DrawAnimationFrame(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 100, INT HEIGHT = 100, CONST CHAR Symbol = '+', UINT Proportion = 4, COLORREF SymbolColor = Colors::DarkBlue) noexcept {
 
 		if (WIDTH > 0 and HEIGHT > 0) {
 
@@ -326,7 +309,7 @@ public:
 			COLORREF PreviousColor = GetTextColor(hdc);
 			SetTextColor(hdc, SymbolColor);
 
-			GetTextExtentPointA(hdc, &Symbol, 1, &size); // Symbol Size In Pixels
+			GetTextExtentPoint32A(hdc, &Symbol, 1, &size); // Symbol Size In Pixels
 
 			GetSystemTime(&st); // Gets System Time
 			srand(st.wMilliseconds); // Random Sead
@@ -353,7 +336,7 @@ public:
 	/// <summary>
 	/// This Function Draw Cross
 	/// </summary>
-	static VOID DrawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 23, INT HEIGHT = 23, COLORREF CrossColor = Colors::BlackColor) {
+	static VOID DrawCross(HDC hdc, INT COORD_X, INT COORD_Y, INT WIDTH = 23, INT HEIGHT = 23, COLORREF CrossColor = Colors::DarkBlue) noexcept {
 
 		if (WIDTH % 2 != 0 and HEIGHT % 2 != 0) {
 
@@ -396,79 +379,4 @@ public:
 
 };
 
-class Graphics {
-
-private:
-
-	ID2D1Factory *Factory = nullptr; // * DirectX2D Factory *
-	ID2D1DCRenderTarget *RenderTarget = nullptr; // * DirectX2D GDI Compatible Render Target *
-	ID2D1SolidColorBrush *SolidColorBrush = nullptr; // * DirectX2D Solid Color Brush *
-
-public:
-
-	BOOL Init() {
-		
-		// * Creating DirectX2D Factory *
-		if (FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &Factory)))
-			return FALSE;
-
-		// * Creating DirectX2D GDI Compatible Render Target *
-		D2D1_RENDER_TARGET_PROPERTIES RTP = D2D1::RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_HARDWARE,
-			D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
-			0.0F, 0.0F, D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE, D2D1_FEATURE_LEVEL_DEFAULT);
-		if (FAILED(Factory->CreateDCRenderTarget(&RTP, &RenderTarget)))
-			return FALSE;
-
-		// * Creating DirectX2D Solid Color Brush *
-		if (FAILED(RenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Enum::Black), &SolidColorBrush)))
-			return FALSE;
-
-		return TRUE;
-
-	}
-
-	VOID BeginDraw(HDC RenderDC, CONST RECT &RenderRect) {
-		// * Binding Device Context To DirectX2D GDI Compatible Render Target *
-		RenderTarget->BindDC(RenderDC, &RenderRect);
-		// * Begins Drawing *
-		RenderTarget->BeginDraw();
-	}
-
-	VOID EndDraw() {
-		// * Ends Drawing *
-		RenderTarget->EndDraw();
-	}
-
-	#pragma region DirectX2D-Drawing
-	VOID DrawCircle(CONST D2D1_POINT_2F &CenterPoint, FLOAT Radius, D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue), FLOAT BrushWidth = 2.0F) {
-		SolidColorBrush->SetColor(Color);
-		RenderTarget->DrawEllipse(D2D1::Ellipse(CenterPoint, Radius, Radius), SolidColorBrush, BrushWidth);
-	}
-
-	VOID DrawRectangle(CONST D2D1_RECT_F &Rectangle, D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue), FLOAT BrushWidth = 2.0F) {
-		SolidColorBrush->SetColor(Color);
-		RenderTarget->DrawRectangle(Rectangle, SolidColorBrush, BrushWidth);
-	}
-
-	VOID FillCircle(CONST D2D1_POINT_2F &CenterPoint, FLOAT Radius, D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue)) {
-		SolidColorBrush->SetColor(Color);
-		RenderTarget->FillEllipse(D2D1::Ellipse(CenterPoint, Radius, Radius), SolidColorBrush);
-	}
-
-	VOID FillRectangle(CONST D2D1_RECT_F &Rectangle, D2D1_COLOR_F Color = D2D1::ColorF(D2D1::ColorF::Enum::DarkBlue)) {
-		SolidColorBrush->SetColor(Color);
-		RenderTarget->FillRectangle(Rectangle, SolidColorBrush);
-	}
-	#pragma endregion
-
-	~Graphics() {
-
-		if (Factory != nullptr) Factory->Release();
-		if (RenderTarget != nullptr) RenderTarget->Release();
-		if (SolidColorBrush != nullptr) SolidColorBrush->Release();
-
-	}
-
-};
-
-#endif // _DRAW_
+#endif // _GRAPHICS_

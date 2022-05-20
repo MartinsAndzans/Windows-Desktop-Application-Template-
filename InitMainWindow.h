@@ -28,21 +28,6 @@ private:
 		Hour = 1000 * 120
 	};
 
-	/// <summary>
-	/// * Predefined Colors *
-	/// </summary>
-	enum Colors {
-		WhiteColor = RGB(255, 255, 255),
-		BlackColor = RGB(0, 0, 0),
-		RedColor = RGB(255, 0, 0),
-		GreenColor = RGB(0, 255, 0),
-		BlueColor = RGB(0, 0, 255),
-		DarkRedColor = RGB(145, 0, 0),
-		DarkGreenColor = RGB(0, 145, 0),
-		DarkBlueColor = RGB(0, 0, 145),
-		OrangeColor = RGB(240, 190, 0)
-	};
-
 	#pragma region MainWindowStaticMembers
 	static PAINTSTRUCT ps;
 	static HDC MainWindowDC;

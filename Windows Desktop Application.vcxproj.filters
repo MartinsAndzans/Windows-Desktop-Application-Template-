@@ -88,7 +88,7 @@
     <ClInclude Include="InitMainWindow.h">
       <Filter>InitMainWindow</Filter>
     </ClInclude>
-    <ClInclude Include="Draw.h">
+    <ClInclude Include="Graphics.h">
       <Filter>Functions</Filter>
     </ClInclude>
     <ClInclude Include="ColorPicker.h">
